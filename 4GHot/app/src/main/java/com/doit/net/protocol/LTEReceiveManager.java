@@ -1,0 +1,464 @@
+package com.doit.net.protocol;
+
+import android.text.TextUtils;
+
+import com.doit.net.bean.DeviceState;
+import com.doit.net.bean.Get2GCommonResponseBean;
+import com.doit.net.bean.Report2GIMSIBean;
+import com.doit.net.bean.Report2GNumberBean;
+import com.doit.net.bean.Set2GParamsBean;
+import com.doit.net.bean.UeidBean;
+import com.doit.net.event.EventAdapter;
+import com.doit.net.model.CacheManager;
+import com.doit.net.model.DBUeidInfo;
+import com.doit.net.model.ImsiMsisdnConvert;
+import com.doit.net.model.UCSIDBManager;
+import com.doit.net.socket.ServerSocketUtils;
+import com.doit.net.utils.DateUtils;
+import com.doit.net.utils.GsonUtils;
+import com.doit.net.utils.LogUtils;
+import com.doit.net.utils.UtilDataFormatChange;
+
+/**
+ * Created by Zxc on 2018/10/18.
+ */
+import org.xutils.DbManager;
+import org.xutils.ex.DbException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class LTEReceiveManager {
+    //将字节数暂存
+    private ArrayList<Byte> listReceiveBuffer = new ArrayList<Byte>();
+    //包头的长度
+    private short packageHeadLength = 12;
+
+    private Timer timer;
+
+    private boolean initSuccess;
+
+
+    //解析数据
+    public synchronized void parseData(String ip, byte[] bytesReceived, int receiveCount) {
+        //将接收到数据存放在列表中
+        for (int i = 0; i < receiveCount; i++) {
+            listReceiveBuffer.add(bytesReceived[i]);
+        }
+
+        while (true) {
+            //得到当前缓存中的长度
+            int listReceiveCount = listReceiveBuffer.size();
+
+            //如果缓存长度小于12说明最小包都没有收完整
+            if (listReceiveCount < packageHeadLength) {
+                break;
+            }
+
+            //取出长度
+            byte[] contentLength = {listReceiveBuffer.get(0), listReceiveBuffer.get(1)};
+            int contentLen = getShortData(contentLength[0], contentLength[1]);
+
+
+            LogUtils.log("分包大小：" + listReceiveBuffer.size() + "," + contentLen);
+            //判断缓存列表中的数据是否达到一个包的数据
+            if (listReceiveBuffer.size() < contentLen) {
+                LogUtils.log("LTE没有达到整包数:");
+                break;
+            }
+
+            byte[] tempPackage = new byte[contentLen];
+            //取出一个整包
+            for (int j = 0; j < contentLen; j++) {
+                tempPackage[j] = listReceiveBuffer.get(j);
+            }
+
+            //删除内存列表中的数据
+            if (contentLen > 0) {
+                listReceiveBuffer.subList(0, contentLen).clear();
+            }
+
+            //解析包
+            parsePackageData(ip, tempPackage);
+        }
+
+    }
+
+
+    //解析成包数据
+    private void parsePackageData(String ip, byte[] tempPackage) {
+        if (tempPackage.length < 12)
+            return;
+
+        LTEReceivePackage receivePackage = new LTEReceivePackage();
+
+        receivePackage.setIp(ip);
+
+        //第一步取出包的长度
+        short packageLength = getShortData(tempPackage[0], tempPackage[1]);
+        receivePackage.setPackageLength(packageLength);
+        //UtilBaseLog.printLog("LTE收到(packageLength):"+receivePackage.getPackageLength());
+
+        //第二步取出CheckNum
+        short packageCheckNum = getShortData(tempPackage[2], tempPackage[3]);
+        receivePackage.setPackageCheckNum(packageCheckNum);
+        //UtilBaseLog.printLog("LTE收到(packageCheckNum):"+packageCheckNum);
+
+        //第三步取出序号
+        short packageSequence = getShortData(tempPackage[4], tempPackage[5]);
+        receivePackage.setPackageSequence(packageSequence);
+        //UtilBaseLog.printLog("LTE收到(packageSequence):"+packageSequence);
+
+        //第四步取出SessionID
+        short packageSessionID = getShortData(tempPackage[6], tempPackage[7]);
+        receivePackage.setPackageSessionID(packageSessionID);
+        //UtilBaseLog.printLog("LTE收到(packageSessionID):"+receivePackage.getPackageSessionID());
+
+        //第五步取出主协议类型EquipType
+        byte packageEquipType = tempPackage[8];
+        receivePackage.setPackageEquipType(packageEquipType);
+
+
+        //4G设备类型
+        if (receivePackage.getIp().equals(ServerSocketUtils.REMOTE_4G_IP)) {
+            CacheManager.equipType4G = packageEquipType;
+        }
+
+        //2G设备类型
+        if (receivePackage.getIp().equals(ServerSocketUtils.REMOTE_2G_IP)) {
+            CacheManager.equipType2G = packageEquipType;
+        }
+
+
+        //第六步取出预留类型Reserve
+        byte packageReserve = tempPackage[9];
+        receivePackage.setPackageReserve(packageReserve);
+        //UtilBaseLog.printLog("LTE收到(packageReserve):"+receivePackage.getPackageReserve());
+
+        //第七步取出主协议类型MainType
+        byte packageMainType = tempPackage[10];
+        receivePackage.setPackageMainType(packageMainType);
+        //UtilBaseLog.printLog("LTE收到(packageMainType):"+receivePackage.getPackageMainType());
+
+        //第八步取出主协议类型Type
+        byte packageSubType = tempPackage[11];
+        receivePackage.setPackageSubType(packageSubType);
+
+
+        //第九部取出内容
+        //1.计算子协议内容包的长度
+        int subPacketLength = packageLength - packageHeadLength;
+        byte[] byteSubContent = new byte[subPacketLength];
+        //2.取出子协议内容
+        if (subPacketLength > 0) {
+            for (int j = 0; j < byteSubContent.length; j++) {
+                byteSubContent[j] = tempPackage[packageHeadLength + j];
+            }
+        }
+        receivePackage.setByteSubContent(byteSubContent);
+
+
+        LogUtils.log("TCP接收：ip:" + ip + ",Type:" + packageMainType + ";  SubType:0x" + Integer.toHexString(receivePackage.getPackageSubType())
+                + ";  子协议:" + new String(receivePackage.getByteSubContent(), StandardCharsets.UTF_8));
+        //实时解析协议
+        realTimeResponse(receivePackage);
+    }
+
+
+    //实时回复协议
+    public void realTimeResponse(LTEReceivePackage receivePackage) {
+
+        switch (receivePackage.getIp()) {
+            case ServerSocketUtils.REMOTE_4G_IP:   //4g
+                switch (receivePackage.getPackageMainType()) {
+
+                    case LTE_PT_LOGIN.PT_LOGIN:
+                        LTE_PT_LOGIN.loginResp(receivePackage);
+                        break;
+                    case LTE_PT_ADJUST.PT_ADJUST:
+//                        LTE_PT_ADJUST.response(receivePackage);
+                        break;
+
+                    case LTE_PT_SYSTEM.PT_SYSTEM:
+                        switch (receivePackage.getPackageSubType()) {
+                            case LTE_PT_SYSTEM.SYSTEM_REBOOT_ACK:
+                            case LTE_PT_SYSTEM.SYSTEM_SET_DATETIME_ASK:
+                            case LTE_PT_SYSTEM.SYSTEM_UPGRADE_ACK:
+                            case LTE_PT_SYSTEM.SYSTEM_GET_LOG_ACK:
+                                LTE_PT_SYSTEM.processCommonSysResp(receivePackage);
+                                break;
+                        }
+
+                        break;
+                    case LTE_PT_PARAM.PT_PARAM:
+                        switch (receivePackage.getPackageSubType()) {
+                            case LTE_PT_PARAM.PARAM_SET_ENB_CONFIG_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_CHANNEL_CONFIG_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_CHANNEL_ON_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_BLACK_NAMELIST_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_RT_IMSI_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_CHANNEL_OFF_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_FTP_CONFIG_ACK:
+                            case LTE_PT_PARAM.PARAM_CHANGE_TAG_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_NAMELIST_ACK:
+                            case LTE_PT_PARAM.PARAM_CHANGE_BAND_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_SCAN_FREQ_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_FAN_ACK:
+                            case LTE_PT_PARAM.PPARAM_SET_LOC_IMSI_ACK:
+                            case LTE_PT_PARAM.PARAM_SET_ACTIVE_MODE_ACK:
+                            case LTE_PT_PARAM.PARAM_RPT_UPGRADE_STATUS:
+
+                                LTE_PT_PARAM.processSetResp(receivePackage);
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_GET_ENB_CONFIG_ACK:
+                                LTE_PT_PARAM.processEnbConfigQuery(receivePackage);
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_GET_ACTIVE_MODE_ASK:
+                                LogUtils.log("工作模式查询:" + UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0));
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_RPT_HEATBEAT:
+                                LTE_PT_PARAM.processRPTHeartbeat(receivePackage);
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_GET_NAMELIST_ACK:
+                                LTE_PT_PARAM.processNamelistQuery(receivePackage);
+                                break;
+                            case LTE_PT_PARAM.PARAM_RPT_BLACK_NAME:
+                                LTE_PT_PARAM.processRptBlackName(receivePackage);
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_SET_SCAN_FREQ:
+                                LTE_PT_PARAM.processRPTHeartbeat(receivePackage);
+                                break;
+
+                            case LTE_PT_PARAM.PARAM_RPT_SCAN_FREQ:
+                                LTE_PT_PARAM.processRPTFreqScan(receivePackage);
+                                break;
+                            case LTE_PT_PARAM.RPT_SRSP_GROUP:
+                                LTE_PT_PARAM.processLocRpt(receivePackage);
+                                break;
+                        }
+
+                        break;
+                }
+
+                break;
+            case ServerSocketUtils.REMOTE_2G_IP:    //2G
+                switch (receivePackage.getPackageMainType()) {
+                    case MsgType2G.PT_LOGIN:
+                        LTE_PT_LOGIN.loginResp(receivePackage);
+                        break;
+                    case MsgType2G.PT_ADJUST:
+                        LTE_PT_ADJUST.response(receivePackage);
+
+                        if (!CacheManager.initSuccess2G) {
+                            Send2GManager.getParamsConfig();
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    Send2GManager.getCommonConfig();
+                                }
+                            }, 500);
+
+                        }
+                        break;
+                    case MsgType2G.PT_RESP:
+
+                        LogUtils.log("2G登录成功");
+
+                        break;
+                    case MsgType2G.PT_PARAM:
+                        switch (receivePackage.getPackageSubType()) {
+                            case MsgType2G.GET_NTC_CONFIG_ACK:
+                                parseCommonConfig(receivePackage);
+
+                                break;
+                            case MsgType2G.GET_MCRF_CONFIG_ACK:
+                                parseParamsConfig(receivePackage);
+                                break;
+                            case MsgType2G.RPT_IMSI_INFO:
+                                parseImsiReport(receivePackage);
+                                break;
+                            case MsgType2G.RPT_IMSINUM_INFO:
+                                parsePhoneNumber(receivePackage);
+                                break;
+                            case MsgType2G.SET_RF_SWITCH_ACK:
+                                Send2GManager.getCommonConfig();
+                                break;
+                            case MsgType2G.SET_MCRF_CONFIG_ACK:
+                                Send2GManager.getParamsConfig();
+                                break;
+                        }
+                        break;
+
+                }
+
+                break;
+        }
+    }
+
+
+    /**
+     * @param receivePackage 解析2G基本环境参数
+     */
+    private void parseCommonConfig(LTEReceivePackage receivePackage) {
+        try {
+            Get2GCommonResponseBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                    StandardCharsets.UTF_8), Get2GCommonResponseBean.class);
+            if (responseBean.getParams() != null && responseBean.getParams().size() > 0) {
+                for (Get2GCommonResponseBean.Params param : responseBean.getParams()) {
+                    for (int i = 0; i < CacheManager.paramList.size(); i++) {
+                        if ("0".equals(CacheManager.paramList.get(i).getBoardid()) && "0".equals(param.getBoardid())) {
+                            if ("0".equals(CacheManager.paramList.get(i).getCarrierid())) {
+                                CacheManager.paramList.get(i).setRfState("1".equals(param.getRunstate().get(0).getC1rf()));
+                            }
+
+                            if ("1".equals(CacheManager.paramList.get(i).getCarrierid())) {
+                                CacheManager.paramList.get(i).setRfState("1".equals(param.getRunstate().get(0).getC2rf()));
+                            }
+                        }
+
+                        if ("1".equals(CacheManager.paramList.get(i).getBoardid()) && "1".equals(param.getBoardid())) {
+                            CacheManager.paramList.get(i).setRfState("1".equals(param.getRunstate().get(0).getC3rf()));
+                            break;
+                        }
+                    }
+                }
+
+                EventAdapter.call(EventAdapter.REFRESH_DEVICE_2G);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        EventAdapter.call(EventAdapter.RF_STATUS_RPT);
+        EventAdapter.call(EventAdapter.RF_STATUS_LOC);
+
+
+    }
+
+    /**
+     * @param receivePackage 解析2G设备参数
+     */
+    private void parseParamsConfig(LTEReceivePackage receivePackage) {
+        try {
+            Set2GParamsBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                    StandardCharsets.UTF_8), Set2GParamsBean.class);
+            if (responseBean.getParams() != null && responseBean.getParams().size() > 0) {
+                for (Set2GParamsBean.Params param : responseBean.getParams()) {
+                    boolean isContain = false;  //是否已存在
+
+                    for (int i = 0; i < CacheManager.paramList.size(); i++) {
+                        if (param.getBoardid().equals(CacheManager.paramList.get(i).getBoardid())
+                                && param.getCarrierid().equals(CacheManager.paramList.get(i).getCarrierid())) {
+                            isContain = true;
+
+                            param.setRfState(CacheManager.paramList.get(i).isRfState());
+                            CacheManager.paramList.set(i, param);
+                            break;
+                        }
+                    }
+
+
+                    if (!isContain) {
+                        CacheManager.paramList.add(param);
+                    }
+
+                }
+
+                EventAdapter.call(EventAdapter.REFRESH_DEVICE_2G);
+            }
+
+            if (CacheManager.paramList.size() == 3 && !initSuccess) {
+                initSuccess = true;
+                CacheManager.initSuccess2G = true;
+                if (CacheManager.initSuccess4G) {
+                    CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
+                }
+                Send2GManager.setParamsConfig();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * imsi上报
+     */
+    private void parseImsiReport(LTEReceivePackage receivePackage) {
+        Report2GIMSIBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), Report2GIMSIBean.class);
+        for (List<String> imsiList : responseBean.getImsilist()) {
+
+
+            UeidBean ueidBean = new UeidBean();
+            ueidBean.setType(1);
+
+            ueidBean.setImsi(imsiList.get(0));
+            int rssi = (int)(Integer.parseInt(imsiList.get(2))/1.3)+100;
+            if (rssi< 0){
+                rssi = 0;
+            }
+            if (rssi>100){
+                rssi = 100;
+            }
+            ueidBean.setSrsp(rssi+"");
+
+
+            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidBean);
+        }
+
+    }
+
+
+    /**
+     * 手机号上报
+     */
+    private void parsePhoneNumber(LTEReceivePackage receivePackage) {
+        Report2GNumberBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), Report2GNumberBean.class);
+
+        if (responseBean.getInlist() == null) {
+            return;
+        }
+
+        for (List<String> imsiList : responseBean.getInlist()) {
+            LogUtils.log("电话号码"+imsiList.get(0));
+            DbManager db = UCSIDBManager.getDbManager();
+            try {
+                DBUeidInfo dbUeidInfo = db.selector(DBUeidInfo.class)
+                        .where("imsi", "=", imsiList.get(0))
+                        .findFirst();
+
+                if (dbUeidInfo != null) {
+                    dbUeidInfo.setMsisdn(imsiList.get(1));
+                    db.update(dbUeidInfo, "msisdn");
+                }
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    //获取short
+    private short getShortData(byte tempByte1, byte tempByte2) {
+        byte[] tempByteData = {tempByte1, tempByte2};
+        return UtilDataFormatChange.byteToShort(tempByteData);
+    }
+
+    public void clearReceiveBuffer() {
+        LogUtils.log("clearReceiveBuffer... ...");
+        listReceiveBuffer.clear();
+    }
+}
