@@ -105,7 +105,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
 
     private int lastOpenSwipePos = -1;
 
-    private final String WHITELIST_FILE_PATH = FileUtils.ROOT_PATH + "Whitelist.xls";
+    private static final String WHITELIST_FILE_PATH = FileUtils.ROOT_PATH + "Blacklist.xls";
 
     //handler消息
     private final int REFRESH_LIST = 0;
@@ -307,13 +307,13 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
         public void onClick(View v) {
             File file = new File(FileUtils.ROOT_PATH);
             if (!file.exists()) {
-                ToastUtils.showMessageLong("未找到白名单，请确认已将白名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
+                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
                 return;
             }
 
             File[] files = file.listFiles();
             if (files == null || files.length == 0) {
-                ToastUtils.showMessageLong("未找到白名单，请确认已将白名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
+                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
                 return;
             }
 
@@ -330,7 +330,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
             }
 
             if (fileList.size() == 0) {
-                ToastUtils.showMessageLong("未找到白名单，白名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
+                ToastUtils.showMessageLong("未找到黑名单，黑名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
                 return;
             }
 
@@ -345,7 +345,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
             Button btnCancel = dialogView.findViewById(R.id.btn_cancel_import);
             Button btnConfirm = dialogView.findViewById(R.id.btn_confirm_import);
             TextView tvTitle = dialogView.findViewById(R.id.tv_import_whitelist);
-            tvTitle.setText("请选择白名单文件");
+            tvTitle.setText("请选择黑名单文件");
 
 
             //设置Popup具体参数
@@ -447,8 +447,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
                         }
 
 
-                        if (TextUtils.isEmpty(imsiInLine) || TextUtils.isEmpty(msisdnInLine) ||
-                                !isNumeric(imsiInLine) || imsiInLine.length() != 15 ||
+                        if ( TextUtils.isEmpty(msisdnInLine) ||
                                 !isNumeric(msisdnInLine) || msisdnInLine.length() != 11) {
                             errorFormatNum++;
                             continue;
@@ -483,7 +482,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
 
                 } catch (Exception e) {
                     /* proper exception handling to be here */
-                    LogUtils.log("导入白名单错误"+e.toString());
+                    LogUtils.log("导入黑名单错误"+e.toString());
                     createExportError("写入文件错误");
                 }
 
@@ -525,7 +524,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
             }
         } catch (NullPointerException e) {
             /* proper error handling should be here */
-            LogUtils.log("白名单解析异常："+e.toString());
+            LogUtils.log("黑名单解析异常："+e.toString());
         }
         return value;
     }
@@ -546,7 +545,7 @@ public class WhitelistManagerActivity extends BaseActivity implements EventAdapt
                         }
 
                         XSSFWorkbook workbook = new XSSFWorkbook();
-                        XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("WhiteList"));
+                        XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("黑名单"));
 
                         Row row = sheet.createRow(0);
                         Cell cell1 = row.createCell(0);

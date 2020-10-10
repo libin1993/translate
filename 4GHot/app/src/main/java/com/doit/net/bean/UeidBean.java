@@ -11,7 +11,7 @@ public class UeidBean {
     private String rptTime;
     private String longitude;
     private String latitude;
-    private int type;
+    private int type;  //0:2G    1:4G
 
     //为管控而加
     private int rptTimes = 1; //上报次数累积

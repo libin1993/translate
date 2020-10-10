@@ -176,7 +176,7 @@
         <activity
             android:name="com.doit.net.activity.WhitelistManagerActivity"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
-            android:label="白名单管理"
+            android:label="黑名单管理"
             android:parentActivityName="com.doit.net.activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />

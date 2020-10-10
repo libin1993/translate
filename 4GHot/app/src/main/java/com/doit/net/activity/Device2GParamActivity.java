@@ -275,14 +275,12 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
         if (CacheManager.isDeviceOk() && CacheManager.paramList.size() > 0) {
             int powerLevel = (Integer.parseInt(CacheManager.paramList.get(0).getDlattn()));
 
-            //-1  -16 -31
-            //1    3   6
-            if (powerLevel <= 10) {
-                rbPowerLow.setChecked(true);
-            } else if (powerLevel <= 40) {
-                rbPowerMedium.setChecked(true);
-            } else if (powerLevel <= 80) {
+            if (powerLevel <= 5) {
                 rbPowerHigh.setChecked(true);
+            } else if (powerLevel <= 10) {
+                rbPowerMedium.setChecked(true);
+            } else{
+                rbPowerLow.setChecked(true);
             }
 
         }

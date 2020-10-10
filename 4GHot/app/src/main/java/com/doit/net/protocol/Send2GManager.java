@@ -1,16 +1,13 @@
 package com.doit.net.protocol;
 
 import com.doit.net.bean.Get2GCommonBean;
-import com.doit.net.bean.Set2GLocBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.Set2GRFBean;
 import com.doit.net.model.CacheManager;
 import com.doit.net.socket.ServerSocketUtils;
-import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.UtilDataFormatChange;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
 
 /**
@@ -38,7 +34,7 @@ public class Send2GManager {
         //设置Session ID
         sendPackage.setPackageSessionID(LTEProtocol.getSessionID());
         //设置EquipType
-        sendPackage.setPackageEquipType(CacheManager.equipType4G);
+        sendPackage.setPackageEquipType(CacheManager.equipType2G);
         //设置预留
         sendPackage.setPackageReserve((byte) 0);
         //设置主类型
@@ -53,8 +49,8 @@ public class Send2GManager {
         //获取整体的包
         byte[] tempSendBytes = sendPackage.getPackageContent();
 
-//        LogUtils.log("ccc:"+ FormatUtils.getInstance().byte);
         LogUtils.log("TCP发送：Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType()) + ";  子协议:" + UtilDataFormatChange.bytesToString(sendPackage.getByteSubContent(), 0));
+        LogUtils.log(sendPackage.toString());
         ServerSocketUtils.getInstance().sendData(ServerSocketUtils.REMOTE_2G_IP, tempSendBytes);
 
     }
@@ -141,9 +137,9 @@ public class Send2GManager {
 
         for (Set2GParamsBean.Params params : CacheManager.paramList) {
             if (level == 1) {
-                params.setDlattn("80");
+                params.setDlattn("15");
             } else if (level == 2) {
-                params.setDlattn("40");
+                params.setDlattn("7");
             } else if (level == 3) {
                 params.setDlattn("0");
             }
@@ -214,8 +210,24 @@ public class Send2GManager {
 //        imsiList.add(imsi);
 //        bean.setImsilist(imsiList);
 //        bean.setSwitch1(state);
-//
-//        sendData(MsgType2G.PT_SYSTEM, MsgType2G.SET_LOC_IMSI, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
+
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id",MsgType2G.SET_LOC_IMSI_ID);
+            jsonObject.put("switch",state);
+            List<String> imsiList = new ArrayList<>();
+            imsiList.add(imsi);
+            JSONArray jsonArray = new JSONArray(imsiList);
+            jsonObject.put("imsilist",jsonArray);
+            LogUtils.log("2G定位:"+jsonObject.toString());
+            LogUtils.log(new String(jsonObject.toString().getBytes(StandardCharsets.UTF_8),StandardCharsets.UTF_8));
+            sendData(MsgType2G.PT_PARAM, MsgType2G.SET_LOC_IMSI, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -103,7 +103,7 @@
             android:background="@color/deepgrey2"
             app:isShowRightText="false"
             app:leftIcon="@drawable/icon_0000s_0002s_0005_user"
-            app:leftText="@string/white_list_manage" />
+            app:leftText="黑名单管理" />
 
         <View
             android:layout_width="match_parent"

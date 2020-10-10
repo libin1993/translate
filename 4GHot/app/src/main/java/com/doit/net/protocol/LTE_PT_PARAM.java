@@ -114,7 +114,7 @@ public class LTE_PT_PARAM {
 
         LogUtils.log("TCP发送：Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType()) + "" + ";  子协议:" + UtilDataFormatChange.bytesToString(sendPackage.getByteSubContent(), 0));
 
-        ServerSocketUtils.getInstance().sendData(ServerSocketUtils.REMOTE_4G_IP,tempSendBytes);
+        ServerSocketUtils.getInstance().sendData(ServerSocketUtils.REMOTE_4G_IP, tempSendBytes);
     }
 
     //解析设备配置查询回复
@@ -140,7 +140,6 @@ public class LTE_PT_PARAM {
 
             CacheManager.addChannel(lteChannelCfg);
         }
-
 
 
         EventAdapter.call(EventAdapter.UPDATE_BATTERY, Integer.valueOf(CacheManager.getLteEquipConfig().getVoltage12V()));
@@ -223,8 +222,8 @@ public class LTE_PT_PARAM {
 
         //获取整体的包
         byte[] tempSendBytes = sendPackage.getPackageContent();
-        LogUtils.log("TCP发送：ip:"+ServerSocketUtils.REMOTE_4G_IP+",Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType()) + ";  子协议:" + UtilDataFormatChange.bytesToString(sendPackage.getByteSubContent(), 0));
-        ServerSocketUtils.getInstance().sendData(ServerSocketUtils.REMOTE_4G_IP,tempSendBytes);
+        LogUtils.log("TCP发送：ip:" + ServerSocketUtils.REMOTE_4G_IP + ",Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType()) + ";  子协议:" + UtilDataFormatChange.bytesToString(sendPackage.getByteSubContent(), 0));
+        ServerSocketUtils.getInstance().sendData(ServerSocketUtils.REMOTE_4G_IP, tempSendBytes);
     }
 
 
@@ -327,7 +326,7 @@ public class LTE_PT_PARAM {
         File file = new File(filePath);
         if (file.exists() && !file.isDirectory()) {
 
-            Map<String,UeidBean>  ueidMap = new HashMap<>();
+            Map<String, UeidBean> ueidMap = new HashMap<>();
             String[] splitUeid;
 
             try {
@@ -358,7 +357,7 @@ public class LTE_PT_PARAM {
                     latitude = splitUeid[5];
 
 
-                    ueidMap.put(tmpImsi,new UeidBean(tmpImsi, "", tmpTmsi, band, tmpRptTime, longitude, latitude,0));
+                    ueidMap.put(tmpImsi, new UeidBean(tmpImsi, "", tmpTmsi, band, tmpRptTime, longitude, latitude, 0));
 
 
                     if (!CacheManager.removeExistUeidInRealtimeList(splitUeid[0])) {
@@ -367,19 +366,19 @@ public class LTE_PT_PARAM {
                          * 2.存入数据库需要去重，去重的依据是否则已经存在实时列表里
                          * */
                         UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), tmpTmsi,
-                                DateUtils.convert2long(tmpRptTime, DateUtils.LOCAL_DATE), longitude, latitude,0);
+                                DateUtils.convert2long(tmpRptTime, DateUtils.LOCAL_DATE), longitude, latitude, 0);
                     }
                 }
                 bufferedReader.close();
                 file.delete();   //处理完删除
 
-                if (ueidMap.size() > 0){
+                if (ueidMap.size() > 0) {
                     List<UeidBean> listUeid = new ArrayList<>();
                     for (Map.Entry<String, UeidBean> entry : ueidMap.entrySet()) {
                         listUeid.add(entry.getValue());
                     }
 
-                    LogUtils.log("ftp采号上传："+listUeid.size());
+                    LogUtils.log("ftp采号上传：" + listUeid.size());
                     EventAdapter.call(EventAdapter.UEID_RPT, listUeid);
                 }
 
@@ -473,7 +472,7 @@ public class LTE_PT_PARAM {
                 if (onAsk[0].charAt(0) == '0') {
                     for (LteChannelCfg channel : CacheManager.getChannels()) {
                         if (channel.getIdx().equals(onAsk[1])) {
-                            LogUtils.log(onAsk[1]+"：射频开启成功");
+                            LogUtils.log(onAsk[1] + "：射频开启成功");
                             channel.setRFState(true);
                         }
                     }
@@ -490,7 +489,7 @@ public class LTE_PT_PARAM {
                 if (offAsk[0].charAt(0) == '0') {
                     for (LteChannelCfg channel : CacheManager.getChannels()) {
                         if (channel.getIdx().equals(offAsk[1])) {
-                            LogUtils.log(offAsk[1]+"：射频关闭成功");
+                            LogUtils.log(offAsk[1] + "：射频关闭成功");
                             channel.setRFState(false);
                         }
                     }
@@ -770,7 +769,7 @@ public class LTE_PT_PARAM {
 
         if (CacheManager.currentWorkMode.equals("0")) {
             String[] splitStr = locRpt.split("#");
-            Map<String,UeidBean>  ueidMap = new HashMap<>();
+            Map<String, UeidBean> ueidMap = new HashMap<>();
             for (int i = 0; i < splitStr.length; i++) {
                 String[] split = splitStr[i].split(":");
                 if (split.length > 1) {
@@ -785,16 +784,16 @@ public class LTE_PT_PARAM {
 
                 }
 
-                ueidMap.put(tmpImsi,new UeidBean(tmpImsi, "", "", "",
-                        DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE), "", "",0));
+                ueidMap.put(tmpImsi, new UeidBean(tmpImsi, "", "", "",
+                        DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE), "", "", 0));
 
                 if (!CacheManager.removeExistUeidInRealtimeList(tmpImsi)) {
                     UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), "",
-                            new Date().getTime(), "", "",0);
+                            new Date().getTime(), "", "", 0);
                 }
             }
 
-            if (ueidMap.size() > 0){
+            if (ueidMap.size() > 0) {
                 List<UeidBean> listUeid = new ArrayList<>();
                 for (Map.Entry<String, UeidBean> entry : ueidMap.entrySet()) {
                     listUeid.add(entry.getValue());
@@ -808,18 +807,17 @@ public class LTE_PT_PARAM {
                 String[] split = splitStr[i].split(":");
                 if (split.length > 1) {
                     SRSP = split[1];
-                    if (TextUtils.isEmpty(SRSP) || Integer.parseInt(SRSP) <=0){
+                    if (TextUtils.isEmpty(SRSP) || Integer.parseInt(SRSP) <= 0) {
                         continue;
                     }
 
-                    if (CacheManager.getLocState()) {
-                        if (splitStr[i].split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
-                            EventAdapter.call(EventAdapter.LOCATION_RPT, SRSP);
-                        }
+                    if (CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1
+                            && splitStr[i].split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
+                        EventAdapter.call(EventAdapter.LOCATION_RPT, SRSP);
                     }
 
                     UeidBean ueidBean = new UeidBean();
-                    ueidBean.setType(0);
+                    ueidBean.setType(1);
                     ueidBean.setImsi(split[0]);
                     ueidBean.setSrsp(SRSP);
 

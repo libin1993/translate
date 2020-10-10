@@ -12,6 +12,9 @@ import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.ToastUtils;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by wiker on 2016/4/27.
  */
@@ -31,47 +34,55 @@ public class AddToLocationListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-            if (!CacheManager.checkDevice(mContext)) {
-                return;
-            }
+        if (!CacheManager.checkDevice(mContext)) {
+            return;
+        }
 
-            if (TextUtils.isEmpty(imsi)) {
-                return;
-            }
+        if (TextUtils.isEmpty(imsi)) {
+            return;
+        }
 
 
-            if (CacheManager.getCurrentLoction() !=null && CacheManager.getCurrentLoction().isLocateStart()
-                    && imsi.equals(CacheManager.getCurrentLoction().getImsi())
-                    && type == CacheManager.getCurrentLoction().getType()) {
-                ToastUtils.showMessage("该号码正在搜寻中");
-                return;
+        if (CacheManager.getCurrentLoction() != null && CacheManager.getCurrentLoction().isLocateStart()
+                && imsi.equals(CacheManager.getCurrentLoction().getImsi())
+                && type == CacheManager.getCurrentLoction().getType()) {
+            ToastUtils.showMessage("该号码正在搜寻中");
+            return;
+        } else {
+            EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);  //防止快速频繁更换定位目标
+            CacheManager.updateLoc(imsi, type);
+
+            CacheManager.getCurrentLoction().setLocateStart(true);
+            LTESendManager.openAllRf();
+            if (type == 1) {  //4G定位
+
+                Send2GManager.setRFState("0");
+
+                LTESendManager.exchangeFcn(imsi);
+
+                CacheManager.changeLocTarget(imsi);
+                CacheManager.startLoc(imsi);
+
+
             } else {
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);  //防止快速频繁更换定位目标
-                CacheManager.updateLoc(imsi, type);
+                Send2GManager.setLocIMSI(imsi, "1");
 
-                LTESendManager.openAllRf();
-                if (type == 0) {  //4G定位
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Send2GManager.setRFState("1");
+                    }
+                }, 500);
 
-                    Send2GManager.setRFState("0");
-
-                    LTESendManager.exchangeFcn(imsi);
-
-                    CacheManager.changeLocTarget(imsi);
-                    CacheManager.startLoc(imsi);
-
-                } else {
-                    Send2GManager.setRFState("1");
-
-                    Send2GManager.setLocIMSI(imsi, "1");
-                    CacheManager.redirect2G();
-                }
-                ToastUtils.showMessage("搜寻开始");
+                CacheManager.redirect2G();
             }
+            ToastUtils.showMessage("搜寻开始");
+        }
 
-            EventAdapter.call(EventAdapter.CHANGE_TAB, 1);
+        EventAdapter.call(EventAdapter.CHANGE_TAB, 1);
 
-            EventAdapter.call(EventAdapter.ADD_LOCATION, imsi);
-            EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE_FROM_NAMELIST + imsi);
+        EventAdapter.call(EventAdapter.ADD_LOCATION, imsi);
+        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE_FROM_NAMELIST + imsi);
 
 
     }

@@ -274,4 +274,19 @@ public class FormatUtils {
         buffer.flip();//need flip
         return buffer.getLong();
     }
+
+
+    /**
+     * byte数组 转换成 16进制小写字符串
+     */
+    public String bytes2Hex(byte[] bytes) {
+        String strHex = "";
+        StringBuilder sb = new StringBuilder("");
+        for (byte aByte : bytes) {
+            strHex = Integer.toHexString(aByte & 0xFF);
+            sb.append((strHex.length() == 1) ? "0" + strHex : strHex); // 每个字节由两个字符表示，位数不够，高位补0
+        }
+        return sb.toString().trim();
+    }
+
 }

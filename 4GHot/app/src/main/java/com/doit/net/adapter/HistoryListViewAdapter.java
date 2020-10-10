@@ -2,6 +2,7 @@ package com.doit.net.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -85,7 +86,12 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
         TextView text_data = convertView.findViewById(R.id.tvUeidItemText);
 
         DBUeidInfo resp = ueidList.get(position);
-        text_data.setText("IMSI:"+resp.getImsi()+"\n"+mContext.getString(R.string.lab_rpt_time)+ DateUtils.convert2String(resp.getCreateDate(), DateUtils.LOCAL_DATE));
+        String content = "IMSI:"+resp.getImsi()+"\n";
+        if (!TextUtils.isEmpty(resp.getMsisdn())){
+            content += "手机号:"+resp.getMsisdn()+"\n";
+        }
+        content += mContext.getString(R.string.lab_rpt_time)+ DateUtils.convert2String(resp.getCreateDate(), DateUtils.LOCAL_DATE);
+        text_data.setText(content);
         text_data.setTag(position);
 
         if (VersionManage.isPoliceVer()){

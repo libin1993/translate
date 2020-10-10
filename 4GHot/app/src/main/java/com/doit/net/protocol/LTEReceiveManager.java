@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
 import com.doit.net.bean.Report2GIMSIBean;
+import com.doit.net.bean.Report2GLocBean;
 import com.doit.net.bean.Report2GNumberBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
@@ -40,7 +41,6 @@ public class LTEReceiveManager {
     //包头的长度
     private short packageHeadLength = 12;
 
-    private Timer timer;
 
     private boolean initSuccess;
 
@@ -297,6 +297,12 @@ public class LTEReceiveManager {
                             case MsgType2G.SET_MCRF_CONFIG_ACK:
                                 Send2GManager.getParamsConfig();
                                 break;
+                            case MsgType2G.SET_LOC_IMSI_ACK:
+                                LogUtils.log("2G定位下发成功");
+                                break;
+                            case MsgType2G.RPT_IMSI_LOC_INFO:
+                                parseImsiLoc(receivePackage);
+                                break;
                         }
                         break;
 
@@ -402,17 +408,35 @@ public class LTEReceiveManager {
 
 
             UeidBean ueidBean = new UeidBean();
-            ueidBean.setType(1);
+
+            //0；2G   1:4G
+            try {
+                DbManager dbManager = UCSIDBManager.getDbManager();
+                DBUeidInfo ueidInfo = dbManager.selector(DBUeidInfo.class)
+                        .where("imsi", "=", imsiList.get(0))
+                        .orderBy("id", true)
+                        .findFirst();
+
+                if (ueidInfo == null || ueidInfo.getType() ==0) {
+                    ueidBean.setType(0);
+                } else {
+                    ueidBean.setType(1);
+                }
+
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+
 
             ueidBean.setImsi(imsiList.get(0));
-            int rssi = (int)(Integer.parseInt(imsiList.get(2))/1.3)+100;
-            if (rssi< 0){
+            int rssi = Integer.parseInt(imsiList.get(2)) * 2 + 140;
+            if (rssi < 0) {
                 rssi = 0;
             }
-            if (rssi>100){
+            if (rssi > 100) {
                 rssi = 100;
             }
-            ueidBean.setSrsp(rssi+"");
+            ueidBean.setSrsp(rssi + "");
 
 
             EventAdapter.call(EventAdapter.SHIELD_RPT, ueidBean);
@@ -433,7 +457,7 @@ public class LTEReceiveManager {
         }
 
         for (List<String> imsiList : responseBean.getInlist()) {
-            LogUtils.log("电话号码"+imsiList.get(0));
+            LogUtils.log("电话号码" + imsiList.get(0));
             DbManager db = UCSIDBManager.getDbManager();
             try {
                 DBUeidInfo dbUeidInfo = db.selector(DBUeidInfo.class)
@@ -447,6 +471,29 @@ public class LTEReceiveManager {
             } catch (DbException e) {
                 e.printStackTrace();
             }
+
+            EventAdapter.call(EventAdapter.REFRESH_IMSI);
+        }
+    }
+
+    /**
+     * @param receivePackage 定位上报
+     */
+    private void parseImsiLoc(LTEReceivePackage receivePackage) {
+        Report2GLocBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), Report2GLocBean.class);
+
+        if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLoction().getImsi())
+                && CacheManager.getCurrentLoction().getType() == 0) {
+
+            int rssi = Integer.parseInt(responseBean.getRssi()) * 2 + 140;
+            if (rssi < 0) {
+                rssi = 0;
+            }
+            if (rssi > 100) {
+                rssi = 100;
+            }
+            EventAdapter.call(EventAdapter.LOCATION_RPT, rssi + "");
         }
     }
 

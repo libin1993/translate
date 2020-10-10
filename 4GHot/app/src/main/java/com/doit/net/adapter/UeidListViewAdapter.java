@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.doit.net.model.DBUeidInfo;
 import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.view.AddWhitelistDialog;
 import com.doit.net.view.ModifyWhitelistDialog;
@@ -57,13 +58,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         return v;
     }
 
-//    public void setOnItemLongClickListener(onItemLongClickListener mOnItemLongClickListener) {
-//        this.mOnItemLongClickListener = mOnItemLongClickListener;
-//    }
-
 
     @Override
-    public synchronized void fillValues(int position, View convertView) {
+    public  void fillValues(int position, View convertView) {
         LinearLayout layoutItemText = convertView.findViewById(R.id.layoutItemText);
         if (position % 2 == 0) {
             layoutItemText.setBackgroundColor(mContext.getResources().getColor(R.color.deepgrey2));
@@ -161,7 +158,7 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
 
     private void checkBlackWhiteList(UeidBean resp, TextView tvContent) {
         String type = "";
-        if (resp.getType() == 1 ){
+        if (resp.getType() == 0 ){
             type += "2G";
         }else {
             type += "4G";
@@ -239,7 +236,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
                         if (!TextUtils.isEmpty(msisdn)){
                             content += "\n" + "手机号：" + msisdn;
                         }
+
                         tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.white));
+
                     }
 
 

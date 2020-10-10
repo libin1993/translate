@@ -191,7 +191,6 @@ public class CacheManager {
         }
 
 
-        CacheManager.getCurrentLoction().setLocateStart(true);
     }
 
     public static void changeLocTarget(String imsi) {
@@ -328,8 +327,10 @@ public class CacheManager {
         }
 
 
-        if (CacheManager.getCurrentLoction() != null)
+        if (CacheManager.getCurrentLoction() != null){
             CacheManager.getCurrentLoction().setLocateStart(false);
+        }
+
     }
 
     /**

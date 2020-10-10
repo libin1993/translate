@@ -336,6 +336,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
                         CacheManager.updateLoc(imsi,0);
                         CacheManager.startLoc(imsi);
+                        CacheManager.getCurrentLoction().setLocateStart(true);
                         LTESendManager.openAllRf();
                         ToastUtils.showMessage("搜寻开始");
                     }

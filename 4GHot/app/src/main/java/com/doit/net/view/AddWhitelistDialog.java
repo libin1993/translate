@@ -84,10 +84,6 @@ public class AddWhitelistDialog extends Dialog {
                 String msisdn = etMsisdn.getText().toString();
                 String remark = etRemark.getText().toString();
 
-                if (TextUtils.isEmpty(imsi)){
-                    ToastUtils.showMessage( "请输入IMSI");
-                    return;
-                }
 
                 if (TextUtils.isEmpty(msisdn)){
                     ToastUtils.showMessage( "请输入手机号");
@@ -95,7 +91,7 @@ public class AddWhitelistDialog extends Dialog {
                 }
 
 
-                if (imsi.length() != 15){
+                if (!TextUtils.isEmpty(imsi) && imsi.length() != 15){
                     ToastUtils.showMessage("IMSI长度错误，请确认后输入！");
                     return;
                 }

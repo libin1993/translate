@@ -15,6 +15,7 @@ public class EventAdapter {
     public final static String LOCATION_RPT = "LOCATION_RPT";
     public final static String SHIELD_RPT = "SHIELD_RPT";  //军队app，侦码
     public final static String UEID_RPT = "UEID_RPT";    //警察app，管控
+    public final static String REFRESH_IMSI = "REFRESH_IMSI";
     public final static String UPDATE_FILE_SYS = "UPDATE_FILE_SYS";
     public final static String SHOW_PROGRESS = "SHOW_PROGRESS";
     public final static String CLOSE_PROGRESS = "CLOSE_PROGRESS";

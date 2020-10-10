@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +53,11 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     private TextView tvRealtimeCTJCount;
     private TextView tvRealtimeCTUCount;
     private TextView tvRealtimeCTCCount;
+    private TextView tvTranslateNum;
     private int realtimeCTJCount = 0;
     private int realtimeCTUCount = 0;
     private int realtimeCTCCount = 0;
+    private int translateNum = 0;
 
     private CheckBox cbDetectSwitch;
 
@@ -68,6 +71,9 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     private final int UEID_RPT = 1;
     private final int SHIELD_RPT = 2;
     private final int RF_STATUS_RPT = 3;
+    private final int REFRESH_IMSI = 4;
+
+    private DbManager dbManager;
 
 
     public RealTimeUeidRptFragment() {
@@ -85,12 +91,15 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         tvRealtimeCTJCount = rootView.findViewById(R.id.tvCTJCount);
         tvRealtimeCTUCount = rootView.findViewById(R.id.tvCTUCount);
         tvRealtimeCTCCount = rootView.findViewById(R.id.tvCTCCount);
+        tvTranslateNum = rootView.findViewById(R.id.tv_translate_num);
         cbDetectSwitch = rootView.findViewById(R.id.cbDetectSwitch);
         initView();
 
         EventAdapter.register(EventAdapter.RF_STATUS_RPT, this);
         EventAdapter.register(EventAdapter.UEID_RPT, this);
         EventAdapter.register(EventAdapter.SHIELD_RPT, this);
+        EventAdapter.register(EventAdapter.REFRESH_IMSI, this);
+        dbManager = UCSIDBManager.getDbManager();
 
         return rootView;
     }
@@ -292,8 +301,15 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         realtimeCTJCount = 0;
         realtimeCTUCount = 0;
         realtimeCTCCount = 0;
+        translateNum = 0;
 
         for (int i = 0; i < realtimeUeidList.size(); i++) {
+
+            String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(realtimeUeidList.get(i).getImsi());
+            if (!TextUtils.isEmpty(msisdn)){
+                translateNum ++;
+            }
+
             switch (UtilOperator.getOperatorName(realtimeUeidList.get(i).getImsi())) {
                 case "CTJ":
                     realtimeCTJCount++;
@@ -321,6 +337,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         tvRealtimeCTJCount.setText(String.valueOf(realtimeCTJCount));
         tvRealtimeCTUCount.setText(String.valueOf(realtimeCTUCount));
         tvRealtimeCTCCount.setText(String.valueOf(realtimeCTCCount));
+        tvTranslateNum.setText("已翻译："+translateNum);
     }
 
 
@@ -346,13 +363,15 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 case SHIELD_RPT:
                     UeidBean ueidBean = (UeidBean) msg.obj;
 
-
                     addShildRptList(ueidBean.getImsi(), ueidBean.getSrsp(), ueidBean.getType());
                     sortRealtimeRpt();
                     updateView();
                     break;
                 case RF_STATUS_RPT:
                     isRFOpen();
+                    break;
+                case REFRESH_IMSI:
+                    updateView();
                     break;
 
             }
@@ -368,7 +387,53 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         if (new Date().getTime() - lastSortTime >= 3000) {
             Collections.sort(CacheManager.realtimeUeidList, new Comparator<UeidBean>() {
                 public int compare(UeidBean o1, UeidBean o2) {
-                    return Integer.valueOf(o2.getSrsp()).compareTo(Integer.valueOf(o1.getSrsp()));
+                    String imsi1 = o1.getImsi();
+                    int rssi1 = Integer.parseInt(o1.getSrsp());
+
+                    boolean isWhite1 = false;
+                    String msisdn1 = ImsiMsisdnConvert.getMsisdnFromLocal(imsi1);
+
+                    if (!TextUtils.isEmpty(msisdn1)){
+                        try {
+                            WhiteListInfo info1 = dbManager.selector(WhiteListInfo.class).where("msisdn", "=", msisdn1).findFirst();
+                            isWhite1 = info1 != null;
+                        } catch (DbException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+
+
+                    String imsi2 = o2.getImsi();
+                    int rssi2 = Integer.parseInt(o2.getSrsp());
+
+                    boolean isWhite2 = false;
+                    String msisdn2 = ImsiMsisdnConvert.getMsisdnFromLocal(imsi2);
+
+
+                    if (!TextUtils.isEmpty(msisdn2)){
+                        try {
+                            WhiteListInfo info2 = dbManager.selector(WhiteListInfo.class).where("msisdn", "=", msisdn2).findFirst();
+                            isWhite2 = info2 != null;
+                        } catch (DbException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+
+                    if (isWhite1 && isWhite2){
+                        return rssi2 -rssi1;
+
+                    }else if (isWhite1){
+                        return -1;
+                    }else if (isWhite2){
+                        return 1;
+                    }else {
+                        return rssi2 -rssi1;
+                    }
+
                 }
             });
 
@@ -438,6 +503,9 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 break;
             case EventAdapter.RF_STATUS_RPT:
                 mHandler.sendEmptyMessage(RF_STATUS_RPT);
+                break;
+            case EventAdapter.REFRESH_IMSI:
+                mHandler.sendEmptyMessage(REFRESH_IMSI);
                 break;
         }
 

@@ -19,6 +19,8 @@ import org.xutils.ex.DbException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by wiker on 2017-06-25.
@@ -184,7 +186,7 @@ public class LTESendManager {
             setChannelConfig(channel.getIdx(), "", plnmValue, "", "", "", "", "");
 
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -335,7 +337,7 @@ public class LTESendManager {
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             openRf(channel.getIdx());
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -36,6 +36,7 @@ public class MsgType2G {
 
     public static final byte RPT_IMSINUM_INFO = (byte) 0x21;   //号码翻译上报
     public static final byte RPT_IMSI_INFO = (byte) 0x22;   //imsi上报
+    public static final byte RPT_IMSI_LOC_INFO = (byte) 0x2E;   //2G定位上报
 
 
     //消息id

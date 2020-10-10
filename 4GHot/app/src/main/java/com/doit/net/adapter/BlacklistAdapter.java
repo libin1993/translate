@@ -139,7 +139,7 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
         });
         //if(BuildConfig.LOC_MODEL){
         if(CacheManager.getLocMode()){
-            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),0));
+            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),1));
         }else{
             convertView.findViewById(R.id.add_to_localtion).setVisibility(View.GONE);
         }

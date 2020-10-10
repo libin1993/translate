@@ -199,18 +199,33 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         return srsp;
     }
 
+    /**
+     * 开始定位
+     */
     private void startLoc() {
-        if (CacheManager.currentLoction.getType() == 0){ //4G定位
-            LTESendManager.openAllRf();
+        CacheManager.getCurrentLoction().setLocateStart(true);
+        LTESendManager.openAllRf();
+
+        if (CacheManager.currentLoction.getType() == 1){ //4G定位
+
             Send2GManager.setRFState("0");
 
             LTESendManager.exchangeFcn(CacheManager.getCurrentLoction().getImsi());
+
             CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi());
         }else {
-            LTESendManager.openAllRf();
-            Send2GManager.setRFState("1");
+
 
             Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "1");
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Send2GManager.setRFState("1");
+                }
+            }, 500);
+
+
             CacheManager.redirect2G();
         }
 
@@ -235,7 +250,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
 
         switchType.setOnCheckedChangeListener(null);
-        switchType.setChecked(CacheManager.getCurrentLoction().getType() == 0);
+        switchType.setChecked(CacheManager.getCurrentLoction().getType() == 1);
         switchType.setOnCheckedChangeListener(switchListener);
 
 
@@ -302,10 +317,11 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 
             if (CacheManager.currentLoction != null) {
-                CacheManager.currentLoction.setType(isChecked ? 0 : 1);
+                CacheManager.currentLoction.setType(isChecked ? 1 : 0);
 
                 if (CacheManager.getLocState()){
                     startLoc();
+                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
                 }
             }
         }
@@ -328,14 +344,24 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLoction == null || TextUtils.isEmpty(CacheManager.currentLoction.getImsi())) {
                     return;
                 }
+                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+
                 LTESendManager.closeAllRf();
-                Send2GManager.setRFState("0");
 
                 Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Send2GManager.setRFState("0");
+                    }
+                }, 500);
+
                 stopLoc();
+
                 CacheManager.resetMode();
 
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+
                 if (CacheManager.currentLoction != null && !CacheManager.currentLoction.getImsi().equals("")) {
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.STOP_LOCALTE + CacheManager.currentLoction.getImsi());
                 }
@@ -343,9 +369,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLoction == null || CacheManager.currentLoction.getImsi().equals("")) {
                     ToastUtils.showMessage(R.string.button_loc_unstart);
                 } else {
-
-                    startLoc();
                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+                    startLoc();
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE + CacheManager.currentLoction.getImsi());
                 }
             }
@@ -376,8 +401,11 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
             if (isChecked) {
                 CacheManager.setHighGa(true);
+
+                Send2GManager.setPowerLevel(3);
             } else {
                 CacheManager.setHighGa(false);
+                Send2GManager.setPowerLevel(1);
             }
 
             ToastUtils.showMessageLong("增益设置已下发，请等待其生效");
@@ -512,6 +540,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 LogUtils.log("射频全关了，停止定位");
                 stopLoc();
                 Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
+
                 CacheManager.resetMode();
             }
 

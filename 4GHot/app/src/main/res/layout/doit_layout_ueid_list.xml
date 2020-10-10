@@ -90,6 +90,18 @@
             android:textSize="16sp"
             android:textColor="@color/darkgrey"
             android:text="0"/>
+
+
+        <TextView
+            android:id="@+id/tv_translate_num"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/darkgrey"
+            android:text="已翻译：0"/>
     </LinearLayout>
 
 

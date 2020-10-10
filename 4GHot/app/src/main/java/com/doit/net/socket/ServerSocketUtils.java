@@ -2,6 +2,7 @@ package com.doit.net.socket;
 
 import com.doit.net.protocol.LTEReceiveManager;
 import com.doit.net.model.CacheManager;
+import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.LogUtils;
 
 import java.io.IOException;
@@ -90,7 +91,6 @@ public class ServerSocketUtils {
     }
 
 
-
     /**
      * 接收线程
      */
@@ -125,13 +125,13 @@ public class ServerSocketUtils {
 
                 //循环接收数据
                 while ((receiveCount = inputStream.read(bytesReceived)) != -1) {
-                    lteReceiveManager.parseData(remoteIP,bytesReceived, receiveCount);
+                    lteReceiveManager.parseData(remoteIP, bytesReceived, receiveCount);
                 }
 
-                LogUtils.log(remoteIP+"：socket被关闭，读取长度：" + receiveCount);
+                LogUtils.log(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
 
             } catch (IOException ex) {
-                LogUtils.log(remoteIP+"：socket异常:" + ex.toString());
+                LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
             }
 
             onSocketChangedListener.onChange(remoteIP);
@@ -163,7 +163,7 @@ public class ServerSocketUtils {
      * @param tempByte
      * @return
      */
-    public void sendData(String ip,byte[] tempByte) {
+    public void sendData(String ip, byte[] tempByte) {
 
         Socket socket = map.get(ip);
         if (socket != null && socket.isConnected()) {
