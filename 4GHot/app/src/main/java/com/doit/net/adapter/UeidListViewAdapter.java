@@ -83,32 +83,25 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
             convertView.findViewById(R.id.add_to_black).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    try {
-                        WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
-                        if (info != null) {
-                            ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
-                                    resp.getImsi(), info.getMsisdn(), info.getRemark(),false);
-                            modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            modifyWhitelistDialog.show();
-                        }else {
-                            String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(resp.getImsi());
-                            AddWhitelistDialog addWhitelistDialog = new AddWhitelistDialog(mContext, resp.getImsi(),msisdn);
-                            addWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            addWhitelistDialog.show();
-                        }
-                    } catch (DbException e) {
-                        e.printStackTrace();
+                    if (resp.isBlack()){
+                        ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
+                                resp.getImsi(), resp.getNumber(), resp.getRemark(),false);
+                        modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                notifyDataSetChanged();
+                            }
+                        });
+                        modifyWhitelistDialog.show();
+                    }else {
+                        AddWhitelistDialog addWhitelistDialog = new AddWhitelistDialog(mContext, resp.getImsi(),resp.getNumber());
+                        addWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                notifyDataSetChanged();
+                            }
+                        });
+                        addWhitelistDialog.show();
                     }
                 }
             });
@@ -120,37 +113,6 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
             convertView.findViewById(R.id.add_to_localtion).setVisibility(View.GONE);
         }
 
-//        if (mOnItemLongClickListener != null) {
-//            //获取触摸点的坐标，以决定pop从哪里弹出
-//            convertView.setOnTouchListener(new View.OnTouchListener() {
-//                @SuppressLint("ClickableViewAccessibility")
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    switch (event.getAction()) {
-//                        case MotionEvent.ACTION_DOWN:
-//                            motionEvent = event;
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                    // 如果onTouch返回false,首先是onTouch事件的down事件发生，此时，如果长按，触发onLongClick事件；
-//                    // 然后是onTouch事件的up事件发生，up完毕，最后触发onClick事件。
-//                    return false;
-//                }
-//            });
-//
-//
-//            final int pos = position;
-//            convertView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    //int position = holder.getLayoutPosition();
-//                    mOnItemLongClickListener.onItemLongClick(motionEvent, pos);
-//                    //返回true 表示消耗了事件 事件不会继续传递
-//                    return true; //长按了就禁止swipe弹出
-//                }
-//            });
-//        }
 
         checkBlackWhiteList(resp, tvContent);
 
@@ -208,15 +170,15 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         //如果是管控模式，其次检查白名单
         if (CacheManager.currentWorkMode.equals("2")) {
 
-            try {
+//            try {
                 if (!"".equals(resp.getImsi())) {
 
                     content += resp.getRptTime() + "       " + "次数：" + resp.getRptTimes() + "       "
                             + mContext.getString(R.string.ueid_last_intensity) + resp.getSrsp();
-                    WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
-                    if (info != null) {
-                        String msisdn = info.getMsisdn();
-                        String remark = info.getRemark();
+//                    WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
+                    if (resp.isBlack()) {
+                        String msisdn = resp.getNumber();
+                        String remark = resp.getRemark();
                         if (!TextUtils.isEmpty(msisdn)) {
                             content += "\n" + "手机号：" + msisdn + "           ";
                         }
@@ -232,7 +194,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
                         tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.forestgreen));
 
                     } else {
-                        String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(resp.getImsi());
+//                        String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(resp.getImsi());
+
+                        String msisdn = resp.getNumber();
                         if (!TextUtils.isEmpty(msisdn)){
                             content += "\n" + "手机号：" + msisdn;
                         }
@@ -245,9 +209,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
                     tvContent.setText(content);
                 }
 
-            } catch (DbException e) {
-                LogUtils.log("查询白名单异常" + e.getMessage());
-            }
+//            } catch (DbException e) {
+//                LogUtils.log("查询白名单异常" + e.getMessage());
+//            }
         }
 
 

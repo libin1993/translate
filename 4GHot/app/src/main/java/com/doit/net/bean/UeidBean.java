@@ -5,13 +5,27 @@ package com.doit.net.bean;
  */
 public class UeidBean {
     private String imsi;
-    private String tmsi;
-    private String band;
     private String number;
     private String rptTime;
-    private String longitude;
-    private String latitude;
     private int type;  //0:2G    1:4G
+    private String remark;
+    private boolean isBlack;
+
+    public boolean isBlack() {
+        return isBlack;
+    }
+
+    public void setBlack(boolean black) {
+        isBlack = black;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     //为管控而加
     private int rptTimes = 1; //上报次数累积
@@ -29,14 +43,9 @@ public class UeidBean {
         this.type = type;
     }
 
-    public UeidBean(String imsi, String number, String tmsi, String band, String rptTime, String longitude, String latitude, int type) {
+    public UeidBean(String imsi, String rptTime, int type) {
         this.imsi = imsi;
-        this.number = number;
-        this.tmsi = tmsi;
-        this.band = band;
         this.rptTime = rptTime;
-        this.longitude = longitude;
-        this.latitude = latitude;
         this.type = type;
     }
 
@@ -48,24 +57,8 @@ public class UeidBean {
         return number;
     }
 
-    public String getTmsi() {
-        return tmsi;
-    }
-
-    public String getBand() {
-        return band;
-    }
-
     public String getRptTime() {
         return rptTime;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public String getLatitude() {
-        return latitude;
     }
 
     public void setImsi(String imsi) {
@@ -75,25 +68,11 @@ public class UeidBean {
         this.number = number;
     }
 
-    public void setTmsi(String tmsi) {
-        this.tmsi = tmsi;
-    }
-
-    public void setBand(String band) {
-        this.band = band;
-    }
 
     public void setRptTime(String rptTime) {
         this.rptTime = rptTime;
     }
 
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
 
     public int getRptTimes() {
         return rptTimes;

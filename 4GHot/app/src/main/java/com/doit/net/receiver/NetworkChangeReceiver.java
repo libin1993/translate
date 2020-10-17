@@ -40,6 +40,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             isShow = true;
             EventAdapter.call(EventAdapter.STOP_LOC);
             CacheManager.clearCache4G();
+            CacheManager.paramList.clear();
 
         }
 

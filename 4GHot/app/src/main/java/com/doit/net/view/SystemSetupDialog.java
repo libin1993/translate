@@ -25,6 +25,8 @@ import org.xutils.x;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Cache;
+
 /**
  * Created by wiker on 2016/4/29.
  */
@@ -222,15 +224,18 @@ public class SystemSetupDialog extends Dialog {
                     tacPeriod.equals(CacheManager.getCellConfig().getTacTimer())?"":tacPeriod,
                     sync.equals(CacheManager.getCellConfig().getSync())?"":sync);
 
+            CacheManager.getCellConfig().setGpsOffset(gpsOffset);
+            CacheManager.getCellConfig().setPci(tddPci);
+            CacheManager.getCellConfig().setTacTimer(tacPeriod);
+            CacheManager.getCellConfig().setSync(sync);
+
             dismiss();
         } catch (NumberFormatException e) {
             new MySweetAlertDialog(getContext(), MySweetAlertDialog.ERROR_TYPE)
                     .setTitleText(getContext().getString(R.string.tip_16))
                     .show();
         } catch (Exception e){
-//            new SweetAlertDialog(getContext(), SweetAlertDialog.ERROR_TYPE)
-//                    .setTitleText(e.getMessage())
-//                    .show();
+
         }
     }
 

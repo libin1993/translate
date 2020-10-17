@@ -279,6 +279,7 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
                 try {
                     dbUeidInfos = dbManager.selector(DBUeidInfo.class)
                             .where("imsi", "like", "%" + keyword + "%")
+                            .or("msisdn","like","%" + keyword + "%")
                             .orderBy("id", true)
                             .findAll();
                 } catch (DbException e) {

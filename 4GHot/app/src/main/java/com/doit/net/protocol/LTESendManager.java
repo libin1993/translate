@@ -107,7 +107,7 @@ public class LTESendManager {
     }
 
     public static void changeTac() {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class LTESendManager {
     }
 
     public static void setCellConfig(String gpsOffset, String pci, String tacPeriod, String sync) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -150,7 +150,7 @@ public class LTESendManager {
     }
 
     public static void reboot() {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -169,7 +169,7 @@ public class LTESendManager {
     }
 
     public static void setDetectCarrierOpetation(String carrierOpetation) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -185,17 +185,21 @@ public class LTESendManager {
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             setChannelConfig(channel.getIdx(), "", plnmValue, "", "", "", "", "");
 
+            channel.setPlmn(plnmValue);
+
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        EventAdapter.call(EventAdapter.REFRESH_DEVICE);
     }
 
     public static void setChannelConfig(String idx, String fcn, String plmn, String pa,
                                         String ga, String rxlevMin, String atuoOpenRF, String AltFcn) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -323,7 +327,7 @@ public class LTESendManager {
 
     //这个协议是用于rpt_rt_imsi而不是rpt_black_name
     public static void setRTImsi(boolean onOff) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -369,7 +373,7 @@ public class LTESendManager {
     }
 
     public static void setLocImsi(String imsi) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -380,7 +384,7 @@ public class LTESendManager {
 
 
     public static void setActiveMode(String mode) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
         LogUtils.log("设置模式：" + mode);
@@ -424,9 +428,23 @@ public class LTESendManager {
             if (dbChannel !=null){
                 if ("CTJ".equals(UtilOperator.getOperatorName(imsi))){
                     setChannelConfig(dbChannel.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(dbChannel.getIdx())) {
+                            channel.setFcn("1300,1506,1650");
+                            channel.setPlmn("46000");
+                            break;
+                        }
+                    }
                 }else {
                     setChannelConfig(dbChannel.getIdx(), dbChannel.getFcn(),
                             "46001,46011", "", "", "", "", "");
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(dbChannel.getIdx())) {
+                            channel.setFcn(dbChannel.getFcn());
+                            channel.setPlmn("46001,46011");
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -444,8 +462,8 @@ public class LTESendManager {
         String tmpArfcnConfig = "";
         String defaultGa = "";
         String defaultPower = "-7,-7,-7";
-        String band1Fcns = "100,375,400";
-        String band3Fcns = "1825,1650,1506";//1300
+        String band1Fcns = "100,350,550";
+        String band3Fcns = "1300,1650,1506";//1300
         String band38Fcns = "37900,38098,38200";
         String band39Fcns = "38400,38544,38300";
         String band40Fcns = "38950,39148,39300";
@@ -482,8 +500,10 @@ public class LTESendManager {
 
 
                     //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    if (Integer.parseInt(channel.getGa()) <= 8)
+                    if (Integer.parseInt(channel.getGa()) <= 8){
                         defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
+                    }
+
                     break;
 
                 case "3":
@@ -636,17 +656,24 @@ public class LTESendManager {
 
             if ("3".equals(channel.getBand()) && CacheManager.getLocState()){
                 LogUtils.log("当前正在定位且是band3，不设置band3频点");
-                break;
+                continue;
             }
-            if ("".equals(tmpArfcnConfig)) {
+            if (TextUtils.isEmpty(tmpArfcnConfig)) {
                 setChannelConfig(channel.getIdx(), "", "", defaultPower, defaultGa, "", "", "");
+                channel.setPa(defaultPower);
+
             } else {
                 setChannelConfig(channel.getIdx(), tmpArfcnConfig, "", defaultPower, defaultGa, "", "", "");
+                channel.setFcn(tmpArfcnConfig);
+                channel.setPa(defaultPower);
+
+            }
+            if (!TextUtils.isEmpty(defaultGa)){
+                channel.setGa(defaultGa);
             }
 
             LogUtils.log("默认fcn:" + tmpArfcnConfig);
 
-            //setChannelConfig(channel.getIdx(),tmpArfcnConfig, "","", "", "","","");
             tmpArfcnConfig = "";
             defaultPower = "";
             defaultGa = "";
@@ -679,12 +706,14 @@ public class LTESendManager {
      */
     public static void saveDefaultFcn() {
         String fcn="";
-        String band1Fcns = "100,375,400";
-        String band3Fcns = "1825,1650,1506";//1300
+        String band1Fcns = "100,350,550";
+        String band3Fcns = "1300,1650,1506";//1300
         String band38Fcns = "37900,38098,38200";
         String band39Fcns = "38400,38544,38300";
         String band40Fcns = "38950,39148,39300";
         String band41Fcns = "40540,40936,41134";
+
+
         for (LteChannelCfg channel : CacheManager.channels) {
             switch (channel.getBand()) {
                 case "1":
@@ -735,7 +764,7 @@ public class LTESendManager {
     }
 
     public static void setFancontrol(String maxFanSpeed, String minFanSpeed, String tempThreshold) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -762,18 +791,19 @@ public class LTESendManager {
     }
 
     public static void setAutoRF(boolean onOff) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
         String ifAutoOpen = onOff ? "1" : "0";
 
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             setChannelConfig(channel.getIdx(), "", "", "", "", "", ifAutoOpen, "");
+            channel.setAutoOpen(ifAutoOpen);
         }
     }
 
     public static void scanFreq() {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 
@@ -781,7 +811,7 @@ public class LTESendManager {
     }
 
     public static void systemUpgrade(String upgradeCommand) {
-        if (!CacheManager.isDeviceOk()) {
+        if (!CacheManager.initSuccess4G) {
             return;
         }
 

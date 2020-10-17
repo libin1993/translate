@@ -23,7 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="38dp"
         android:background="@color/deepgrey2"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <TextView
             android:layout_width="50dp"
@@ -37,7 +38,7 @@
         <ImageView
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:layout_marginStart="3dp"
+            android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:src="@drawable/ctj_icon"
             android:scaleType="centerCrop"
@@ -45,7 +46,7 @@
 
         <TextView
             android:id="@+id/tvCTJCount"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
             android:layout_gravity="center"
@@ -56,7 +57,7 @@
         <ImageView
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="4dp"
             android:src="@drawable/ctu_icon"
             android:scaleType="centerCrop"
@@ -64,7 +65,7 @@
 
         <TextView
             android:id="@+id/tvCTUCount"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
             android:layout_gravity="center"
@@ -75,7 +76,7 @@
         <ImageView
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="4dp"
             android:src="@drawable/ctc_icon"
             android:scaleType="centerCrop"
@@ -83,7 +84,7 @@
 
         <TextView
             android:id="@+id/tvCTCCount"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
             android:layout_gravity="center"
@@ -91,17 +92,6 @@
             android:textColor="@color/darkgrey"
             android:text="0"/>
 
-
-        <TextView
-            android:id="@+id/tv_translate_num"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_gravity="center"
-            android:textSize="16sp"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/darkgrey"
-            android:text="已翻译：0"/>
     </LinearLayout>
 
 

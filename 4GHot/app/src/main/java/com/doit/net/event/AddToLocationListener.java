@@ -74,7 +74,13 @@ public class AddToLocationListener implements View.OnClickListener {
                     }
                 }, 500);
 
-                CacheManager.redirect2G();
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CacheManager.redirect2G();
+                    }
+                },1000);
+
             }
             ToastUtils.showMessage("搜寻开始");
         }

@@ -32,8 +32,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
 
     private DbManager dbManager;
     private Context mContext;
-//    private HistoryListViewAdapter.onItemLongClickListener mOnItemLongClickListener;
-    private MotionEvent motionEvent;
+
     private static List<DBUeidInfo> ueidList = new ArrayList<>();
 
     public HistoryListViewAdapter(Context mContext) {
@@ -102,7 +101,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
                 public void onClick(View v) {
 
                     try {
-                        WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
+                        WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("msisdn","=",resp.getMsisdn()).or("imsi", "=", resp.getImsi()).findFirst();
                         if (info != null) {
                             ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
                                     resp.getImsi(), info.getMsisdn(), info.getRemark(),false);

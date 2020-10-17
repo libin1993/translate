@@ -62,7 +62,7 @@ public class LTE_PT_ADJUST {
         byte[] tempSendBytes=sendPackage.getPackageContent();
 
 
-//        LogUtils.log("TCP发送：Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType())+ ";  子协议:" + Arrays.toString(sendPackage.getByteSubContent()));
+        LogUtils.log("TCP发送：ip"+receivePackage.getIp()+"Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType())+ ";  子协议:" + Arrays.toString(sendPackage.getByteSubContent()));
 
         ServerSocketUtils.getInstance().sendData(receivePackage.getIp(),tempSendBytes);
 

@@ -24,7 +24,7 @@ public class ServerSocketUtils {
     private ServerSocket mServerSocket;
 
     public final static int LOCAL_PORT = 7003;   //本机端口
-    private final static int READ_TIME_OUT = 60000;  //超时时间
+    private final static int READ_TIME_OUT = 100000;  //超时时间
     public static final String REMOTE_4G_IP = "192.168.1.200";  //4G设备ip
     public static final String REMOTE_2G_IP = "192.168.1.1";     //2G设备ip
 

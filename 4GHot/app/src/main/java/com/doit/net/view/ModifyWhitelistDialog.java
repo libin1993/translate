@@ -109,9 +109,8 @@ public class ModifyWhitelistDialog extends Dialog {
                 //如果修改了imsi
                 if (!imsi.equals(modifyIMSI)) {
                     DbManager db = UCSIDBManager.getDbManager();
-                    WhiteListInfo whiteListInfo = null;
                     try {
-                        whiteListInfo = db.selector(WhiteListInfo.class)
+                        WhiteListInfo whiteListInfo = db.selector(WhiteListInfo.class)
                                 .where("imsi", "=", modifyIMSI)
                                 .findFirst();
 

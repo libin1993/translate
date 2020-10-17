@@ -88,13 +88,12 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
     private MySweetAlertDialog mProgressDialog;
 
-//    private boolean refreshViewEnable = true;   //在设置需要长时间回馈的参数时，禁止界面更新
 
     //handler消息
     private final int UPDATE_VIEW = 0;
     private final int SHOW_PROGRESS = 1;
 
-    private BaseQuickAdapter<LteChannelCfg,BaseViewHolder> adapter;
+    private BaseQuickAdapter<LteChannelCfg, BaseViewHolder> adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,15 +143,15 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
 
         rvBand.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new BaseQuickAdapter<LteChannelCfg, BaseViewHolder>(R.layout.layout_rv_band_item,CacheManager.channels) {
+        adapter = new BaseQuickAdapter<LteChannelCfg, BaseViewHolder>(R.layout.layout_rv_band_item, CacheManager.channels) {
             @Override
             protected void convert(BaseViewHolder helper, LteChannelCfg item) {
-                helper.setText(R.id.tv_band_info,"通道：" + item.getIdx() + "        " + "频段：" + item.getBand() + "\n" +
+                helper.setText(R.id.tv_band_info, "通道：" + item.getIdx() + "        " + "频段：" + item.getBand() + "\n" +
                         "频点：[" + item.getFcn() + "]");
                 ImageView ivRFStatus = helper.getView(R.id.iv_rf_status);
-                if (item.getRFState()){
+                if (item.getRFState()) {
                     ivRFStatus.setImageResource(R.drawable.switch_open);
-                }else {
+                } else {
                     ivRFStatus.setImageResource(R.drawable.switch_close);
                 }
 
@@ -172,14 +171,14 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                if (view.getId() == R.id.iv_rf_status){
-                    if (!CacheManager.checkDevice(DeviceParamActivity.this)){
+                if (view.getId() == R.id.iv_rf_status) {
+                    if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                         return;
                     }
 
                     LteChannelCfg lteChannelCfg = CacheManager.channels.get(position);
 
-                    if (lteChannelCfg == null){
+                    if (lteChannelCfg == null) {
                         return;
                     }
 
@@ -202,6 +201,9 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         mProgressDialog = new MySweetAlertDialog(activity, MySweetAlertDialog.PROGRESS_TYPE);
         mProgressDialog.setTitleText("Loading...");
         mProgressDialog.setCancelable(false);
+
+
+        LTESendManager.getEquipAndAllChannelConfig();
     }
 
     View.OnClickListener setCellParamClick = new View.OnClickListener() {
@@ -221,7 +223,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 return;
             }
 
-//            new ChannelsDialog(DeviceParamActivity.this).show();
 
             setChannel();
         }
@@ -234,7 +235,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private void setChannel() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.doit_layout_channels_dialog, null);
         PopupWindow popupWindow = new PopupWindow(dialogView, ScreenUtils.getInstance()
-                .getScreenWidth(DeviceParamActivity.this)-FormatUtils.getInstance().dip2px(40),
+                .getScreenWidth(DeviceParamActivity.this) - FormatUtils.getInstance().dip2px(40),
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         RecyclerView rvChannel = dialogView.findViewById(R.id.rv_channel);
@@ -272,16 +273,16 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
 
                 if (view.getId() == R.id.button_save) {
-                    if (!CacheManager.checkDevice(DeviceParamActivity.this)){
+                    if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                         return;
                     }
 
-                    EditText etFcn = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.editText_fcn);
-                    EditText etPlmn = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.editText_plmn);
-                    EditText etGa = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.editText_ga);
-                    EditText etPa = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.editText_pa);
-                    EditText etRLM = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.etRLM);
-                    EditText etAltFcn = (EditText) adapter.getViewByPosition(rvChannel,position, R.id.etAltFcn);
+                    EditText etFcn = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.editText_fcn);
+                    EditText etPlmn = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.editText_plmn);
+                    EditText etGa = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.editText_ga);
+                    EditText etPa = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.editText_pa);
+                    EditText etRLM = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.etRLM);
+                    EditText etAltFcn = (EditText) adapter.getViewByPosition(rvChannel, position, R.id.etAltFcn);
 
                     String fcn = etFcn.getText().toString().trim();
                     String plmn = etPlmn.getText().toString().trim();
@@ -308,8 +309,35 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     ToastUtils.showMessage(R.string.tip_15);
                     showProcess(6000);
 
+
+                    LteChannelCfg channelCfg = CacheManager.channels.get(position);
+                    if (!TextUtils.isEmpty(fcn)){
+                        channelCfg.setFcn(fcn);
+                    }
+
+                    if (!TextUtils.isEmpty(plmn)){
+                        channelCfg.setPlmn(plmn);
+                    }
+
+                    if (!TextUtils.isEmpty(ga)){
+                        channelCfg.setGa(ga);
+                    }
+
+                    if (!TextUtils.isEmpty(pa)){
+                        channelCfg.setPa(pa);
+                    }
+                    if (!TextUtils.isEmpty(rlm)){
+                        channelCfg.setRlm(rlm);
+                    }
+                    if (!TextUtils.isEmpty(alt_fcn)){
+                        channelCfg.setAltFcn(alt_fcn);
+                    }
+
+
                     LTESendManager.setChannelConfig(CacheManager.channels.get(position).getIdx(),
                             fcn, plmn, pa, ga, rlm, "", alt_fcn);
+
+                    refreshViews();
 
                 }
             }
@@ -533,19 +561,14 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
         int powerAtt = powerLevel * -5;
 
-        String gaConfig = "";
-        String tmpGa = "";
-        for (int i = 0; i < CacheManager.channels.size(); i++) {
-            LteChannelCfg channel = CacheManager.channels.get(i);
-            tmpGa = String.valueOf(Integer.parseInt(channel.getPMax()) + powerAtt);
-            gaConfig = tmpGa + ",";
-            gaConfig += gaConfig;
-            gaConfig += tmpGa;
-            LogUtils.log("设置功率：" + "IDX:" + channel.getIdx() + "@" + "PA:" + gaConfig);
-            LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_CONFIG,
-                    "IDX:" + channel.getIdx() + "@" + "PA:" + gaConfig);
+        for (LteChannelCfg channel : CacheManager.channels) {
+            int pa = powerAtt + Integer.parseInt(channel.getPMax());
 
-            //
+            LTESendManager.setChannelConfig(channel.getIdx(), "", "", pa + "," + pa + "," + pa,
+                    "", "", "", "");
+            channel.setPa(pa + "," + pa + "," + pa);
+
+
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -553,6 +576,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
         }
 
+        refreshViews();
     }
 
     public void refreshViews() {
@@ -625,70 +649,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         super.onResume();
     }
 
-
-//    private void refreshChannels() {
-//        if (!CacheManager.isDeviceOk()) {
-//            return;
-//        }
-//
-//        layoutChannelList.removeAllViews();
-//        for (int i = 0; i < CacheManager.channels.size(); i++) {
-//            final LteChannelCfg cfg = CacheManager.getChannels().get(i);
-//            //String tac = CacheManager.getTac(cfg.getIdx());
-//
-//            LSettingItem item = new LSettingItem(activity);
-//            String leftText = "通道：" + cfg.getIdx() + "        " + "频段：" + cfg.getBand() + "\n" +
-//                    "频点：[" + cfg.getFcn() + "]";
-//            item.setRightStyle(3);
-//            item.switchRightStyle(3);
-//            item.setLeftIconVisible(View.GONE);
-//            item.setClickItemChangeState(false);
-//            item.setChecked(cfg.getRFState());
-////            item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-//            item.setLeftText(leftText);
-//            item.isShowDivider(true);
-//            //只有能切换的band可以点击
-//            if (!"".equals(cfg.getChangeBand())) {
-//                item.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-//                    @Override
-//                    public void click(LSettingItem item) {
-//                        changeChannelBandDialog(cfg.getIdx(), cfg.getChangeBand());
-//                    }
-//                });
-//            }
-//
-//            item.setOnLSettingCheckedChange(new LSettingItem.OnLSettingItemClick() {
-//                @Override
-//                public void click(LSettingItem item) {
-//                    if (!CacheManager.checkDevice(activity)) {
-//                        if (item.isChecked()) {
-//                            item.setChecked(false);
-//                        } else {
-//                            item.setChecked(true);
-//                        }
-//                        return;
-//                    }
-//
-//                    if (CacheManager.getLocState()) {
-//                        ToastUtils.showMessageLong("当前正在搜寻中，请确认通道射频变动是否对其产生影响！");
-//                    }
-//
-//                    showProcess(0);
-//                    if (item.isChecked()) {
-//                        item.setChecked(true);
-//                        ProtocolManager.openRf(cfg.getIdx());
-//                    } else {
-//                        item.setChecked(false);
-//                        ProtocolManager.closeRf(cfg.getIdx());
-//                    }
-//                }
-//            });
-//
-//            layoutChannelList.addView(item);
-////            txt += "通道："  + cfg.getPlmn() + "，频点:" + cfg.getBand()+ "，TAC:" + tac + "，射频：" + (rf ? rf_open_tip : rf_close_tip)+"<br>";
-//        }
-//    }
-
     private void changeChannelBandDialog(final String idx, final String band) {
         UserChannelListAdapter adapter = new UserChannelListAdapter(activity);
         adapter.setIdx(idx);
@@ -696,11 +656,9 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         DialogPlus deviceListDialog = DialogPlus.newDialog(activity)
                 .setContentHolder(new ListHolder())
                 .setHeader(R.layout.user_channel_header)
-//				.setFooter(R.layout.footer)
                 .setCancelable(true)
                 .setGravity(Gravity.CENTER)
                 .setAdapter(adapter)
-//				.setOnClickListener(clickListener)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {

@@ -53,18 +53,17 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     private TextView tvRealtimeCTJCount;
     private TextView tvRealtimeCTUCount;
     private TextView tvRealtimeCTCCount;
-    private TextView tvTranslateNum;
+
     private int realtimeCTJCount = 0;
     private int realtimeCTUCount = 0;
     private int realtimeCTCCount = 0;
-    private int translateNum = 0;
+
+    private int translateCMCCNum = 0;  //移动翻译数量
+    private int translateCUNum = 0;    //联通翻译数量
+    private int translateCTNum = 0;    //电信翻译数量
 
     private CheckBox cbDetectSwitch;
 
-    //    private PopupWindow ueidItemPop;
-//    View ueidItemPopView;
-//    private TextView tvGetTelNumber;
-//    private UeidBean selectedUeidItem = null;
     private long lastSortTime = 0;  //为了防止频繁上报排序导致列表错乱，定时排序一次
 
     //handler消息
@@ -91,7 +90,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         tvRealtimeCTJCount = rootView.findViewById(R.id.tvCTJCount);
         tvRealtimeCTUCount = rootView.findViewById(R.id.tvCTUCount);
         tvRealtimeCTCCount = rootView.findViewById(R.id.tvCTCCount);
-        tvTranslateNum = rootView.findViewById(R.id.tv_translate_num);
         cbDetectSwitch = rootView.findViewById(R.id.cbDetectSwitch);
         initView();
 
@@ -117,43 +115,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 ((SwipeLayout) (mListView.getChildAt(position - mListView.getFirstVisiblePosition()))).setClickToClose(true);
             }
         });
-//        mAdapter.setOnItemLongClickListener(new UeidListViewAdapter.onItemLongClickListener() {
-//            @Override
-//            public void onItemLongClick(MotionEvent motionEvent, int position) {
-//                selectedUeidItem = CacheManager.realtimeUeidList.get(position);
-//                showListPopWindow(mListView, calcPopWindowPosX((int) motionEvent.getX()), calcPopWindowPosY((int) motionEvent.getY()));
-//            }
-//        });
-
-//        ueidItemPopView = LayoutInflater.from(getActivity()).inflate(R.layout.realtime_ueid_pop_window, null);
-//        ueidItemPop = new PopupWindow(ueidItemPopView, getResources().getDisplayMetrics().widthPixels / 3,
-//                LinearLayout.LayoutParams.WRAP_CONTENT, true);   //宽度和屏幕成比例
-//        ueidItemPop.setContentView(ueidItemPopView);
-//        ueidItemPop.setBackgroundDrawable(new ColorDrawable());  //据说不设在有些情况下会关不掉
-//        tvGetTelNumber = ueidItemPopView.findViewById(R.id.tvGetTelNumber);
-//        tvGetTelNumber.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                LogUtils.log("点击了：" + selectedUeidItem.getImsi());
-//                if (!ImsiMsisdnConvert.isAuthenticated()) {
-//                    ToastUtils.showMessageLong("尚未通过认证，请先进入“号码翻译设置”进行认证");
-//                    return;
-//                }
-//
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        ImsiMsisdnConvert.requestConvertImsiToMsisdn(getContext(), selectedUeidItem.getImsi());
-//                        //ImsiMsisdnConvert.queryImsiConvertMsisdnRes(getContext(), selectedUeidItem.getImsi());
-//                        //ToastUtils.showMessageLong(getContext(), requestRes);
-//                    }
-//                }.start();
-//
-//
-//                ueidItemPop.dismiss();
-//            }
-//        });
-
 
         cbDetectSwitch.setOnCheckedChangeListener(null);
         cbDetectSwitch.setChecked(CacheManager.isDeviceOk());
@@ -177,7 +138,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 Send2GManager.setRFState("1");
                 ToastUtils.showMessageLong(R.string.all_rf_open);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_RF);
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 6000);
+                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
             } else {
                 if (CacheManager.getLocState()) {
                     new MySweetAlertDialog(getContext(), MySweetAlertDialog.WARNING_TYPE)
@@ -194,7 +155,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                                     Send2GManager.setRFState("0");
 
                                     ToastUtils.showMessage(R.string.all_rf_close);
-                                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 6000);
+                                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
                                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
                                 }
                             })
@@ -221,96 +182,95 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     };
 
 
-//    private void showListPopWindow(View anchorView, int posX, int posY) {
-//        ueidItemPop.showAtLocation(anchorView, Gravity.TOP | Gravity.START, posX, posY);
-//    }
-//
-//    private int calcPopWindowPosY(int eventY) {
-//        int listviewHeight = mListView.getResources().getDisplayMetrics().heightPixels;
-//        ueidItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        int popWinHeight = ueidItemPop.getContentView().getMeasuredHeight();
-//
-//        boolean isNeedShowUpward = (eventY + popWinHeight > listviewHeight);  //超过范围就向上显示
-//        if (isNeedShowUpward) {
-//            return eventY - popWinHeight;
-//        } else {
-//            return eventY;
-//        }
-//    }
-//
-//    private int calcPopWindowPosX(int eventX) {
-//        int listviewWidth = mListView.getResources().getDisplayMetrics().widthPixels;
-//        ueidItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        int windowWidth = ueidItemPop.getContentView().getMeasuredWidth();
-//
-//        boolean isShowLeft = (eventX + windowWidth > listviewWidth);  //超过屏幕的话就向左边显示
-//        if (isShowLeft) {
-//            return eventX - windowWidth;
-//        } else {
-//            return eventX;
-//        }
-//    }
+    private void addShildRptList(List<UeidBean> ueidList) {
+        for (UeidBean ueidBean : ueidList) {
+            boolean isContain = false;
+            LogUtils.log("侦码上报: IMSI：" + ueidBean.getImsi() + "强度：" + ueidBean.getSrsp() + ",类型" + ueidBean.getType());
+            for (int i = 0; i < CacheManager.realtimeUeidList.size(); i++) {
+                if (CacheManager.realtimeUeidList.get(i).getImsi().equals(ueidBean.getImsi())) {
+                    int times = CacheManager.realtimeUeidList.get(i).getRptTimes();
+                    if (times > 1000) {
+                        times = 0;
+                    }
+                    CacheManager.realtimeUeidList.get(i).setRptTimes(times + 1);
+                    CacheManager.realtimeUeidList.get(i).setSrsp("" + Integer.parseInt(ueidBean.getSrsp()) * 5 / 6);
+                    if (ueidBean.getType() == 1) {
+                        CacheManager.realtimeUeidList.get(i).setType(ueidBean.getType());
+                    }
+                    CacheManager.realtimeUeidList.get(i).setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
 
-    private void addShildRptList(String imsi, String srsp, int type) {
-        //不再过滤，需要额外显示
-
-        LogUtils.log("侦码上报: IMSI：" + imsi + "强度：" + srsp + ",类型" + type);
-        for (int i = 0; i < CacheManager.realtimeUeidList.size(); i++) {
-            if (CacheManager.realtimeUeidList.get(i).getImsi().equals(imsi)) {
-                int times = CacheManager.realtimeUeidList.get(i).getRptTimes();
-                if (times > 1000) {
-                    times = 0;
+                    isContain = true;
+                    break;
                 }
-                CacheManager.realtimeUeidList.get(i).setRptTimes(times + 1);
-                CacheManager.realtimeUeidList.get(i).setSrsp("" + Integer.parseInt(srsp) * 5 / 6);
-                CacheManager.realtimeUeidList.get(i).setType(type);
-                CacheManager.realtimeUeidList.get(i).setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
-
-                return;
             }
+
+            if (!isContain) {
+                UeidBean newUeid = new UeidBean();
+                newUeid.setImsi(ueidBean.getImsi());
+                newUeid.setSrsp("" + Integer.parseInt(ueidBean.getSrsp()) * 5 / 6);
+                newUeid.setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
+                newUeid.setRptTimes(1);
+                if (ueidBean.getType() == 1) {
+                    newUeid.setType(ueidBean.getType());
+                }
+                CacheManager.realtimeUeidList.add(newUeid);
+
+
+                UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), "", "",
+                        new Date().getTime(), "", "", ueidBean.getType());
+            }
+
         }
 
-        UeidBean newUeid = new UeidBean();
-        newUeid.setImsi(imsi);
-        newUeid.setNumber("");
-        newUeid.setSrsp("" + Integer.parseInt(srsp) * 5 / 6);
-        newUeid.setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
-        newUeid.setRptTimes(1);
-        newUeid.setType(type);
-        CacheManager.realtimeUeidList.add(newUeid);
-
-        UCSIDBManager.saveUeidToDB(imsi, ImsiMsisdnConvert.getMsisdnFromLocal(imsi), "",
-                new Date().getTime(), "", "", type);
-    }
-
-    private boolean isWhitelist(String imsi) {
-        DbManager dbManager = UCSIDBManager.getDbManager();
-        long count = 0;
-        try {
-            count = dbManager.selector(WhiteListInfo.class)
-                    .where("imsi", "=", imsi).count();
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-
-        return count > 0;
     }
 
 
-    private void updateUeidCntInOperator(List<UeidBean> realtimeUeidList) {
+    private void updateView() {
         realtimeCTJCount = 0;
         realtimeCTUCount = 0;
         realtimeCTCCount = 0;
-        translateNum = 0;
 
-        for (int i = 0; i < realtimeUeidList.size(); i++) {
+        translateCMCCNum = 0;
+        translateCUNum = 0;
+        translateCTNum = 0;
 
-            String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(realtimeUeidList.get(i).getImsi());
-            if (!TextUtils.isEmpty(msisdn)){
-                translateNum ++;
+
+        for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
+            try {
+                WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("msisdn",
+                        "=", ueidBean.getNumber()).or("imsi", "=", ueidBean.getImsi()).findFirst();
+                if (info != null) {
+                    ueidBean.setBlack(true);
+                    ueidBean.setRemark(info.getRemark());
+                } else {
+                    ueidBean.setBlack(false);
+                    ueidBean.setRemark("");
+                }
+            } catch (DbException e) {
+                e.printStackTrace();
             }
 
-            switch (UtilOperator.getOperatorName(realtimeUeidList.get(i).getImsi())) {
+            String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(ueidBean.getImsi());
+            if (!TextUtils.isEmpty(msisdn)) {
+                ueidBean.setNumber(msisdn);
+            }
+
+            if (!TextUtils.isEmpty(ueidBean.getNumber())) {
+                switch (UtilOperator.getOperatorName(ueidBean.getImsi())) {
+                    case "CTJ":
+                        translateCMCCNum++;
+                        break;
+                    case "CTU":
+                        translateCUNum++;
+                        break;
+                    case "CTC":
+                        translateCTNum++;
+                        break;
+                }
+
+            }
+
+            switch (UtilOperator.getOperatorName(ueidBean.getImsi())) {
                 case "CTJ":
                     realtimeCTJCount++;
                     break;
@@ -318,26 +278,24 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                     realtimeCTUCount++;
                     break;
                 case "CTC":
-                    realtimeCTCCount++;
-                    break;
-                default:
+                    if (!ueidBean.getImsi().startsWith("46011")){   //电信4G和2G同时存在，4G无法翻译，过滤掉46011
+                        realtimeCTCCount++;
+                    }
                     break;
             }
         }
-    }
 
 
-    private void updateView() {
+        tvRealtimeCTJCount.setText(translateCMCCNum +"/"+realtimeCTJCount);
+        tvRealtimeCTUCount.setText(translateCUNum+"/"+ realtimeCTUCount);
+        tvRealtimeCTCCount.setText(translateCTNum+"/"+realtimeCTCCount);
+
+
+
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
 
-        updateUeidCntInOperator(CacheManager.realtimeUeidList);
-
-        tvRealtimeCTJCount.setText(String.valueOf(realtimeCTJCount));
-        tvRealtimeCTUCount.setText(String.valueOf(realtimeCTUCount));
-        tvRealtimeCTCCount.setText(String.valueOf(realtimeCTCCount));
-        tvTranslateNum.setText("已翻译："+translateNum);
     }
 
 
@@ -361,9 +319,9 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                     updateView();
                     break;
                 case SHIELD_RPT:
-                    UeidBean ueidBean = (UeidBean) msg.obj;
+                    List<UeidBean> ueidList = (List<UeidBean>) msg.obj;
 
-                    addShildRptList(ueidBean.getImsi(), ueidBean.getSrsp(), ueidBean.getType());
+                    addShildRptList(ueidList);
                     sortRealtimeRpt();
                     updateView();
                     break;
@@ -387,51 +345,31 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         if (new Date().getTime() - lastSortTime >= 3000) {
             Collections.sort(CacheManager.realtimeUeidList, new Comparator<UeidBean>() {
                 public int compare(UeidBean o1, UeidBean o2) {
-                    String imsi1 = o1.getImsi();
+
+                    boolean isBlack1 = o1.isBlack();
                     int rssi1 = Integer.parseInt(o1.getSrsp());
-
-                    boolean isWhite1 = false;
-                    String msisdn1 = ImsiMsisdnConvert.getMsisdnFromLocal(imsi1);
-
-                    if (!TextUtils.isEmpty(msisdn1)){
-                        try {
-                            WhiteListInfo info1 = dbManager.selector(WhiteListInfo.class).where("msisdn", "=", msisdn1).findFirst();
-                            isWhite1 = info1 != null;
-                        } catch (DbException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
+                    String phoneNumber1  = o1.getNumber();
 
 
-
-                    String imsi2 = o2.getImsi();
+                    boolean isBlack2 = o2.isBlack();
                     int rssi2 = Integer.parseInt(o2.getSrsp());
-
-                    boolean isWhite2 = false;
-                    String msisdn2 = ImsiMsisdnConvert.getMsisdnFromLocal(imsi2);
+                    String phoneNumber2 = o2.getNumber();
 
 
-                    if (!TextUtils.isEmpty(msisdn2)){
-                        try {
-                            WhiteListInfo info2 = dbManager.selector(WhiteListInfo.class).where("msisdn", "=", msisdn2).findFirst();
-                            isWhite2 = info2 != null;
-                        } catch (DbException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-
-                    if (isWhite1 && isWhite2){
-                        return rssi2 -rssi1;
-
-                    }else if (isWhite1){
+                    if (isBlack1 && isBlack2) {
+                        return rssi2 - rssi1;
+                    } else if (isBlack1) {
                         return -1;
-                    }else if (isWhite2){
+                    } else if (isBlack2) {
+                        return 1;
+                    } else if (!TextUtils.isEmpty(phoneNumber1) && !TextUtils.isEmpty(phoneNumber2)){
+                        return rssi2 - rssi1;
+                    }else if (!TextUtils.isEmpty(phoneNumber1)){
+                        return -1;
+                    }else if (!TextUtils.isEmpty(phoneNumber2)){
                         return 1;
                     }else {
-                        return rssi2 -rssi1;
+                        return rssi2 - rssi1;
                     }
 
                 }
@@ -465,7 +403,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             }
         }
         for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            if (params.isRfState()) {
+            if (params.isRfState() && !params.getBoardid().equals("1")) {
                 rfState2G = true;
                 break;
             }

@@ -14,6 +14,7 @@ import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
 import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.model.UCSIDBManager;
+import com.doit.net.model.WhiteListInfo;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.GsonUtils;
@@ -24,6 +25,8 @@ import com.doit.net.utils.UtilDataFormatChange;
  * Created by Zxc on 2018/10/18.
  */
 import org.xutils.DbManager;
+import org.xutils.common.util.KeyValue;
+import org.xutils.db.sqlite.WhereBuilder;
 import org.xutils.ex.DbException;
 
 import java.nio.charset.StandardCharsets;
@@ -390,7 +393,21 @@ public class LTEReceiveManager {
                 if (CacheManager.initSuccess4G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
-                Send2GManager.setParamsConfig();
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    params.setDlattn("0");
+//                }
+//                Send2GManager.setParamsConfig();
+
+
+                if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            CacheManager.redirect2G();
+                        }
+                    }, 1000);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -404,44 +421,28 @@ public class LTEReceiveManager {
     private void parseImsiReport(LTEReceivePackage receivePackage) {
         Report2GIMSIBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), Report2GIMSIBean.class);
+        List<UeidBean> ueidList = new ArrayList<>();
         for (List<String> imsiList : responseBean.getImsilist()) {
 
 
             UeidBean ueidBean = new UeidBean();
 
-            //0；2G   1:4G
-            try {
-                DbManager dbManager = UCSIDBManager.getDbManager();
-                DBUeidInfo ueidInfo = dbManager.selector(DBUeidInfo.class)
-                        .where("imsi", "=", imsiList.get(0))
-                        .orderBy("id", true)
-                        .findFirst();
-
-                if (ueidInfo == null || ueidInfo.getType() ==0) {
-                    ueidBean.setType(0);
-                } else {
-                    ueidBean.setType(1);
-                }
-
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
-
-
             ueidBean.setImsi(imsiList.get(0));
-            int rssi = Integer.parseInt(imsiList.get(2)) * 2 + 140;
+            int rssi = Integer.parseInt(imsiList.get(2)) + 125;
+
             if (rssi < 0) {
                 rssi = 0;
             }
+
             if (rssi > 100) {
                 rssi = 100;
             }
             ueidBean.setSrsp(rssi + "");
 
+            ueidList.add(ueidBean);
 
-            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidBean);
         }
-
+        EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
     }
 
 
@@ -457,23 +458,30 @@ public class LTEReceiveManager {
         }
 
         for (List<String> imsiList : responseBean.getInlist()) {
-            LogUtils.log("电话号码" + imsiList.get(0));
-            DbManager db = UCSIDBManager.getDbManager();
             try {
-                DBUeidInfo dbUeidInfo = db.selector(DBUeidInfo.class)
-                        .where("imsi", "=", imsiList.get(0))
-                        .findFirst();
+                //修改手机号
+                KeyValue keyValue1 = new KeyValue("msisdn", imsiList.get(1));
 
-                if (dbUeidInfo != null) {
-                    dbUeidInfo.setMsisdn(imsiList.get(1));
-                    db.update(dbUeidInfo, "msisdn");
+                UCSIDBManager.getDbManager().update(DBUeidInfo.class, WhereBuilder.b("imsi", "=", imsiList.get(0)), keyValue1);
+
+
+                //修改白名单
+                KeyValue keyValue2 = new KeyValue("imsi", imsiList.get(0));
+
+                UCSIDBManager.getDbManager().update(WhiteListInfo.class, WhereBuilder.b("msisdn", "=", imsiList.get(1)), keyValue2);
+
+                for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
+                    if (ueidBean.getImsi().equals(imsiList.get(0))){
+                        ueidBean.setNumber(imsiList.get(1));
+                    }
                 }
+
             } catch (DbException e) {
                 e.printStackTrace();
             }
-
-            EventAdapter.call(EventAdapter.REFRESH_IMSI);
         }
+
+        EventAdapter.call(EventAdapter.REFRESH_IMSI);
     }
 
     /**
@@ -486,7 +494,7 @@ public class LTEReceiveManager {
         if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLoction().getImsi())
                 && CacheManager.getCurrentLoction().getType() == 0) {
 
-            int rssi = Integer.parseInt(responseBean.getRssi()) * 2 + 140;
+            int rssi = Integer.parseInt(responseBean.getRssi())  + 125;
             if (rssi < 0) {
                 rssi = 0;
             }

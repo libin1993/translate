@@ -92,7 +92,6 @@ import java.util.TimerTask;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.doit.net.activity.SystemSettingActivity.SET_STATIC_IP;
 
-@SuppressLint("NewApi")
 public class MainActivity extends BaseActivity implements TextToSpeech.OnInitListener, EventAdapter.EventCall {
     private Activity activity = this;
 
@@ -168,8 +167,8 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             public void run() {
                 checkDataDir();
                 initEvent();
-                initWifiChangeReceive();
-                setData();
+//                initWifiChangeReceive();
+//                setData();
                 startCheckDeviceState();
                 initNetWork();
                 initSpeech();
@@ -601,13 +600,13 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             } //只有从wifi未连接到连接才出现这种状态
 
             initUDP();  //重连wifi后udp发送ip、端口
-            initGSM();
             downloadAccount();
 
         } else {
             CacheManager.isWifiConnected = false;
             CacheManager.deviceState.setDeviceState(DeviceState.WIFI_DISCONNECT);
             CacheManager.clearCache4G();
+            CacheManager.paramList.clear();
         }
     }
 
@@ -684,22 +683,17 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             return;
         }
 
-        Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
+        new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 if (!CacheManager.deviceState.getDeviceState().equals(DeviceState.NORMAL)) {
                     sendData();
                 } else {
+                    cancel();
                     DatagramSocketUtils.getInstance().closeSocket();
-                    timer.cancel();
                 }
             }
-        };
-
-        timer.schedule(timerTask,
-                0,
-                5000);//周期时间
+        },0,5000);
 
     }
 
@@ -947,9 +941,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 heartbeatCount = true;
             }
 
-//            if (!CacheManager.hasPressStartButton) {
-//                mHandler.sendEmptyMessage(HEARTBEAT_RPT);
-//            }
 
         } else if (EventAdapter.INIT_SUCCESS.equals(key)) {
             if (!CacheManager.initSuccess4G && CacheManager.getChannels().size() > 0) {
@@ -970,17 +961,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
 
-                getChannel();
-
-//                if (CacheManager.hasPressStartButton()) {
-//                    new Timer().schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            ProtocolManager.openAllRf();
-//                        }
-//                    }, 5000);
-//                }
-
             }
 
         } else if (EventAdapter.BATTERY_STATE.equals(key)) {
@@ -991,21 +971,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         }
     }
 
-    /**
-     * 定时轮询获取设备配置
-     */
-    private void getChannel() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (CacheManager.deviceState.getDeviceState().equals(DeviceState.NORMAL)) {
-                    LTESendManager.getEquipAndAllChannelConfig();
-                } else {
-                    cancel();
-                }
-            }
-        }, 1000, 6000);
-    }
+
 
 
     private void setDeviceWorkMode() {
@@ -1042,6 +1008,16 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 //
 //            }
 //        }, 2000);
+
+        if (VersionManage.isArmyVer() && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    CacheManager.redirect2G();
+                }
+            },1000);
+
+        }
 
     }
 

@@ -3,6 +3,7 @@ package com.doit.net.protocol;
 
 import android.text.TextUtils;
 
+import com.doit.net.model.VersionManage;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.bean.BatteryBean;
 import com.doit.net.bean.LteCellConfig;
@@ -142,7 +143,7 @@ public class LTE_PT_PARAM {
         }
 
 
-        EventAdapter.call(EventAdapter.UPDATE_BATTERY, Integer.valueOf(CacheManager.getLteEquipConfig().getVoltage12V()));
+//        EventAdapter.call(EventAdapter.UPDATE_BATTERY, Integer.valueOf(CacheManager.getLteEquipConfig().getVoltage12V()));
 
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
         EventAdapter.call(EventAdapter.INIT_SUCCESS);
@@ -291,7 +292,7 @@ public class LTE_PT_PARAM {
 
     //处理黑名单中标上报
     public static void processRptBlackName(LTEReceivePackage receivePackage) {
-        if (!CacheManager.isDeviceOk())
+        if (!CacheManager.initSuccess4G)
             return;
 
         String rptBlackName = UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0);
@@ -357,7 +358,7 @@ public class LTE_PT_PARAM {
                     latitude = splitUeid[5];
 
 
-                    ueidMap.put(tmpImsi, new UeidBean(tmpImsi, "", tmpTmsi, band, tmpRptTime, longitude, latitude, 0));
+                    ueidMap.put(tmpImsi, new UeidBean(tmpImsi,  tmpRptTime, 0));
 
 
                     if (!CacheManager.removeExistUeidInRealtimeList(splitUeid[0])) {
@@ -400,7 +401,7 @@ public class LTE_PT_PARAM {
 
     //搜网结果上报
     public static void processRPTFreqScan(LTEReceivePackage receivePackage) {
-        if (!CacheManager.isDeviceOk())
+        if (!CacheManager.initSuccess4G)
             return;
         String band1FcnList = "";
         String band3FcnList = "";
@@ -765,27 +766,27 @@ public class LTE_PT_PARAM {
         if ("".equals(locRpt))
             return;
 
-        String SRSP = "";
+        String rssi = "";
 
-        if (CacheManager.currentWorkMode.equals("0")) {
+        if (VersionManage.isPoliceVer()) {
             String[] splitStr = locRpt.split("#");
             Map<String, UeidBean> ueidMap = new HashMap<>();
             for (int i = 0; i < splitStr.length; i++) {
                 String[] split = splitStr[i].split(":");
                 if (split.length > 1) {
-                    SRSP = split[1];
+                    rssi = split[1];
                 } else {
-                    SRSP = "";
+                    rssi = "";
                 }
 
                 String tmpImsi = split[0];
-                if (tmpImsi.equals(CacheManager.getCurrentLoction().getImsi()) && !TextUtils.isEmpty(SRSP) && Integer.parseInt(SRSP) > 0) {
-                    EventAdapter.call(EventAdapter.LOCATION_RPT, SRSP);
+                if (tmpImsi.equals(CacheManager.getCurrentLoction().getImsi()) && !TextUtils.isEmpty(rssi) && Integer.parseInt(rssi) > 0) {
+                    EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
 
                 }
 
-                ueidMap.put(tmpImsi, new UeidBean(tmpImsi, "", "", "",
-                        DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE), "", "", 0));
+                ueidMap.put(tmpImsi, new UeidBean(tmpImsi,
+                        DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE), 0));
 
                 if (!CacheManager.removeExistUeidInRealtimeList(tmpImsi)) {
                     UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), "",
@@ -801,31 +802,33 @@ public class LTE_PT_PARAM {
                 EventAdapter.call(EventAdapter.UEID_RPT, listUeid);
             }
 
-        } else if (CacheManager.currentWorkMode.equals("2")) {
+        } else if (VersionManage.isArmyVer()) {
             String[] splitStr = locRpt.split("#");
-            for (int i = 0; i < splitStr.length; i++) {
-                String[] split = splitStr[i].split(":");
+            List<UeidBean> ueidList = new ArrayList<>();
+            for (String s : splitStr) {
+                String[] split = s.split(":");
                 if (split.length > 1) {
-                    SRSP = split[1];
-                    if (TextUtils.isEmpty(SRSP) || Integer.parseInt(SRSP) <= 0) {
+                    rssi = split[1];
+                    if (TextUtils.isEmpty(rssi) || Integer.parseInt(rssi) <= 0) {
                         continue;
                     }
 
                     if (CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1
-                            && splitStr[i].split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
-                        EventAdapter.call(EventAdapter.LOCATION_RPT, SRSP);
+                            && s.split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
+                        EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
                     }
 
                     UeidBean ueidBean = new UeidBean();
                     ueidBean.setType(1);
                     ueidBean.setImsi(split[0]);
-                    ueidBean.setSrsp(SRSP);
+                    ueidBean.setSrsp(rssi);
 
+                    ueidList.add(ueidBean);
 
-                    EventAdapter.call(EventAdapter.SHIELD_RPT, ueidBean);
                 }
-
             }
+            LogUtils.log("4G采号数量："+ueidList.size());
+            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
         }
 
     }

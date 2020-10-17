@@ -67,7 +67,7 @@ public class ScanFreqManager {
             @Override
             public void run() {
                 while(true){
-                    if (CacheManager.isDeviceOk()){
+                    if (CacheManager.initSuccess4G){
                         LTESendManager.scanFreq();
                         break;
                     }else{
@@ -84,7 +84,7 @@ public class ScanFreqManager {
             @Override
             public void run() {
                 while (true) {
-                    if (CacheManager.isDeviceOk()){
+                    if (CacheManager.initSuccess4G){
                         for(LteChannelCfg channel:CacheManager.getChannels()){
                             switch (channel.getBand()){
                                 case "1":

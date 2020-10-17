@@ -226,7 +226,12 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             }, 500);
 
 
-            CacheManager.redirect2G();
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    CacheManager.redirect2G();
+                }
+            },1000);
         }
 
 
@@ -283,6 +288,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
     private void stopLoc() {
         LogUtils.log("停止定位");
+
         if (CacheManager.getLocState()) {
             CacheManager.stopCurrentLoc();
 
@@ -440,64 +446,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         }
     }
 
-    private void setArfcnPowerByTargetOpr() {
-        //军队版本不做功率调整
-        if (VersionManage.isArmyVer())
-            return;
-
-
-        String operator = UtilOperator.getOperatorName(CacheManager.getCurrentLoction().getImsi());
-        if (operator.equals("CTJ")) {
-            //List<Integer> listBandsInCTJ = Arrays.asList(38,39,40,41);
-            for (LteChannelCfg channel : CacheManager.getChannels()) {
-//                if (listBandsInCTJ.contains(Integer.valueOf(channel.getBand()))){
-//                    ProtocolManager.setChannelConfig(channel.getIdx(), "", "", tmpPa, "", "", "", "");
-//                }
-
-                //对于移动，只要判断band3里有无1300频点，有则拉低其他两个频点
-                if (channel.getBand().equals("3") && channel.getFcn().contains("1300")) {
-                    String[] tmpFcns;
-                    String tmpPa = "";
-                    tmpFcns = channel.getFcn().split(",");
-                    for (int i = 0; i < tmpFcns.length; i++) {
-                        if (tmpFcns[i].equals("1300")) {
-                            tmpPa += "-7";
-                            tmpPa += ",";
-                        } else {
-                            tmpPa += "-55,";
-                        }
-                    }
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", tmpPa.substring(0, tmpPa.length() - 1), "", "", "", "");
-                } else if (channel.getBand().equals("1") || channel.getBand().equals("3")) {
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "-7,-7,-7", "", "", "", "");
-                }
-                /* 无论是什么制式，怎么切换，band38-41一直保持最大，无需调整 */
-//                else if (channel.getBand().equals("38") || channel.getBand().equals("40") || channel.getBand().equals("41")){
-//                    ProtocolManager.setChannelConfig(channel.getIdx(), "", "", "-1,-1,-1", "", "", "", "");
-//                }else if (channel.getBand().equals("39")){
-//                    ProtocolManager.setChannelConfig(channel.getIdx(), "", "", "-13,-13,-13", "", "", "", "");
-//                }
-            }
-        } else if (operator.equals("CTU") || operator.equals("CTC")) {
-            String[] tmpFcns;
-            String tmpPa = "";
-            for (LteChannelCfg channel : CacheManager.getChannels()) {
-                if (channel.getBand().equals("1") || channel.getBand().equals("3")) {
-                    tmpFcns = channel.getFcn().split(",");
-                    for (int i = 0; i < tmpFcns.length; i++) {
-                        if (UtilOperator.isArfcnInOperator(operator, tmpFcns[i])) {
-                            tmpPa += "-7";
-                            tmpPa += ",";
-                        } else {
-                            tmpPa += "-55,";
-                        }
-                    }
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", tmpPa.substring(0, tmpPa.length() - 1), "", "", "", "");
-                    tmpPa = "";
-                }
-            }
-        }
-    }
 
 
     @Override
@@ -521,7 +469,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             }
         }
         for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            if (params.isRfState()) {
+            if (params.isRfState() && !params.getBoardid().equals("1")) {
                 rfState2G = true;
                 break;
             }
@@ -637,6 +585,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     if (CacheManager.channels != null && CacheManager.channels.size() > 0) {
                         cbGainSwitch.setOnCheckedChangeListener(null);
                         for (LteChannelCfg channel : CacheManager.channels) {
+                            LogUtils.log(channel.toString());
                             int ga = Integer.parseInt(channel.getGa());
                             if (ga <= 10) {
                                 cbGainSwitch.setChecked(false);

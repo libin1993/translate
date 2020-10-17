@@ -148,9 +148,9 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if (view.getId() == R.id.iv_rf_status) {
-//                    if (!CacheManager.checkDevice(Device2GParamActivity.this)){
-//                        return;
-//                    }
+                    if (!CacheManager.checkDevice(Device2GParamActivity.this)){
+                        return;
+                    }
 
                     Set2GParamsBean.Params params = CacheManager.paramList.get(position);
 
@@ -177,6 +177,9 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
         mProgressDialog.setTitleText("Loading...");
         mProgressDialog.setCancelable(false);
 
+
+        Send2GManager.getParamsConfig();
+
     }
 
     CompoundButton.OnCheckedChangeListener rfCheckChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -196,7 +199,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 Send2GManager.setRFState("1");
                 ToastUtils.showMessageLong(R.string.rf_open);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_RF);
-                showProcess(6000);
+                showProcess(10000);
             } else {
                 if (CacheManager.getLocState()) {
                     new MySweetAlertDialog(Device2GParamActivity.this, MySweetAlertDialog.WARNING_TYPE)
@@ -212,7 +215,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                                     sweetAlertDialog.dismiss();
                                     LTESendManager.closeAllRf();
                                     ToastUtils.showMessage(R.string.rf_close);
-                                    showProcess(8000);
+                                    showProcess(10000);
                                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
                                 }
                             })
@@ -220,7 +223,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 } else {
                     Send2GManager.setRFState("0");
                     ToastUtils.showMessageLong(R.string.rf_close);
-                    showProcess(8000);
+                    showProcess(10000);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
                 }
 
@@ -279,7 +282,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 rbPowerHigh.setChecked(true);
             } else if (powerLevel <= 10) {
                 rbPowerMedium.setChecked(true);
-            } else{
+            } else {
                 rbPowerLow.setChecked(true);
             }
 
@@ -363,12 +366,13 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastRefreshParamTime > 20 * 1000) {
             Send2GManager.getParamsConfig();
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     Send2GManager.getCommonConfig();
                 }
-            },500);
+            }, 500);
             lastRefreshParamTime = currentTime;
             ToastUtils.showMessage("下发查询参数成功！");
         } else {
@@ -440,7 +444,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 }
 
 
-                helper.setText(R.id.tv_2g_plmn, "通道：" + type);
+                helper.setText(R.id.tv_2g_plmn,  type);
                 TableRow trFcn = helper.getView(R.id.tr_fcn);
                 if (item.getBoardid().equals("0")) {
                     trFcn.setVisibility(View.VISIBLE);
@@ -491,16 +495,37 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                         return;
                     }
 
-                    Set2GParamsBean.Params params = CacheManager.paramList.get(position);
+                    Set2GParamsBean.Params params = new Set2GParamsBean.Params();
+                    params.setBoardid(CacheManager.paramList.get(position).getBoardid());
+                    params.setCarrierid(CacheManager.paramList.get(position).getCarrierid());
+                    params.setMcc(CacheManager.paramList.get(position).getMcc());
+                    params.setMnc(CacheManager.paramList.get(position).getMnc());
+                    params.setLac(CacheManager.paramList.get(position).getLac());
+                    params.setOpmode(CacheManager.paramList.get(position).getOpmode());
+                    params.setSniff(CacheManager.paramList.get(position).getSniff());
+                    params.setCi(CacheManager.paramList.get(position).getCi());
+                    params.setCro(CacheManager.paramList.get(position).getCro());
+                    params.setCfgmode(CacheManager.paramList.get(position).getCfgmode());
+                    params.setFcnmode(CacheManager.paramList.get(position).getFcnmode());
                     params.setFcn(fcn);
                     params.setDlattn(pa);
                     params.setUlattn(ga);
                     Send2GManager.setParamsConfig(params);
 
                     ToastUtils.showMessage(R.string.tip_15);
-                    showProcess(6000);
+                    showProcess(10000);
 
 
+                    if (!TextUtils.isEmpty(fcn) && !fcn.equals(CacheManager.paramList.get(position).getFcn())
+                            && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                CacheManager.redirect2G();
+                            }
+                        },5000);
+
+                    }
                 }
             }
         });

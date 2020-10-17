@@ -320,6 +320,14 @@ public class CacheManager {
             if (dbChannel != null) {
                 LTESendManager.setChannelConfig(dbChannel.getIdx(), dbChannel.getFcn(),
                         "46001,46011", "", "", "", "", "");
+
+                for (LteChannelCfg channel : CacheManager.channels) {
+                    if (channel.getIdx().equals(dbChannel.getIdx())){
+                        channel.setFcn(dbChannel.getFcn());
+                        channel.setPlmn("46001,46011");
+                        break;
+                    }
+                }
             }
 
         } catch (DbException e) {
@@ -337,7 +345,9 @@ public class CacheManager {
      * 重置模式
      */
     public static void resetMode() {
-        LTESendManager.setActiveMode(CacheManager.currentWorkMode);
+        if (VersionManage.isPoliceVer()){
+            LTESendManager.setActiveMode(CacheManager.currentWorkMode);
+        }
 
         new Timer().schedule(new TimerTask() {
             @Override
@@ -493,17 +503,11 @@ public class CacheManager {
                 }
             }
         }
-        LogUtils.log("重定向到2G");
+        LogUtils.log("重定向到2G:"+mobileFcn+","+unicomFcn);
         String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LTESendManager.setNameList("on", redirectConfig, "",
-                            "", "", "redirect", "", "");
-
-                }
-            }, 1000);
+            LTESendManager.setNameList("on", redirectConfig, "",
+                    "", "", "redirect", "", "");
         }
 
 
@@ -585,19 +589,21 @@ public class CacheManager {
             for (LteChannelCfg channel : channels) {
                 if (Integer.parseInt(channel.getGa()) <= 10) {
                     LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", String.valueOf(Integer.parseInt(channel.getGa()) * 5), "", "", "");
+                    channel.setGa(String.valueOf(Integer.parseInt(channel.getGa()) * 5));
                 }
             }
         } else {
             for (LteChannelCfg channel : channels) {
                 if (Integer.parseInt(channel.getGa()) > 10) {
                     LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", String.valueOf(Integer.parseInt(channel.getGa()) / 5), "", "", "");
+                    channel.setGa(String.valueOf(Integer.parseInt(channel.getGa()) / 5));
                 }
             }
         }
     }
 
     public static boolean isHighGa() {
-        if (!isDeviceOk())
+        if (!initSuccess4G)
             return true;    //默认高
 
         int allGa = 0;
@@ -621,7 +627,17 @@ public class CacheManager {
                     return;
                 }
                 LTESendManager.setChannelConfig(idx, fcn, "", "", "", "", "", "");
+                for (LteChannelCfg channel : CacheManager.channels) {
+                    if (idx.equals(channel.getIdx())){
+                        channel.setFcn(fcn);
+                        channel.setChangeBand(channel.getBand());
+                        channel.setBand(changeBand);
 
+                        EventAdapter.call(EventAdapter.REFRESH_DEVICE);
+
+                        break;
+                    }
+                }
             }
         }, 2000);
 

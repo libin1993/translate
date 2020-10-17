@@ -1,5 +1,7 @@
 package com.doit.net.bean;
 
+import java.util.Arrays;
+
 /**
  * Created by Zxc on 2018/10/19.
  */
@@ -195,5 +197,31 @@ public class LteChannelCfg {
 
     public void setAltFcn(String alt_fcn) {
         this.alt_fcn = alt_fcn;
+    }
+
+    @Override
+    public String toString() {
+        return "LteChannelCfg{" +
+                "idx='" + idx + '\'' +
+                ", band='" + band + '\'' +
+                ", fcn='" + fcn + '\'' +
+                ", plmn='" + plmn + '\'' +
+                ", pa='" + pa + '\'' +
+                ", ga='" + ga + '\'' +
+                ", pw='" + pw + '\'' +
+                ", rlm='" + rlm + '\'' +
+                ", change='" + change + '\'' +
+                ", autoopen='" + autoopen + '\'' +
+                ", alt_fcn='" + alt_fcn + '\'' +
+                ", pmax='" + pmax + '\'' +
+                ", RFState=" + RFState +
+                ", state=" + state +
+                ", hold=" + hold +
+                ", info='" + info + '\'' +
+                ", fcns=" + Arrays.toString(fcns) +
+                ", pas=" + Arrays.toString(pas) +
+                ", pwrs=" + Arrays.toString(pwrs) +
+                ", result=" + result +
+                '}';
     }
 }

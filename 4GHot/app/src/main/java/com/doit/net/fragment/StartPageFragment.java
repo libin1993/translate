@@ -16,6 +16,9 @@ import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.ToastUtils;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Zxc on 2019/12/17.
  */
@@ -48,14 +51,21 @@ public class StartPageFragment extends BaseFragment {
                     //改为抬起时的图片
                     ivPowerStart.setImageResource(R.drawable.start_button);
 
-                    if (CacheManager.isDeviceOk()){
+                    if (CacheManager.checkDevice(getActivity())){
                         CacheManager.hasPressStartButton = true;
                         turnToDetectPage();
                         LTESendManager.openAllRf();
                         Send2GManager.setRFState("1");
-                        CacheManager.redirect2G();
-                    }else{
-                        ToastUtils.showMessage("设备未初始化完成，请稍候...");
+
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                CacheManager.redirect2G();
+                            }
+                        }, 1000);
+                    }
+//                    else{
+//                        ToastUtils.showMessage("设备未初始化完成，请稍候...");
 //                        new MySweetAlertDialog(getContext(), MySweetAlertDialog.WARNING_TYPE)
 //                                .setTitleText("提示")
 //                                .setContentText("设备未连接或未初始化完成，是否进入工作页面？")
@@ -72,10 +82,12 @@ public class StartPageFragment extends BaseFragment {
 //
 //                                })
 //                                .show();
-                    }
+//                    }
 
 
                 }
+
+
                 return false;
             }
         });

@@ -60,7 +60,13 @@ public class Send2GManager {
      */
     public static void getCommonConfig() {
         getCommonConfig("0");
-        getCommonConfig("1");
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getCommonConfig("1");
+            }
+        },500);
+
     }
 
     /**
@@ -81,14 +87,21 @@ public class Send2GManager {
      */
     public static void getParamsConfig() {
         getParamsConfig("0", "0");
-        getParamsConfig("0", "1");
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getParamsConfig("0", "1");
+            }
+        }, 500);
+
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 getParamsConfig("1", "0");
             }
-        },500);
+        }, 1000);
 
     }
 
@@ -192,7 +205,7 @@ public class Send2GManager {
     /**
      * 重启设备
      */
-    public static void rebootDevice(){
+    public static void rebootDevice() {
         Set2GRFBean bean = new Set2GRFBean();
         bean.setId(MsgType2G.SYS_REBOOT_ID);
         sendData(MsgType2G.PT_SYSTEM, MsgType2G.REBOOT_DEVICE, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
@@ -202,26 +215,19 @@ public class Send2GManager {
      * @param imsi  开始、结束定位
      * @param state
      */
-    public static void setLocIMSI(String imsi,String state){
-
-//        Set2GLocBean bean = new Set2GLocBean();
-//        bean.setId(MsgType2G.SET_LOC_IMSI_ID);
-//        List<String> imsiList = new ArrayList<>();
-//        imsiList.add(imsi);
-//        bean.setImsilist(imsiList);
-//        bean.setSwitch1(state);
+    public static void setLocIMSI(String imsi, String state) {
 
 
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id",MsgType2G.SET_LOC_IMSI_ID);
-            jsonObject.put("switch",state);
+            jsonObject.put("id", MsgType2G.SET_LOC_IMSI_ID);
+            jsonObject.put("switch", state);
             List<String> imsiList = new ArrayList<>();
             imsiList.add(imsi);
             JSONArray jsonArray = new JSONArray(imsiList);
-            jsonObject.put("imsilist",jsonArray);
-            LogUtils.log("2G定位:"+jsonObject.toString());
-            LogUtils.log(new String(jsonObject.toString().getBytes(StandardCharsets.UTF_8),StandardCharsets.UTF_8));
+            jsonObject.put("imsilist", jsonArray);
+            LogUtils.log("2G定位:" + jsonObject.toString());
+            LogUtils.log(new String(jsonObject.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
             sendData(MsgType2G.PT_PARAM, MsgType2G.SET_LOC_IMSI, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
 
 
