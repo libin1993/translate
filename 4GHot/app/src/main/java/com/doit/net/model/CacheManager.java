@@ -53,6 +53,9 @@ public class CacheManager {
     public static byte equipType4G;  //4G设备类型
     public static byte equipType2G;  //2G设备类型
 
+    public static String GSMSoftwareVersion;  //GSM软件版本
+    public static String CDMASoftwareVersion;  //CDMA软件版本
+
     public static List<UeidBean> realtimeUeidList = new ArrayList<>();
     public static final int MAX_REALTIME_LIST_SIZE = 300;
 
@@ -76,7 +79,6 @@ public class CacheManager {
     public static boolean initSuccess4G = false;   //4G初始化成功
     public static boolean initSuccess2G = false;    //2G初始化成功
 
-    public static boolean isWifiConnected = false;   //wifi是否连接成功
 
     public static boolean hasPressStartButton = false;  //是否已经在主页面点击开始按钮
 

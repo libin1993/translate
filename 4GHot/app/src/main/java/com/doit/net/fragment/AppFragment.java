@@ -4,6 +4,7 @@ import com.doit.net.activity.Device2GParamActivity;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.FileUtils;
+import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.view.ClearHistoryTimeDialog;
 import com.doit.net.activity.CustomFcnActivity;
 import com.doit.net.activity.DeviceParamActivity;
@@ -122,7 +123,6 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
     private ArrayAdapter upgradePackageAdapter;
     private LinearLayout layoutUpgradePackage;
 
-    private String[] playTypes;
 
     //handler消息
     private final int EXPORT_SUCCESS = 0;
@@ -145,7 +145,6 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        playTypes = getResources().getStringArray(R.array.play_list);
 
         tvLoginAccount.setText(AccountManage.getCurrentLoginAccount());
 
@@ -172,8 +171,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         btUserManage.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
-                if (!CacheManager.isWifiConnected){
-                    ToastUtils.showMessage("wifi已断开，请连接设备wifi");
+                if (!CacheManager.checkDevice(getActivity())) {
                     return;
                 }
 
@@ -186,6 +184,10 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             btBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
                 @Override
                 public void click(LSettingItem item) {
+                    if (!NetWorkUtils.getNetworkState()) {
+                        ToastUtils.showMessage("设备未就绪");
+                        return;
+                    }
                     startActivity(new Intent(getActivity(), BlackBoxActivity.class));
                 }
             });
@@ -263,6 +265,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
+
         String imsi = getImsi();
         tvLocalImsi.setRightText(imsi);
         tvLocalImsi.setOnClickListener(new View.OnClickListener() {
@@ -313,11 +316,25 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         final View dialogView = LayoutInflater.from(getContext())
                 .inflate(R.layout.layout_device_info, null);
         TextView tvDeviceIP = dialogView.findViewById(R.id.tvDeviceIP);
-        tvDeviceIP.setText(ServerSocketUtils.REMOTE_4G_IP +" | "+ServerSocketUtils.REMOTE_2G_IP);
+        tvDeviceIP.setText(ServerSocketUtils.REMOTE_4G_IP + " | " + ServerSocketUtils.REMOTE_2G_IP);
+
         TextView tvHwVersion = dialogView.findViewById(R.id.tvHwVersion);
+
         tvHwVersion.setText(CacheManager.getLteEquipConfig().getHw());
+
         TextView tvSwVersion = dialogView.findViewById(R.id.tvSwVersion);
-        tvSwVersion.setText(CacheManager.getLteEquipConfig().getSw());
+        String softwareVersion = "4G:" + CacheManager.getLteEquipConfig().getSw();
+        if (!TextUtils.isEmpty(CacheManager.GSMSoftwareVersion)) {
+            softwareVersion += "\nGSM:" + CacheManager.GSMSoftwareVersion;
+        }
+
+        if (!TextUtils.isEmpty(CacheManager.CDMASoftwareVersion)) {
+            softwareVersion += "\nCDMA:" + CacheManager.CDMASoftwareVersion;
+        }
+        tvSwVersion.setText(softwareVersion);
+
+
+
         Button btDeviceUpgrade = dialogView.findViewById(R.id.btDeviceUpgrade);
         btDeviceUpgrade.setOnClickListener(upgradeListner);
         lvPackageList = dialogView.findViewById(R.id.lvPackageList);
@@ -376,17 +393,17 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
     View.OnClickListener upgradeListner = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-           String UPGRADE_PACKAGE_PATH = "upgrade/";
+            String UPGRADE_PACKAGE_PATH = "upgrade/";
 
             File file = new File(FileUtils.ROOT_PATH + UPGRADE_PACKAGE_PATH);
             if (!file.exists()) {
-                ToastUtils.showMessageLong("未找到升级包，请确认已将升级包放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"/upgrade\"目录下");
+                ToastUtils.showMessageLong("未找到升级包，请确认已将升级包放在\"手机存储/" + FileUtils.ROOT_DIRECTORY + "/upgrade\"目录下");
                 return;
             }
 
             File[] files = file.listFiles();
             if (files == null || files.length == 0) {
-                ToastUtils.showMessageLong("未找到升级包，请确认已将升级包放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"/upgrade\"目录下");
+                ToastUtils.showMessageLong("未找到升级包，请确认已将升级包放在\"手机存储/" + FileUtils.ROOT_DIRECTORY + "/upgrade\"目录下");
                 return;
             }
 
@@ -421,7 +438,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
                             .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(MySweetAlertDialog sweetAlertDialog) {
-                                    String md5 = getPackageMD5(FileUtils.ROOT_PATH+ UPGRADE_PACKAGE_PATH + choosePackage);
+                                    String md5 = getPackageMD5(FileUtils.ROOT_PATH + UPGRADE_PACKAGE_PATH + choosePackage);
                                     if ("".equals(md5)) {
                                         ToastUtils.showMessage("文件校验失败，升级取消！");
                                         sweetAlertDialog.dismiss();

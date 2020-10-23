@@ -20,6 +20,5 @@ public class DeviceState {
     public synchronized void setDeviceState(String deviceState){
         this.deviceState = deviceState;
 
-        //UIEventManager.call(UIEventManager.KEY_DEVICE_STATE_CHANGE);
     }
 }

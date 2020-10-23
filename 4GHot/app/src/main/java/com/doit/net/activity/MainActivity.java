@@ -167,8 +167,8 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             public void run() {
                 checkDataDir();
                 initEvent();
-//                initWifiChangeReceive();
-//                setData();
+                initWifiChangeReceive();
+                setData();
                 startCheckDeviceState();
                 initNetWork();
                 initSpeech();
@@ -180,11 +180,17 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
 
     private void setData() {
-        NetworkInfo wifiNetInfo = ((ConnectivityManager) activity.
-                getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//        String ssid = NetWorkUtils.getWifiSSID(activity);
+//        NetworkInfo wifiNetInfo = ((ConnectivityManager) activity.
+//                getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        if (wifiNetInfo.isConnected()) {
+
+//        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//
+//        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
+
+        if (NetWorkUtils.getNetworkState()) {
             LogUtils.log("wifi连接成功");
             if (CacheManager.deviceState.getDeviceState().equals(DeviceState.WIFI_DISCONNECT))  //只有从wifi未连接到连接才出现这种状态
                 CacheManager.deviceState.setDeviceState(DeviceState.WAIT_SOCKET);
@@ -210,7 +216,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             public void onChange(String ip) {
                 CacheManager.deviceState.setDeviceState(DeviceState.ON_INIT);
 
-                switch (ip){
+                switch (ip) {
                     case ServerSocketUtils.REMOTE_4G_IP:
                         heartbeatCount = false;    //一旦发现是连接就重置此标志以设置所有配置
                         //设备重启（重连）后需要重新检查设置默认参数
@@ -259,16 +265,15 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private void initView() {
         setOverflowShowingAlways();
-//        getActionBar().setDisplayShowHomeEnabled(false);
+
         mViewPager = findViewById(R.id.vpTabPage);
         tabLayout = findViewById(R.id.tablayout);
 
         ivWifiState = findViewById(R.id.ivWifiState);
         ivWifiState.setOnClickListener(wifiSystemSetting);
-        //ivWifiState.setOnClickListener(showSetParamDialogListener);
+
 
         ivDeviceState = findViewById(R.id.ivDeviceState);
-        //ivDeviceState.setOnClickListener(showSetParamDialogListener);
 
         ivSyncError = findViewById(R.id.ivSyncError);
 
@@ -590,11 +595,16 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     }
 
     private void wifiChangeEvent() {
-        NetworkInfo wifiNetInfo = ((ConnectivityManager) activity.
-                getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+//        NetworkInfo wifiNetInfo = ((ConnectivityManager) activity.
+//                getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        if (wifiNetInfo.isConnected()) {
-            CacheManager.isWifiConnected = true;
+//        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//
+//        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
+
+        if (NetWorkUtils.getNetworkState()) {
             if (CacheManager.deviceState.getDeviceState().equals(DeviceState.WIFI_DISCONNECT)) {
                 CacheManager.deviceState.setDeviceState(DeviceState.WAIT_SOCKET);
             } //只有从wifi未连接到连接才出现这种状态
@@ -603,7 +613,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             downloadAccount();
 
         } else {
-            CacheManager.isWifiConnected = false;
             CacheManager.deviceState.setDeviceState(DeviceState.WIFI_DISCONNECT);
             CacheManager.clearCache4G();
             CacheManager.paramList.clear();
@@ -693,7 +702,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     DatagramSocketUtils.getInstance().closeSocket();
                 }
             }
-        },0,5000);
+        }, 0, 5000);
 
     }
 
@@ -957,7 +966,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
                 LTESendManager.setDefaultArfcnsAndPwr();
 
-                if (CacheManager.initSuccess2G){
+                if (CacheManager.initSuccess2G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
 
@@ -970,8 +979,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             mHandler.sendMessage(msg);
         }
     }
-
-
 
 
     private void setDeviceWorkMode() {
@@ -1015,7 +1022,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 public void run() {
                     CacheManager.redirect2G();
                 }
-            },1000);
+            }, 1000);
 
         }
 

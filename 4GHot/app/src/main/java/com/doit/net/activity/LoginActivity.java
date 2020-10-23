@@ -59,6 +59,7 @@ public class LoginActivity extends BaseActivity {
 //        checkAuthorize();
         initView();
         checkLocalDir();
+
         initLog();
 
     }
@@ -81,6 +82,8 @@ public class LoginActivity extends BaseActivity {
 //        String nowDate = DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE_DAY);
 //        long nowTime = DateUtils.convert2long(nowDate, DateUtils.LOCAL_DATE_DAY);
 //        if (nowTime >= longDueTime){
+
+
 //            ToastUtils.showMessageLong(activity, "授权已过期，请联系管理员");
 //            LicenceDialog licenceDialog = new LicenceDialog(this);
 //            licenceDialog.show();

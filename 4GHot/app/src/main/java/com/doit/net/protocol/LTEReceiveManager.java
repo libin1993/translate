@@ -1,7 +1,5 @@
 package com.doit.net.protocol;
 
-import android.text.TextUtils;
-
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
 import com.doit.net.bean.Report2GIMSIBean;
@@ -12,11 +10,9 @@ import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.WhiteListInfo;
 import com.doit.net.socket.ServerSocketUtils;
-import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.UtilDataFormatChange;
@@ -24,17 +20,13 @@ import com.doit.net.utils.UtilDataFormatChange;
 /**
  * Created by Zxc on 2018/10/18.
  */
-import org.xutils.DbManager;
 import org.xutils.common.util.KeyValue;
 import org.xutils.db.sqlite.WhereBuilder;
 import org.xutils.ex.DbException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -334,10 +326,14 @@ public class LTEReceiveManager {
                             if ("1".equals(CacheManager.paramList.get(i).getCarrierid())) {
                                 CacheManager.paramList.get(i).setRfState("1".equals(param.getRunstate().get(0).getC2rf()));
                             }
+
+                            CacheManager.GSMSoftwareVersion = param.getSwver();
                         }
 
                         if ("1".equals(CacheManager.paramList.get(i).getBoardid()) && "1".equals(param.getBoardid())) {
                             CacheManager.paramList.get(i).setRfState("1".equals(param.getRunstate().get(0).getC3rf()));
+
+                            CacheManager.CDMASoftwareVersion = param.getSwver();
                             break;
                         }
                     }

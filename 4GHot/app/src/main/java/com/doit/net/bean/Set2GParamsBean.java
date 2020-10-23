@@ -33,6 +33,9 @@ public class Set2GParamsBean extends Base2GBean<Set2GParamsBean.Params> {
 
         private boolean rfState;
 
+
+
+
         public boolean isRfState() {
             return rfState;
         }

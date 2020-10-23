@@ -22,6 +22,7 @@ import com.doit.net.model.BlackBoxBean;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.utils.DateUtils;
+import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.adapter.BlackBoxListAdapter;
 import com.doit.net.view.MyTimePickDialog;
@@ -122,9 +123,13 @@ public class BlackBoxActivity extends BaseActivity {
     View.OnClickListener searchClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (!CacheManager.checkDevice(BlackBoxActivity.this)) {
+
+                return;
+            }
             String keyword = etKeyword.getText().toString();
-            final String startTime = etStartTime.getText().toString();
-            final String endTime = etEndTime.getText().toString();
+            String startTime = etStartTime.getText().toString();
+            String endTime = etEndTime.getText().toString();
 
             clearBlackboxList();
 
@@ -137,9 +142,6 @@ public class BlackBoxActivity extends BaseActivity {
             } else if (!"".equals(startTime) && !"".equals(endTime) && !isStartEndTimeOrderRight(startTime, endTime)) {
                 ToastUtils.showMessage("开始时间比结束时间晚，请重新设置！");
                 return;
-            } else if (!CacheManager.isWifiConnected) {
-                ToastUtils.showMessage("Wifi未连接到设备，黑匣子获取失败");
-                return;
             }
 
             initQueryBlx(keyword,startTime, endTime);
@@ -150,9 +152,12 @@ public class BlackBoxActivity extends BaseActivity {
 
     private void initQueryBlx(String keyword,String startTime, String endTime) {
 
-        if (!CacheManager.isWifiConnected) {
+
+        if (!NetWorkUtils.getNetworkState()) {
+            ToastUtils.showMessage("设备未就绪");
             return;
         }
+
 
         try {
             dbManager.delete(BlackBoxBean.class);
@@ -180,8 +185,8 @@ public class BlackBoxActivity extends BaseActivity {
     }
 
     public  void getBlxFromDevice(String keyword,String startTime, String endTime) {
-        if (!CacheManager.isWifiConnected){
-            LogUtils.log("wifi断开");
+        if (!NetWorkUtils.getNetworkState()) {
+            ToastUtils.showMessage("设备未就绪");
             return;
         }
 

@@ -132,15 +132,6 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
     }
 
 
-
-    @Override
-    protected void onResume() {
-        if (!CacheManager.isWifiConnected){
-            ToastUtils.showMessageLong("请在已连接到设备Wifi的情况下管理账户，否则不生效！");
-        }
-        super.onResume();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
