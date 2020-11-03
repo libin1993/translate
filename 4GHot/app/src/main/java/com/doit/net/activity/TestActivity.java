@@ -127,15 +127,9 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
         test4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LTESendManager.setActiveMode("0");
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CacheManager.setLocalWhiteList("off");
 
-                    }
-                }, 1000);
+
 
             }
         });
@@ -143,36 +137,16 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
         test5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (VersionManage.isPoliceVer()){
-                    LTESendManager.setActiveMode("1");
-                }
 
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (VersionManage.isArmyVer()) {
-                            CacheManager.setLocalWhiteList("on");
-                        } else {
-                            CacheManager.setLocalWhiteList("off");
-                        }
-
-                    }
-                },1000);
             }
         });
 
         test6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LTESendManager.setActiveMode("2");
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CacheManager.setLocalWhiteList("on");
 
-                    }
-                }, 1000);
+
             }
         });
 
@@ -282,7 +256,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
                                 EventAdapter.call(EventAdapter.STOP_LOC);
                                 LTESendManager.openAllRf();
 
-                                LTESendManager.setActiveMode("2");
+
 
                                 new Timer().schedule(new TimerTask() {
                                     @Override
@@ -327,7 +301,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
                             LTESendManager.exchangeFcn(imsi);
 
                             CacheManager.updateLoc(imsi,0);
-                            CacheManager.changeLocTarget(imsi);
+
                             ToastUtils.showMessage( "开始新的搜寻");
                         }
                     }else{
@@ -335,7 +309,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
                         LTESendManager.exchangeFcn(imsi);
 
                         CacheManager.updateLoc(imsi,0);
-                        CacheManager.startLoc(imsi);
+
                         CacheManager.getCurrentLoction().setLocateStart(true);
                         LTESendManager.openAllRf();
                         ToastUtils.showMessage("搜寻开始");

@@ -3,6 +3,8 @@ package com.doit.net.protocol;
 import com.doit.net.bean.Get2GCommonBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.Set2GRFBean;
+import com.doit.net.event.EventAdapter;
+import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.GsonUtils;
@@ -119,15 +121,6 @@ public class Send2GManager {
     }
 
 
-    /**
-     * 设置运营商参数、工作模式
-     */
-    public static void setParamsConfig() {
-        Set2GParamsBean paramsBean = new Set2GParamsBean();
-        paramsBean.setId(MsgType2G.SET_MCRF_CONFIG_ID);
-        paramsBean.setParams(CacheManager.paramList);
-        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_MCRF_CONFIG, GsonUtils.objectToString(paramsBean).getBytes(StandardCharsets.UTF_8));
-    }
 
     /**
      * 设置运营商参数、工作模式
@@ -209,6 +202,8 @@ public class Send2GManager {
         Set2GRFBean bean = new Set2GRFBean();
         bean.setId(MsgType2G.SYS_REBOOT_ID);
         sendData(MsgType2G.PT_SYSTEM, MsgType2G.REBOOT_DEVICE, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
+
+        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.REBOOT_2G_DEVICE);
     }
 
     /**

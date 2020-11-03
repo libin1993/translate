@@ -98,37 +98,6 @@ public class GSMReceiveManager {
             gsmPackage.setSubContent(tempSubContent);
         }
 
-//        if (packageLength - packageHeadLength > 0){
-//            List<GSMSubPackage> subPackageList = new ArrayList<>();
-//
-//            int subLength = 0;
-//            while (subLength < packageLength - packageHeadLength){
-//                byte length = tempPackage[packageHeadLength+subLength];
-//                GSMSubPackage gsmSubPackage = new GSMSubPackage();
-//                //信息体长度
-//                gsmSubPackage.setSubMsgLength(length);
-//
-//                //信息体编号
-//                byte[] contentNumber= {tempPackage[packageHeadLength+subLength+2],tempPackage[packageHeadLength+subLength+1]};
-//                gsmSubPackage.setSubMsgNumber(FormatUtils.getInstance().byteToShort(contentNumber));
-//
-//
-//                byte[] tempContent = new byte[length - 3];
-//                System.arraycopy(tempPackage, packageHeadLength+subLength+3, tempContent, 0, length - 3);
-//
-//                gsmSubPackage.setSubMsgContent(FormatUtils.getInstance().bytes2StringForUTF(tempContent));
-//
-//
-//                LogUtils.log(gsmSubPackage.toString());
-//                subPackageList.add(gsmSubPackage);
-//
-//                subLength += length;
-//
-//            }
-//
-//
-//        }
-
 
         LogUtils.log("UDP1接收数据"+gsmPackage.toString());
 

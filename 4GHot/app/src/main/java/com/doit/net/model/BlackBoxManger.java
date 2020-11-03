@@ -29,14 +29,18 @@ public class BlackBoxManger {
     public final static String LOGIN = "账户登录";
     public final static String FIRST_HEARTBEAT = "收到第一个心跳包";
     public final static String CHANGE_DETTECT_OPERATE = "切换采集制式为:";
-    public final static String OPEN_ALL_RF = "打开所有射频...";
-    public final static String CLOSE_ALL_RF = "关闭所有射频...";
+    public final static String OPEN_ALL_4G_RF = "打开4G所有射频...";
+    public final static String CLOSE_ALL_4G_RF = "关闭4G所有射频...";
+    public final static String OPEN_ALL_2G_RF = "打开2G所有射频...";
+    public final static String CLOSE_ALL_2G_RF = "关闭2G所有射频...";
     public final static String SET_CELL_CONFIG = "设置小区信息:";
     public final static String SET_CHANNEL_CONFIG = "设置通道信息:";
     public final static String CHANNEL_TAG = "更新了TAC...";
     public final static String CHANGE_BAND = "切换BAND到:";
-    public final static String REBOOT_DEVICE = "软重启了设备...";
-    public final static String SET_ALL_POWER = "设置了总功率为:";
+    public final static String REBOOT_4G_DEVICE = "重启4G设备...";
+    public final static String REBOOT_2G_DEVICE = "重启2G设备...";
+    public final static String SET_4G_POWER = "设置4G总功率为:";
+    public final static String SET_2G_POWER = "设置2G总功率为:";
     public final static String ADD_NAMELIST = "添加了一个名单，名单信息:";
     public final static String DELTE_NAMELIST = "删除了一个名单，名单信息:";
     public final static String MODIFY_NAMELIST = "修改了一个名单信息，";
@@ -51,11 +55,9 @@ public class BlackBoxManger {
     public final static String START_LOCALTE = "开始搜寻，号码为:";
     public final static String STOP_LOCALTE = "停止搜寻，号码为:";
     public final static String EXPORT_HISTORT_DATA = "导出历史数据,文件名为:";
-    public final static String EXPORT_NAMELIST = "导出黑名单,文件名为:";
-    public final static String EXPORT_WHITELIST = "导出白名单,文件名为:";
-    public final static String CLEAR_WHITELIST = "清空白名单";
-    public final static String IMPORT_NAMELIST = "导入黑名单,文件名为:";
-    public final static String IMPORT_WhiteLIST = "导入白名单,文件名为:";
+    public final static String EXPORT_WHITELIST = "导出黑名单,文件名为:";
+    public final static String CLEAR_WHITELIST = "清空黑名单";
+    public final static String IMPORT_WHITELIST = "导入黑名单,文件名为:";
     public final static String ADD_USER = "添加了一个用户:";
     public final static String DELTE_USER = "删除了一个用户:";
     public final static String MODIFY_USER = "修改一个用户信息，";
@@ -239,17 +241,4 @@ public class BlackBoxManger {
         downloadIntradayBlxThread.start();
     }
 
-
-//    public static void clearBlxData(){
-//        File file = new File(LOCAL_FTP_BLX_PATH);
-//        if(!file.exists()){//判断是否待删除目录是否存在
-//            return;
-//        }
-//
-//        String[] content = file.list();//取得当前目录下所有文件和文件夹
-//        for(String name : content){
-//            File temp = new File(LOCAL_FTP_BLX_PATH, name);
-//            temp.delete();
-//        }
-//    }
 }

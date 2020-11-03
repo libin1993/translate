@@ -61,10 +61,6 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
 
     private List<DBUeidInfo> dbUeidInfos = new ArrayList<>();
 
-//    private PopupWindow ueidItemPop;
-//    View ueidItemPopView;
-//    private TextView tvGetTelNumber;
-//    private DBUeidInfo selectedUeidItem = null;
 
     //handler消息
     private final int EXPORT_ERROR = -1;
@@ -114,100 +110,10 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
             }
         });
 
-//        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectedUeidItem = CacheManager.realtimeUeidList.get(position);
-//                showListPopWindow(mListView, calcPopWindowPosX((int)motionEvent.getX()), calcPopWindowPosY((int)motionEvent.getY()));
-//                return true;
-//            }
-//        });
-//        ueidItemPopView = LayoutInflater.from(activity).inflate(R.layout.realtime_ueid_pop_window, null);
-//        ueidItemPop = new PopupWindow(ueidItemPopView, getResources().getDisplayMetrics().widthPixels/3,
-//                LinearLayout.LayoutParams.WRAP_CONTENT, true);   //宽度和屏幕成比例
-//        ueidItemPop.setContentView(ueidItemPopView);
-//        ueidItemPop.setBackgroundDrawable(new ColorDrawable());  //据说不设在有些情况下会关不掉
-//        mAdapter.setOnItemLongClickListener(new HistoryListViewAdapter.onItemLongClickListener() {
-//            @Override
-//            public void onItemLongClick(MotionEvent motionEvent, int position) {
-//                selectedUeidItem = mAdapter.getUeidList().get(position);
-//                showListPopWindow(mListView, calcPopWindowPosX((int)motionEvent.getX()), calcPopWindowPosY((int)motionEvent.getY()));
-//            }
-//        });
-
-//        tvGetTelNumber = ueidItemPopView.findViewById(R.id.tvGetTelNumber);
-//        tvGetTelNumber.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                LogUtils.log("点击了："+selectedUeidItem.getImsi());
-//                if (!ImsiMsisdnConvert.isAuthenticated()){
-//                    ToastUtils.showMessageLong( "尚未通过认证，请先进入“号码翻译设置”进行认证");
-//                    ueidItemPop.dismiss();
-//                    return;
-//                }
-//
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        ImsiMsisdnConvert.requestConvertImsiToMsisdn(activity,selectedUeidItem.getImsi());
-//                        //ImsiMsisdnConvert.queryImsiConvertMsisdnRes(activity, selectedUeidItem.getImsi());
-//                    }
-//                }.start();
-//
-//                ueidItemPop.dismiss();
-//            }
-//        });
 
         EventAdapter.register(EventAdapter.RESEARCH_HISTORY_LIST,this);
     }
 
-
-//    private void showListPopWindow(View anchorView, int posX, int posY) {
-//        ueidItemPop.showAtLocation(anchorView, Gravity.TOP | Gravity.START, posX, posY);
-//    }
-//
-//    private int calcPopWindowPosY(int eventY) {
-//        int listviewHeight = mListView.getResources().getDisplayMetrics().heightPixels;
-//        ueidItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        int popWinHeight = ueidItemPop.getContentView().getMeasuredHeight();
-//
-//        boolean isNeedShowUpward = (eventY + popWinHeight > listviewHeight);  //超过范围就向上显示
-//        if (isNeedShowUpward){
-//            return eventY-popWinHeight;
-//        } else {
-//            return eventY;
-//        }
-//    }
-//
-//    private int calcPopWindowPosX(int eventX) {
-//        int listviewWidth = mListView.getResources().getDisplayMetrics().widthPixels;
-//        ueidItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        int windowWidth = ueidItemPop.getContentView().getMeasuredWidth();
-//
-//        boolean isShowLeft = (eventX+windowWidth > listviewWidth);  //超过屏幕的话就向左边显示
-//        if (isShowLeft) {
-//            return eventX-windowWidth;
-//        } else {
-//            return eventX;
-//        }
-//    }
-
-    public void getTitleBar() {
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-        setContentView(R.layout.doit_layout_history_title);
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
-                R.layout.doit_layout_history_title);
-        TextView textView = findViewById(R.id.head_center_text);
-        textView.setText("采集历史记录");
-        Button titleBackBtn = findViewById(R.id.btn_back);
-        titleBackBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                KeyEvent newEvent = new KeyEvent(KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_BACK);
-                onKeyDown(KeyEvent.KEYCODE_BACK, newEvent);
-            }
-        });
-    }
 
 
     private Handler mHandler = new Handler() {
@@ -289,7 +195,6 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
                 try {
                     dbUeidInfos = dbManager.selector(DBUeidInfo.class)
                             .where("imsi", "like", "%" + keyword + "%")
-//                        .or("imei", "like", "%" + keyword + "%")
                             .and("createDate", "BETWEEN",
                                     new long[]{DateUtils.convert2long(startTime, DateUtils.LOCAL_DATE), DateUtils.convert2long(endTime, DateUtils.LOCAL_DATE)})
                             .orderBy("id", true)
@@ -323,14 +228,13 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
             BufferedWriter bufferedWriter = null;
             try {
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fullPath,true)));
-                bufferedWriter.write("imsi,tmsi,时间,经度,纬度"+"\r\n");
+                bufferedWriter.write("imsi,手机号,时间"+"\r\n");
                 for (DBUeidInfo info: dbUeidInfos) {
-                    //bufferedWriter.write(DateUtil.getDateByFormat(info.getCreateDate(),DateUtil.LOCAL_DATE)+",");
+
                     bufferedWriter.write(info.getImsi()+",");
-                    bufferedWriter.write(info.getTmsi()+",");
-                    bufferedWriter.write(DateUtils.convert2String(info.getCreateDate(), DateUtils.LOCAL_DATE)+",");
-                    bufferedWriter.write(StringUtils.defaultString(info.getLongitude())+",");
-                    bufferedWriter.write(StringUtils.defaultString(info.getLatitude()));
+                    bufferedWriter.write(info.getMsisdn()+",");
+                    bufferedWriter.write(DateUtils.convert2String(info.getCreateDate(), DateUtils.LOCAL_DATE));
+
                     bufferedWriter.write("\r\n");
                 }
             } catch (DbException e) {

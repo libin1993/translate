@@ -619,9 +619,9 @@ public class ImsiMsisdnConvert {
 
     private static void updatWhitelistToDB(String imsi, String msisdn) {
         DbManager db = UCSIDBManager.getDbManager();
-        List<WhiteListInfo> listDBUeidInfo = new ArrayList<>();
+        List<BlackListInfo> listDBUeidInfo = new ArrayList<>();
         try {
-            listDBUeidInfo = db.selector(WhiteListInfo.class)
+            listDBUeidInfo = db.selector(BlackListInfo.class)
                     .where("msisdn", "=", msisdn)
                     .findAll();
 

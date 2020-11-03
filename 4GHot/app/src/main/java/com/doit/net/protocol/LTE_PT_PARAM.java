@@ -316,88 +316,75 @@ public class LTE_PT_PARAM {
     }
 
     //处理Ftp上传的UEID文件
-    public static void processUeidRpt(String filePath) {
-        if (filePath.contains("19700101")) {
-            LogUtils.log("上报采集文件时间无效文件——忽略");
-            deleteFile(filePath);
-            return;
-        }
-
-
-        File file = new File(filePath);
-        if (file.exists() && !file.isDirectory()) {
-
-            Map<String, UeidBean> ueidMap = new HashMap<>();
-            String[] splitUeid;
-
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-                String readLine = "";
-                String tmpImsi, tmpTmsi, band, tmpRptTime, longitude, latitude;
-
-
-                while ((readLine = bufferedReader.readLine()) != null) {
-                    splitUeid = readLine.split("\t");
-
-                    //如果是定位号码就跳过（目前的情况是在定位就不会有FTP上传）
-//                    if (CacheManager.getCurrentLoction() != null && CacheManager.getCurrentLoction().isLocateStart() &&
-//                            (CacheManager.currentLoction.getImsi().equals(splitUeid[0])))
+//    public static void processUeidRpt(String filePath) {
+//        if (filePath.contains("19700101")) {
+//            LogUtils.log("上报采集文件时间无效文件——忽略");
+//            deleteFile(filePath);
+//            return;
+//        }
+//
+//
+//        File file = new File(filePath);
+//        if (file.exists() && !file.isDirectory()) {
+//
+//            Map<String, UeidBean> ueidMap = new HashMap<>();
+//            String[] splitUeid;
+//
+//            try {
+//                FileInputStream fileInputStream = new FileInputStream(file);
+//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+//                String readLine = "";
+//                String tmpImsi, tmpTmsi, band, tmpRptTime, longitude, latitude;
+//
+//
+//                while ((readLine = bufferedReader.readLine()) != null) {
+//                    splitUeid = readLine.split("\t");
+//
+//                    //据测试，有时文件最后会多一行且带有/t
+//                    if (splitUeid.length < 6) {
 //                        continue;
+//                    }
+//
+//                    tmpImsi = splitUeid[0];
+//                    tmpTmsi = splitUeid[1];
+//                    band = splitUeid[2];
+//                    tmpRptTime = splitUeid[3];
+//                    longitude = splitUeid[4];
+//                    latitude = splitUeid[5];
+//
+//
+//                    ueidMap.put(tmpImsi, new UeidBean(tmpImsi,  tmpRptTime, 0));
+//
+//
+//                    if (!CacheManager.removeExistUeidInRealtimeList(splitUeid[0])) {
+//                        //
+//                        /* 1.如果实时上报界面没打开，就只是存到数据库而不显示
+//                         * 2.存入数据库需要去重，去重的依据是否则已经存在实时列表里
+//                         * */
+//                        UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), tmpTmsi,
+//                                DateUtils.convert2long(tmpRptTime, DateUtils.LOCAL_DATE), longitude, latitude, 0);
+//                    }
+//                }
+//                bufferedReader.close();
+//                file.delete();   //处理完删除
+//
+//                if (ueidMap.size() > 0) {
+//                    List<UeidBean> listUeid = new ArrayList<>();
+//                    for (Map.Entry<String, UeidBean> entry : ueidMap.entrySet()) {
+//                        listUeid.add(entry.getValue());
+//                    }
+//
+//                    LogUtils.log("ftp采号上传：" + listUeid.size());
+//                    EventAdapter.call(EventAdapter.UEID_RPT, listUeid);
+//                }
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-                    //据测试，有时文件最后会多一行且带有/t
-                    if (splitUeid.length < 6) {
-                        continue;
-                    }
 
-                    tmpImsi = splitUeid[0];
-                    tmpTmsi = splitUeid[1];
-                    band = splitUeid[2];
-                    tmpRptTime = splitUeid[3];
-                    longitude = splitUeid[4];
-                    latitude = splitUeid[5];
-
-
-                    ueidMap.put(tmpImsi, new UeidBean(tmpImsi,  tmpRptTime, 0));
-
-
-                    if (!CacheManager.removeExistUeidInRealtimeList(splitUeid[0])) {
-                        //
-                        /* 1.如果实时上报界面没打开，就只是存到数据库而不显示
-                         * 2.存入数据库需要去重，去重的依据是否则已经存在实时列表里
-                         * */
-                        UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), tmpTmsi,
-                                DateUtils.convert2long(tmpRptTime, DateUtils.LOCAL_DATE), longitude, latitude, 0);
-                    }
-                }
-                bufferedReader.close();
-                file.delete();   //处理完删除
-
-                if (ueidMap.size() > 0) {
-                    List<UeidBean> listUeid = new ArrayList<>();
-                    for (Map.Entry<String, UeidBean> entry : ueidMap.entrySet()) {
-                        listUeid.add(entry.getValue());
-                    }
-
-                    LogUtils.log("ftp采号上传：" + listUeid.size());
-                    EventAdapter.call(EventAdapter.UEID_RPT, listUeid);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static boolean isImsiExistInSimpleRpt(String imsi, List<UeidBean> listUeid) {
-        for (int i = 0; i < listUeid.size(); i++) {
-            if (listUeid.get(i).getImsi().equals(imsi)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     //搜网结果上报
     public static void processRPTFreqScan(LTEReceivePackage receivePackage) {
@@ -756,80 +743,36 @@ public class LTE_PT_PARAM {
            2.管控模式的号码强度也是从这里上报，要加以区分 */
         String locRpt = UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0);
         LogUtils.log("上报:" + locRpt);
-        if (CacheManager.currentWorkMode.equals("0") && !CacheManager.getLocState()) {
-
-            LogUtils.log("忽略此次srsp上报:" + locRpt);
-            return;
-        }
-
 
         if ("".equals(locRpt))
             return;
 
-        String rssi = "";
-
-        if (VersionManage.isPoliceVer()) {
-            String[] splitStr = locRpt.split("#");
-            Map<String, UeidBean> ueidMap = new HashMap<>();
-            for (int i = 0; i < splitStr.length; i++) {
-                String[] split = splitStr[i].split(":");
-                if (split.length > 1) {
-                    rssi = split[1];
-                } else {
-                    rssi = "";
+        String[] splitStr = locRpt.split("#");
+        List<UeidBean> ueidList = new ArrayList<>();
+        for (String s : splitStr) {
+            String[] split = s.split(":");
+            if (split.length > 1) {
+                String rssi = split[1];
+                if (TextUtils.isEmpty(rssi) || Integer.parseInt(rssi) <= 0) {
+                    continue;
                 }
 
-                String tmpImsi = split[0];
-                if (tmpImsi.equals(CacheManager.getCurrentLoction().getImsi()) && !TextUtils.isEmpty(rssi) && Integer.parseInt(rssi) > 0) {
+                if (CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1
+                        && s.split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
                     EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
-
                 }
 
-                ueidMap.put(tmpImsi, new UeidBean(tmpImsi,
-                        DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE), 0));
+                UeidBean ueidBean = new UeidBean();
+                ueidBean.setType(1);
+                ueidBean.setImsi(split[0]);
+                ueidBean.setSrsp(rssi);
 
-                if (!CacheManager.removeExistUeidInRealtimeList(tmpImsi)) {
-                    UCSIDBManager.saveUeidToDB(tmpImsi, ImsiMsisdnConvert.getMsisdnFromLocal(tmpImsi), "",
-                            new Date().getTime(), "", "", 0);
-                }
+                ueidList.add(ueidBean);
+
             }
-
-            if (ueidMap.size() > 0) {
-                List<UeidBean> listUeid = new ArrayList<>();
-                for (Map.Entry<String, UeidBean> entry : ueidMap.entrySet()) {
-                    listUeid.add(entry.getValue());
-                }
-                EventAdapter.call(EventAdapter.UEID_RPT, listUeid);
-            }
-
-        } else if (VersionManage.isArmyVer()) {
-            String[] splitStr = locRpt.split("#");
-            List<UeidBean> ueidList = new ArrayList<>();
-            for (String s : splitStr) {
-                String[] split = s.split(":");
-                if (split.length > 1) {
-                    rssi = split[1];
-                    if (TextUtils.isEmpty(rssi) || Integer.parseInt(rssi) <= 0) {
-                        continue;
-                    }
-
-                    if (CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1
-                            && s.split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
-                        EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
-                    }
-
-                    UeidBean ueidBean = new UeidBean();
-                    ueidBean.setType(1);
-                    ueidBean.setImsi(split[0]);
-                    ueidBean.setSrsp(rssi);
-
-                    ueidList.add(ueidBean);
-
-                }
-            }
-            LogUtils.log("4G采号数量："+ueidList.size());
-            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
         }
+        LogUtils.log("4G采号数量："+ueidList.size());
+        EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
 
     }
 }

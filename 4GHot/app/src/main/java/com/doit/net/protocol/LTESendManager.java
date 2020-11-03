@@ -19,15 +19,13 @@ import org.xutils.ex.DbException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by wiker on 2017-06-25.
  */
 
 public class LTESendManager {
-    private static final String HOLD_VALUE = "0";  //设备是否保存配置：“0”不保存，“1”保存
+
 
 
     public static void setNameList(String mode, String redirectConfig, String nameListReject,
@@ -156,7 +154,7 @@ public class LTESendManager {
 
         LogUtils.log("重启设备");
         LTE_PT_SYSTEM.commonSystemMsg(LTE_PT_SYSTEM.SYSTEM_REBOOT);
-        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.REBOOT_DEVICE);
+        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.REBOOT_4G_DEVICE);
     }
 
     public static void changeBand(String idx, String changeBand) {
@@ -383,12 +381,10 @@ public class LTESendManager {
     }
 
 
-    public static void setActiveMode(String mode) {
-        if (!CacheManager.initSuccess4G) {
-            return;
-        }
-        LogUtils.log("设置模式：" + mode);
-        LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_ACTIVE_MODE, mode);
+    public static void setActiveMode() {
+
+        LogUtils.log("设置管控模式");
+        LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_ACTIVE_MODE, "2");
     }
 
     /**

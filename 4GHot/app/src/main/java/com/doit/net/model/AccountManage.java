@@ -36,7 +36,6 @@ public class AccountManage {
 
     private static DbManager dbManager = UCSIDBManager.getDbManager();
 
-    private static boolean hasGetAccountFromDev = false;
 
     private static int currentPermissionLevel = 1;
 
@@ -93,10 +92,6 @@ public class AccountManage {
         }
     }
 
-    public static void updateAdminAccoutToPref(String account, String password) {
-        PrefManage.setString("admin_account", account);
-        PrefManage.setString("admin_password", password);
-    }
 
     public static void clearCurrentAccountDB() {
         try {

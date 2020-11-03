@@ -13,7 +13,7 @@ import com.doit.net.activity.TestActivity;
 import com.doit.net.view.LicenceDialog;
 import com.doit.net.activity.SystemSettingActivity;
 import com.doit.net.activity.UserManageActivity;
-import com.doit.net.activity.WhitelistManagerActivity;
+import com.doit.net.activity.BlacklistManagerActivity;
 import com.doit.net.activity.BlackBoxActivity;
 import com.doit.net.model.VersionManage;
 
@@ -148,16 +148,12 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
 
         tvLoginAccount.setText(AccountManage.getCurrentLoginAccount());
 
-        if (VersionManage.isPoliceVer()) {
-            btSetWhiteList.setVisibility(View.GONE);
-        } else if (VersionManage.isArmyVer()) {
-            btSetWhiteList.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-                @Override
-                public void click(LSettingItem item) {
-                    startActivity(new Intent(getActivity(), WhitelistManagerActivity.class));
-                }
-            });
-        }
+        btSetWhiteList.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+            @Override
+            public void click(LSettingItem item) {
+                startActivity(new Intent(getActivity(), BlacklistManagerActivity.class));
+            }
+        });
 
         historyItem.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
@@ -180,18 +176,16 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
-        if ((VersionManage.isPoliceVer())) {
-            btBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-                @Override
-                public void click(LSettingItem item) {
-                    if (!NetWorkUtils.getNetworkState()) {
-                        ToastUtils.showMessage("设备未就绪");
-                        return;
-                    }
-                    startActivity(new Intent(getActivity(), BlackBoxActivity.class));
+        btBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+            @Override
+            public void click(LSettingItem item) {
+                if (!NetWorkUtils.getNetworkState()) {
+                    ToastUtils.showMessage("设备未就绪");
+                    return;
                 }
-            });
-        }
+                startActivity(new Intent(getActivity(), BlackBoxActivity.class));
+            }
+        });
 
         btWifiSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
@@ -291,9 +285,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
 
         if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL2) {
             btUserManage.setVisibility(View.VISIBLE);
-            if (VersionManage.isPoliceVer()) {    //军队版本不使用黑匣子
-                btBlackBox.setVisibility(View.VISIBLE);
-            }
+            btBlackBox.setVisibility(View.VISIBLE);
             btClearUeid.setVisibility(View.VISIBLE);
         }
 

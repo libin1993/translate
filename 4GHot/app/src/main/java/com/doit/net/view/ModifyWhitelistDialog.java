@@ -9,10 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.doit.net.event.AddToWhitelistListner;
-import com.doit.net.model.CacheManager;
+import com.doit.net.event.AddToBlacklistListener;
 import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.WhiteListInfo;
+import com.doit.net.model.BlackListInfo;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
@@ -110,36 +109,36 @@ public class ModifyWhitelistDialog extends Dialog {
                 if (!imsi.equals(modifyIMSI)) {
                     DbManager db = UCSIDBManager.getDbManager();
                     try {
-                        WhiteListInfo whiteListInfo = db.selector(WhiteListInfo.class)
+                        BlackListInfo blackListInfo = db.selector(BlackListInfo.class)
                                 .where("imsi", "=", modifyIMSI)
                                 .findFirst();
 
-                        if (whiteListInfo == null) {
+                        if (blackListInfo == null) {
                             ToastUtils.showMessage(R.string.modify_whitelist_fail);
                             return;
                         }
 
-                        db.delete(whiteListInfo);
+                        db.delete(blackListInfo);
                     } catch (DbException e) {
                         e.printStackTrace();
                     }
 
-                    new AddToWhitelistListner(mContext, imsi, msisdn, remark).onClick(null);
-                    CacheManager.updateWhitelistToDev(mContext);
+                    new AddToBlacklistListener(mContext, imsi, msisdn, remark).onClick(null);
+
                 } else {
                     try {
-                        WhiteListInfo whiteListInfo = UCSIDBManager.getDbManager().selector(WhiteListInfo.class)
+                        BlackListInfo blackListInfo = UCSIDBManager.getDbManager().selector(BlackListInfo.class)
                                 .where("imsi", "=", modifyIMSI)
                                 .findFirst();
 
-                        if (whiteListInfo == null) {
+                        if (blackListInfo == null) {
                             ToastUtils.showMessage(R.string.modify_whitelist_fail);
                             return;
                         }
 
-                        whiteListInfo.setMsisdn(etMsisdn.getText().toString());
-                        whiteListInfo.setRemark(etRemark.getText().toString());
-                        UCSIDBManager.getDbManager().update(whiteListInfo, "msisdn", "remark");
+                        blackListInfo.setMsisdn(etMsisdn.getText().toString());
+                        blackListInfo.setRemark(etRemark.getText().toString());
+                        UCSIDBManager.getDbManager().update(blackListInfo, "msisdn", "remark");
                     } catch (DbException e) {
                         new SweetAlertDialog(getContext(), SweetAlertDialog.ERROR_TYPE)
                                 .setTitleText(getContext().getString(R.string.modify_whitelist_fail))

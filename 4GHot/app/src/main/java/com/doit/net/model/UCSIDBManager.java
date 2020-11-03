@@ -40,9 +40,9 @@ public class UCSIDBManager {
         return DB;
     }
 
-    public static void saveUeidToDB(String imsi,String msisdn, String tmsi, long createDate, String longitude, String latitude,int type){
+    public static void saveUeidToDB(String imsi,String msisdn, long createDate,int type){
         try {
-            DB.save(new DBUeidInfo(imsi, msisdn, tmsi, createDate, longitude, latitude,type));
+            DB.save(new DBUeidInfo(imsi, msisdn, createDate,type));
         } catch (DbException e) {
             e.printStackTrace();
         }

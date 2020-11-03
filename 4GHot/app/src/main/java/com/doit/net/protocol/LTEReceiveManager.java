@@ -1,5 +1,12 @@
 package com.doit.net.protocol;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+
+import com.doit.net.application.MyApplication;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
 import com.doit.net.bean.Report2GIMSIBean;
@@ -11,8 +18,9 @@ import com.doit.net.event.EventAdapter;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
 import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.WhiteListInfo;
+import com.doit.net.model.BlackListInfo;
 import com.doit.net.socket.ServerSocketUtils;
+import com.doit.net.ucsi.R;
 import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.UtilDataFormatChange;
@@ -20,6 +28,7 @@ import com.doit.net.utils.UtilDataFormatChange;
 /**
  * Created by Zxc on 2018/10/18.
  */
+import org.xutils.DbManager;
 import org.xutils.common.util.KeyValue;
 import org.xutils.db.sqlite.WhereBuilder;
 import org.xutils.ex.DbException;
@@ -29,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class LTEReceiveManager {
     //将字节数暂存
@@ -389,10 +400,6 @@ public class LTEReceiveManager {
                 if (CacheManager.initSuccess4G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
-//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
-//                    params.setDlattn("0");
-//                }
-//                Send2GManager.setParamsConfig();
 
 
                 if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
@@ -437,6 +444,7 @@ public class LTEReceiveManager {
 
             ueidList.add(ueidBean);
 
+            LogUtils.log("2G采号上报：IMSI:"+imsiList.get(0)+"    强度:"+ imsiList.get(2));
         }
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
     }
@@ -455,16 +463,21 @@ public class LTEReceiveManager {
 
         for (List<String> imsiList : responseBean.getInlist()) {
             try {
+
+                DbManager dbManager = UCSIDBManager.getDbManager();
                 //修改手机号
                 KeyValue keyValue1 = new KeyValue("msisdn", imsiList.get(1));
-
-                UCSIDBManager.getDbManager().update(DBUeidInfo.class, WhereBuilder.b("imsi", "=", imsiList.get(0)), keyValue1);
-
+                dbManager.update(DBUeidInfo.class, WhereBuilder.b("imsi", "=", imsiList.get(0)), keyValue1);
 
                 //修改白名单
-                KeyValue keyValue2 = new KeyValue("imsi", imsiList.get(0));
+                BlackListInfo blackListInfo = dbManager.selector(BlackListInfo.class).where("msisdn", "=", imsiList.get(1)).findFirst();
+                if (blackListInfo !=null){
+                    blackListInfo.setImsi(imsiList.get(0));
+                    dbManager.update(blackListInfo);
+                    notice( "手机号:"+imsiList.get(1)+"    IMSI:"+ imsiList.get(0));
 
-                UCSIDBManager.getDbManager().update(WhiteListInfo.class, WhereBuilder.b("msisdn", "=", imsiList.get(1)), keyValue2);
+                }
+                LogUtils.log("翻译上报：手机号:"+imsiList.get(1)+"    IMSI:"+ imsiList.get(0));
 
                 for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
                     if (ueidBean.getImsi().equals(imsiList.get(0))){
@@ -478,6 +491,34 @@ public class LTEReceiveManager {
         }
 
         EventAdapter.call(EventAdapter.REFRESH_IMSI);
+    }
+
+    /**
+     * 翻译上报，通知
+     */
+    public static void notice(String content){
+        String id = "channel";
+        String name="号码翻译";
+        NotificationManager notificationManager = (NotificationManager) MyApplication.mContext.getSystemService(NOTIFICATION_SERVICE);
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+            notification = new Notification.Builder(MyApplication.mContext,id)
+                    .setContentTitle("目标手机上报")
+                    .setContentText(content)
+                    .setSmallIcon(R.drawable.august_first)
+                    .build();
+        } else {
+            notification = new NotificationCompat.Builder(MyApplication.mContext,id)
+                    .setContentTitle("目标手机上报")
+                    .setContentText(content)
+                    .setSmallIcon(R.drawable.august_first)
+                    .build();
+        }
+        notification.flags=Notification.FLAG_AUTO_CANCEL;
+        notificationManager.notify(123, notification);
+
     }
 
     /**
@@ -498,6 +539,8 @@ public class LTEReceiveManager {
                 rssi = 100;
             }
             EventAdapter.call(EventAdapter.LOCATION_RPT, rssi + "");
+
+            LogUtils.log("2G定位上报：IMSI:"+responseBean.getImsi()+",强度："+responseBean.getRssi());
         }
     }
 
@@ -509,7 +552,7 @@ public class LTEReceiveManager {
     }
 
     public void clearReceiveBuffer() {
-        LogUtils.log("clearReceiveBuffer... ...");
+        LogUtils.log("清除缓存");
         listReceiveBuffer.clear();
     }
 }

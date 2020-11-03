@@ -22,10 +22,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        ConnectivityManager connectivityManager=(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-////        NetworkInfo wifiNetInfo=connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//
-//        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
         if (!NetWorkUtils.getNetworkState() && !isShow) {
             MySweetAlertDialog dialog = new MySweetAlertDialog(context, MySweetAlertDialog.WARNING_TYPE);
             dialog.setTitleText("网络异常");

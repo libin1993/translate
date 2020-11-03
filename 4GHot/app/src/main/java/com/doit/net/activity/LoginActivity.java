@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.doit.net.protocol.LTEReceiveManager;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.model.AccountManage;
@@ -28,6 +29,8 @@ import com.doit.net.ucsi.R;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.doit.net.activity.SystemSettingActivity.LOC_PREF_KEY;
 
@@ -55,8 +58,7 @@ public class LoginActivity extends BaseActivity {
 
         setContentView(R.layout.activity_login);
 
-//        checkTimeDatum();
-//        checkAuthorize();
+
         initView();
         checkLocalDir();
 
@@ -64,35 +66,6 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-//    private boolean checkAuthorize() {
-//        LicenceUtils.generateAuthorizeInfo(activity);
-//        String authorizeCode = LicenceUtils.getAuthorizeCode();
-//        if (authorizeCode.equals("")){
-//            ToastUtils.showMessageLong(activity, "App未授权，请联系管理员。");
-//            LicenceDialog licenceDialog = new LicenceDialog(this);
-//            licenceDialog.show();
-//            //LicenceManage.investDays(30,activity);
-//
-//            return false;
-//        }
-//
-//        //以下判断是否过期
-//        String dueTime = LicenceUtils.getDueTime();
-//        long longDueTime = DateUtils.convert2long(dueTime, DateUtils.LOCAL_DATE_DAY);
-//        String nowDate = DateUtils.convert2String(new Date(), DateUtils.LOCAL_DATE_DAY);
-//        long nowTime = DateUtils.convert2long(nowDate, DateUtils.LOCAL_DATE_DAY);
-//        if (nowTime >= longDueTime){
-
-
-//            ToastUtils.showMessageLong(activity, "授权已过期，请联系管理员");
-//            LicenceDialog licenceDialog = new LicenceDialog(this);
-//            licenceDialog.show();
-//
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
     private void checkLocalDir() {
         File dir = new File(FileUtils.ROOT_PATH);
@@ -108,38 +81,6 @@ public class LoginActivity extends BaseActivity {
         LogUtils.initLog(); //必须在UPDATE_FILE_SYS事件注册后，否则电脑端无法显示
     }
 
-    private void getAccountInfoFormDevice() {
-
-
-    }
-
-    private boolean checkTimeDatum() {
-        long timeDatum = PrefManage.getLong(TIME_DATUM, Long.valueOf("0"));
-        long nowTime = new Date().getTime();
-        if (timeDatum == 0) {
-            PrefManage.setLong(TIME_DATUM, nowTime);
-            return true;
-        }
-
-        if (timeDatum >= nowTime) {
-            new MySweetAlertDialog(this, MySweetAlertDialog.WARNING_TYPE)
-                    .setTitleText("时间异常")
-                    .setContentText("当前系统时间异常，请矫正后再打开App！")
-                    .setConfirmText("退出")
-                    .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(MySweetAlertDialog sDialog) {
-                            System.exit(0);
-                        }
-                    })
-                    .show();
-
-            return false;
-        } else {
-            PrefManage.setLong(TIME_DATUM, nowTime);
-            return true;
-        }
-    }
 
     /**
      * 是否开启搜寻功能

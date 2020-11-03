@@ -11,38 +11,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
-import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.ImsiMsisdnConvert;
-import com.doit.net.view.AddWhitelistDialog;
+import com.doit.net.view.AddBlacklistDialog;
 import com.doit.net.view.ModifyWhitelistDialog;
 import com.doit.net.application.MyApplication;
 import com.doit.net.bean.UeidBean;
-import com.doit.net.event.AddToLocalBlackListener;
+
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.model.CacheManager;
-import com.doit.net.model.DBBlackInfo;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.VersionManage;
-import com.doit.net.model.WhiteListInfo;
-import com.doit.net.utils.LogUtils;
+
 import com.doit.net.utils.UtilOperator;
 import com.doit.net.ucsi.R;
 
-import org.xutils.DbManager;
-import org.xutils.ex.DbException;
 
 public class UeidListViewAdapter extends BaseSwipeAdapter {
 
     private Context mContext;
 
-    //    private onItemLongClickListener mOnItemLongClickListener;
-    private MotionEvent motionEvent;
 
     public UeidListViewAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    private DbManager dbManager;
 
 
     @Override
@@ -53,8 +42,6 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
     @Override
     public View generateView(int position, ViewGroup parent) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.doit_layout_ueid_list_item, null);
-        dbManager = UCSIDBManager.getDbManager();
-
         return v;
     }
 
@@ -77,35 +64,31 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
 
 
 
-        if (VersionManage.isPoliceVer()) {
-            convertView.findViewById(R.id.add_to_black).setOnClickListener(new AddToLocalBlackListener(mContext, resp.getImsi()));
-        } else if (VersionManage.isArmyVer()) {
-            convertView.findViewById(R.id.add_to_black).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (resp.isBlack()){
-                        ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
-                                resp.getImsi(), resp.getNumber(), resp.getRemark(),false);
-                        modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                notifyDataSetChanged();
-                            }
-                        });
-                        modifyWhitelistDialog.show();
-                    }else {
-                        AddWhitelistDialog addWhitelistDialog = new AddWhitelistDialog(mContext, resp.getImsi(),resp.getNumber());
-                        addWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                notifyDataSetChanged();
-                            }
-                        });
-                        addWhitelistDialog.show();
-                    }
+        convertView.findViewById(R.id.add_to_black).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (resp.isBlack()){
+                    ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
+                            resp.getImsi(), resp.getNumber(), resp.getRemark(),false);
+                    modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            notifyDataSetChanged();
+                        }
+                    });
+                    modifyWhitelistDialog.show();
+                }else {
+                    AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(mContext, resp.getImsi(),resp.getNumber());
+                    addBlacklistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            notifyDataSetChanged();
+                        }
+                    });
+                    addBlacklistDialog.show();
                 }
-            });
-        }
+            }
+        });
 
         if (CacheManager.getLocMode()) {
             convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext, resp.getImsi(), resp.getType()));
@@ -127,91 +110,42 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         }
         String content = "IMSI：" + resp.getImsi() + "          " + "制式: " + UtilOperator.getOperatorNameCH(resp.getImsi())+type + "\n";
 
-        //优先先检查是否为黑名单
-        if (VersionManage.isPoliceVer()) {
-            DBBlackInfo dbBlackInfo = null;
-            try {
-                dbBlackInfo = dbManager.selector(DBBlackInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
-            } catch (DbException e) {
-                LogUtils.log("查询黑名单异常" + e.getMessage());
-            }
 
-            content += mContext.getString(R.string.ueid_last_rpt_time) + resp.getRptTime();
-            if (dbBlackInfo != null) {
-                String name = dbBlackInfo.getName();
-                String remark = dbBlackInfo.getRemark();
+        if (!"".equals(resp.getImsi())) {
 
-                if (!TextUtils.isEmpty(name)) {
-                    content += "\n" + mContext.getString(R.string.lab_name) + name + "         ";
+            content += resp.getRptTime() + "       " + "次数：" + resp.getRptTimes() + "       "
+                    + mContext.getString(R.string.ueid_last_intensity) + resp.getSrsp();
+
+            if (resp.isBlack()) {
+                String msisdn = resp.getNumber();
+                String remark = resp.getRemark();
+                if (!TextUtils.isEmpty(msisdn)) {
+                    content += "\n" + "手机号：" + msisdn + "           ";
                 }
 
                 if (!TextUtils.isEmpty(remark)) {
-                    if (!TextUtils.isEmpty(name)) {
+                    if (!TextUtils.isEmpty(msisdn)) {
                         content += remark;
                     } else {
                         content += "\n" + remark;
                     }
                 }
 
-                tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.red));
+                tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.forestgreen));
+
             } else {
-                tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.white));
-            }
 
-            if (resp.getType() == 1 ){
-                content += "      2G";
-            }else {
-                content += "      4G";
-            }
-
-            tvContent.setText(content);
-        }
-
-        //如果是管控模式，其次检查白名单
-        if (CacheManager.currentWorkMode.equals("2")) {
-
-//            try {
-                if (!"".equals(resp.getImsi())) {
-
-                    content += resp.getRptTime() + "       " + "次数：" + resp.getRptTimes() + "       "
-                            + mContext.getString(R.string.ueid_last_intensity) + resp.getSrsp();
-//                    WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("imsi", "=", resp.getImsi()).findFirst();
-                    if (resp.isBlack()) {
-                        String msisdn = resp.getNumber();
-                        String remark = resp.getRemark();
-                        if (!TextUtils.isEmpty(msisdn)) {
-                            content += "\n" + "手机号：" + msisdn + "           ";
-                        }
-
-                        if (!TextUtils.isEmpty(remark)) {
-                            if (!TextUtils.isEmpty(msisdn)) {
-                                content += remark;
-                            } else {
-                                content += "\n" + remark;
-                            }
-                        }
-
-                        tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.forestgreen));
-
-                    } else {
-//                        String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(resp.getImsi());
-
-                        String msisdn = resp.getNumber();
-                        if (!TextUtils.isEmpty(msisdn)){
-                            content += "\n" + "手机号：" + msisdn;
-                        }
-
-                        tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.white));
-
-                    }
-
-
-                    tvContent.setText(content);
+                String msisdn = resp.getNumber();
+                if (!TextUtils.isEmpty(msisdn)){
+                    content += "\n" + "手机号：" + msisdn;
                 }
 
-//            } catch (DbException e) {
-//                LogUtils.log("查询白名单异常" + e.getMessage());
-//            }
+                tvContent.setTextColor(MyApplication.mContext.getResources().getColor(R.color.white));
+
+            }
+
+
+            tvContent.setText(content);
         }
 
 

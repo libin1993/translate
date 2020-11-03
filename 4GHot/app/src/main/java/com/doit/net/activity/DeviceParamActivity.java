@@ -13,7 +13,6 @@ import com.doit.net.utils.ScreenUtils;
 import com.doit.net.view.SystemSetupDialog;
 import com.doit.net.adapter.UserChannelListAdapter;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.protocol.LTE_PT_PARAM;
 import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.ucsi.R;
@@ -360,7 +359,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
 
             LTESendManager.changeTac();
-            //ToastUtils.showMessage(GameApplication.appContext,"下发更新TAC成功");
+
             EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANNEL_TAG);
         }
     };
@@ -432,19 +431,19 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     //ProtocolManager.setAllPower(String.valueOf(-5*POWER_LEVEL_HIGH));
                     setPowerLevel(POWER_LEVEL_HIGH);
                     lastPowerPress = rbPowerHigh;
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "高");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "高");
                     break;
 
                 case R.id.rbPowerMedium:
                     setPowerLevel(POWER_LEVEL_MEDIUM);
                     lastPowerPress = rbPowerMedium;
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "中");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "中");
                     break;
 
                 case R.id.rbPowerLow:
                     setPowerLevel(POWER_LEVEL_LOW);
                     lastPowerPress = rbPowerLow;
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "低");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "低");
                     break;
             }
 
@@ -521,7 +520,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             if (isChecked) {
                 LTESendManager.openAllRf();
                 ToastUtils.showMessageLong(R.string.rf_open);
-                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_RF);
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_4G_RF);
                 showProcess(6000);
             } else {
                 if (CacheManager.getLocState()) {
@@ -539,7 +538,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                                     LTESendManager.closeAllRf();
                                     ToastUtils.showMessage(R.string.rf_close);
                                     showProcess(6000);
-                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                                 }
                             })
                             .show();
@@ -547,7 +546,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     LTESendManager.closeAllRf();
                     ToastUtils.showMessageLong(R.string.rf_close);
                     showProcess(6000);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                 }
 
             }

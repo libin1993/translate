@@ -19,12 +19,11 @@ import com.doit.net.ucsi.R;
 
 
 public class StartActivity extends BaseActivity {
-    View view;
+
     private final int PERMISSION_REQUEST_CODE = 1;
     private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.ACCESS_COARSE_LOCATION,};
     private String[][] permissionArray = {{Manifest.permission.WRITE_EXTERNAL_STORAGE, "存储"},{Manifest.permission.READ_PHONE_STATE, "读取手机状态"},{Manifest.permission.ACCESS_COARSE_LOCATION, "定位"}};
 
-	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		checkPermissions();
@@ -37,46 +36,9 @@ public class StartActivity extends BaseActivity {
     }
 
 	private void startApp(){
-        if (BuildConfig.SPLASH_SCREEN){
-            getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-            view = View.inflate(this, R.layout.start, null);
-            setContentView(view);
-            loadAnim();
-        }else{
-            redirectTo();
-        }
-    }
-
-    private void loadAnim(){
-	     // 渐变展示启动屏
-        AlphaAnimation aa = new AlphaAnimation(0.8f, 1.0f);
-        aa.setDuration(2000);
-        view.startAnimation(aa);
-        aa.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation arg0) {
-                redirectTo();
-            }
-            
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-            
-            @Override
-            public void onAnimationStart(Animation animation) {
-                //mSoundManager.play(SoundManager.SOUND_LOGO);
-            }
-            
-        });
-    }
-
-	private void redirectTo(){
-        finish();
         startActivity(new Intent(this, LoginActivity.class));
-	}
-
-
+        finish();
+    }
 
     private void checkPermissions() {
         if (PermissionUtils.getInstance().hasPermission(this, permissions)) {

@@ -13,7 +13,6 @@ public class LteEquipConfig {
     private String board;
     private String protocol;
     private String protocolType;
-    ///private String sync = "";
     private String voltage12V;
     private String voltage28V;
     private String maxFanSpeed;
@@ -21,9 +20,6 @@ public class LteEquipConfig {
     private String tempThreshold;
 
 
-//    private int bandwidth;
-//    private boolean result;
-//    private boolean needReboot;
 
     public LteEquipConfig() {
     }
@@ -60,9 +56,7 @@ public class LteEquipConfig {
         return protocolType;
     }
 
-//    public String getSync() {
-//        return sync;
-//    }
+
 
     public String getVoltage12V() {
         return voltage12V;
@@ -104,9 +98,6 @@ public class LteEquipConfig {
         this.protocolType = protocolType;
     }
 
-//    public void setSync(String sync) {
-//        this.sync = sync;
-//    }
 
     public void setVoltage12V(String voltage12V) {
         this.voltage12V = voltage12V;

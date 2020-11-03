@@ -93,21 +93,24 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
-            android:text="侦码模式" />
+            android:text="侦码模式"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/test5"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
-            android:text="定位模式" />
+            android:text="定位模式"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/test6"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
-            android:text="管控模式" />
+            android:text="管控模式"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/test7"

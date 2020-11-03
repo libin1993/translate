@@ -18,8 +18,6 @@ android {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
         }
-        buildConfigField "boolean", "LOC_MODEL", "true"
-        buildConfigField "boolean", "SAVE_LOG", "true"
 
         packagingOptions {
             exclude 'META-INF/LICENSE'
@@ -93,34 +91,9 @@ android {
             versionCode android.defaultConfig.versionCode
             versionName android.defaultConfig.versionName
             signingConfig signingConfigs.relealse
-            buildConfigField "boolean", "SPLASH_SCREEN", "false"//军队版本找不到合适的启动画面，所以暂时不用
-            //buildConfigField "boolean", "LOC_MODEL", "false"
-            resValue("string", "app_name", "便携式翻译定位")
-            resValue("string", "login_lable", "便携式翻译定位")
-            resValue("string", "login_icon", "@drawable/august_first")
-            //resValue("string", "app_icon", "@drawable/august_first")
-            manifestPlaceholders = [app_icon: "@drawable/august_first"]
+
         }
-
-//        police {
-//            minSdkVersion 21
-//            applicationId 'com.synway.lte.hotspot'
-//            targetSdkVersion 28
-//            versionCode android.defaultConfig.versionCode
-//            versionName android.defaultConfig.versionName
-//            signingConfig signingConfigs.relealse
-////            buildConfigField "boolean", "SPLASH_SCREEN", "false"
-////            resValue("string", "app_name", "4G便携式主动定位设备")
-////            resValue("string", "login_lable", "4G便携式主动定位设备")
-//
-//            buildConfigField "boolean", "SPLASH_SCREEN", "true"
-//            resValue("string", "app_name", "便携式微侦码")
-//            resValue("string", "login_lable", "便携式微侦码")
-//            resValue("string", "login_icon", "@drawable/app_icon")
-//            manifestPlaceholders = [app_icon: "@drawable/app_icon"]
-//        }
-
-
+        
     }
     compileOptions {
         sourceCompatibility = 1.8

@@ -22,29 +22,23 @@ public class LogUtils {
 
     public static void log(String proTag, String msg) {
         Log.v(proTag,msg);
-        if (BuildConfig.SAVE_LOG){
-            saveLog(msg);
-        }
+        saveLog(msg);
     }
 
     //将日志打印到调试界面
     public static void log(String msg) {
         Log.v("libin",msg);
-        if (BuildConfig.SAVE_LOG){
-            saveLog(msg);
-        }
+        saveLog(msg);
     }
 
     //将日志打印到调试界面
     public static void log1(String msg) {
         Log.d("aaa",msg);
-        if (BuildConfig.SAVE_LOG){
-            saveLog(msg);
-        }
+        saveLog(msg);
     }
 
     public static void initLog(){
-        if (BuildConfig.SAVE_LOG){
+
             String logDir = FileUtils.ROOT_PATH+"log/";
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");// 设置日期格式
             String fileName = df.format(new Date())+".log";// new Date()为获取当前系统时间
@@ -73,18 +67,15 @@ public class LogUtils {
             }catch(Exception ex){
                 ex.printStackTrace();
             }
-        }
 
     }
 
     public static void unInitLog(){
-        if (BuildConfig.SAVE_LOG){
-            try {
-                saveLogOS.close();
-                EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, currentLogPath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            saveLogOS.close();
+            EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, currentLogPath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

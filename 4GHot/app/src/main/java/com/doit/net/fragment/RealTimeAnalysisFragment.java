@@ -27,7 +27,6 @@ import com.doit.net.protocol.LTESendManager;
 import com.doit.net.model.CacheManager;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.LogUtils;
-import com.doit.net.utils.UtilDelay;
 import com.doit.net.ucsi.R;
 
 import java.util.ArrayList;
@@ -214,9 +213,17 @@ public class RealTimeAnalysisFragment extends BaseFragment {
                             LTESendManager.changeTac();
                             mHandler.sendEmptyMessage(UPDATE_COLLIDE_RESULT);
                             ToastUtils.showMessage("跟踪结果已刷新");
-                            UtilDelay.delayMilis(COLLIED_TIME_PERIOD - 5000);
+
+                            try {
+                                Thread.sleep(COLLIED_TIME_PERIOD - 5000);
+                            } catch (InterruptedException e) {}
+
                         }
-                        UtilDelay.delayMilis(5000);
+
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {}
+
                     }
                 }
             });

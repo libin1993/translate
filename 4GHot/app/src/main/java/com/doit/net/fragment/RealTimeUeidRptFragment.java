@@ -28,7 +28,7 @@ import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.WhiteListInfo;
+import com.doit.net.model.BlackListInfo;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.MySweetAlertDialog;
@@ -67,7 +67,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     private long lastSortTime = 0;  //为了防止频繁上报排序导致列表错乱，定时排序一次
 
     //handler消息
-    private final int UEID_RPT = 1;
     private final int SHIELD_RPT = 2;
     private final int RF_STATUS_RPT = 3;
     private final int REFRESH_IMSI = 4;
@@ -94,7 +93,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         initView();
 
         EventAdapter.register(EventAdapter.RF_STATUS_RPT, this);
-        EventAdapter.register(EventAdapter.UEID_RPT, this);
+
         EventAdapter.register(EventAdapter.SHIELD_RPT, this);
         EventAdapter.register(EventAdapter.REFRESH_IMSI, this);
         dbManager = UCSIDBManager.getDbManager();
@@ -137,7 +136,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 LTESendManager.openAllRf();
                 Send2GManager.setRFState("1");
                 ToastUtils.showMessageLong(R.string.all_rf_open);
-                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_RF);
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_4G_RF);
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_2G_RF);
                 EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
             } else {
                 if (CacheManager.getLocState()) {
@@ -156,7 +156,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
 
                                     ToastUtils.showMessage(R.string.all_rf_close);
                                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
-                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
+                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                                 }
                             })
                             .setCancelClickListener(new MySweetAlertDialog.OnSweetClickListener() {
@@ -175,7 +176,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
 
                     ToastUtils.showMessageLong(R.string.all_rf_close);
                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 6000);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                 }
             }
         }
@@ -216,8 +218,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 CacheManager.realtimeUeidList.add(newUeid);
 
 
-                UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), "", "",
-                        new Date().getTime(), "", "", ueidBean.getType());
+                UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), "",
+                        new Date().getTime(), ueidBean.getType());
             }
 
         }
@@ -237,7 +239,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
 
         for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
             try {
-                WhiteListInfo info = dbManager.selector(WhiteListInfo.class).where("msisdn",
+                BlackListInfo info = dbManager.selector(BlackListInfo.class).where("msisdn",
                         "=", ueidBean.getNumber()).or("imsi", "=", ueidBean.getImsi()).findFirst();
                 if (info != null) {
                     ueidBean.setBlack(true);
@@ -304,20 +306,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case UEID_RPT:
-                    if (CacheManager.currentWorkMode.equals("2"))  //管控模式忽略ftp上报的
-                        return;
-
-                    //确保到达这里的采集数据已经去过重，并存到数据库了
-                    List<UeidBean> listUeid = (List<UeidBean>) msg.obj;
-                    CacheManager.addRealtimeUeidList(listUeid);
-
-                    /* 对于同步完成之前的上传数据，保存数据库但不显示 */
-                    if (!CacheManager.isDeviceOk())
-                        return;
-
-                    updateView();
-                    break;
                 case SHIELD_RPT:
                     List<UeidBean> ueidList = (List<UeidBean>) msg.obj;
 
@@ -339,8 +327,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
 
     //根据强度排序
     private void sortRealtimeRpt() {
-        if (!CacheManager.currentWorkMode.equals("2"))
-            return;
 
         if (new Date().getTime() - lastSortTime >= 3000) {
             Collections.sort(CacheManager.realtimeUeidList, new Comparator<UeidBean>() {
@@ -432,12 +418,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 msg.what = SHIELD_RPT;
                 msg.obj = val;
                 mHandler.sendMessage(msg);
-                break;
-            case EventAdapter.UEID_RPT:
-                Message message = new Message();
-                message.what = UEID_RPT;
-                message.obj = val;
-                mHandler.sendMessage(message);
                 break;
             case EventAdapter.RF_STATUS_RPT:
                 mHandler.sendEmptyMessage(RF_STATUS_RPT);

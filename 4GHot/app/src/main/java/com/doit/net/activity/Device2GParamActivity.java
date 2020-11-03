@@ -13,6 +13,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -21,13 +23,12 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TableRow;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
@@ -41,6 +42,8 @@ import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.utils.ScreenUtils;
 import com.doit.net.utils.ToastUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,6 +83,13 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
 
     private final int SHOW_PROGRESS = 1;
     private final int UPDATE_VIEW = 0;
+
+    public static String[] workModeArr = {"扫描", "常开", "关闭"};  //频点工作模式
+
+    private String fcnMode1;
+    private String fcnMode2;
+    private String fcnMode3;
+    private String fcnMode4;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,7 +158,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if (view.getId() == R.id.iv_rf_status) {
-                    if (!CacheManager.checkDevice(Device2GParamActivity.this)){
+                    if (!CacheManager.checkDevice(Device2GParamActivity.this)) {
                         return;
                     }
 
@@ -198,7 +208,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             if (isChecked) {
                 Send2GManager.setRFState("1");
                 ToastUtils.showMessageLong(R.string.rf_open);
-                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_RF);
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_2G_RF);
                 showProcess(10000);
             } else {
                 if (CacheManager.getLocState()) {
@@ -216,7 +226,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                                     LTESendManager.closeAllRf();
                                     ToastUtils.showMessage(R.string.rf_close);
                                     showProcess(10000);
-                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                                 }
                             })
                             .show();
@@ -224,7 +234,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                     Send2GManager.setRFState("0");
                     ToastUtils.showMessageLong(R.string.rf_close);
                     showProcess(10000);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_RF);
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                 }
 
             }
@@ -247,17 +257,17 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             switch (checkedId) {
                 case R.id.rb_power_high:
                     Send2GManager.setPowerLevel(3);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "高");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_2G_POWER + "高");
                     break;
 
                 case R.id.rb_power_medium:
                     Send2GManager.setPowerLevel(2);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "中");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_2G_POWER + "中");
                     break;
 
                 case R.id.rb_power_low:
                     Send2GManager.setPowerLevel(1);
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_ALL_POWER + "低");
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_2G_POWER + "低");
                     break;
             }
 
@@ -435,22 +445,87 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 String type = "制式：";
                 if (item.getBoardid().equals("0") && item.getCarrierid().equals("0")) {
                     type += "移动";
-                }
-                if (item.getBoardid().equals("0") && item.getCarrierid().equals("1")) {
+                } else if (item.getBoardid().equals("0") && item.getCarrierid().equals("1")) {
                     type += "联通";
-                }
-                if (item.getBoardid().equals("1") && item.getCarrierid().equals("0")) {
+                } else if (item.getBoardid().equals("1") && item.getCarrierid().equals("0")) {
                     type += "电信";
                 }
 
 
-                helper.setText(R.id.tv_2g_plmn,  type);
+                Spinner spinner1 = helper.getView(R.id.spinner_mode1);
+                Spinner spinner2 = helper.getView(R.id.spinner_mode2);
+                Spinner spinner3 = helper.getView(R.id.spinner_mode3);
+                Spinner spinner4 = helper.getView(R.id.spinner_mode4);
+
+                helper.setText(R.id.tv_2g_plmn, type);
                 TableRow trFcn = helper.getView(R.id.tr_fcn);
+                TableRow trMode = helper.getView(R.id.tr_work_mode);
                 if (item.getBoardid().equals("0")) {
                     trFcn.setVisibility(View.VISIBLE);
+                    trMode.setVisibility(View.GONE);
                     helper.setText(R.id.et_fcn_2g, item.getFcn() == null ? "" : "" + item.getFcn());
                 } else {
                     trFcn.setVisibility(View.GONE);
+                    trMode.setVisibility(View.VISIBLE);
+                    initAdapter(spinner1, workModeArr);
+                    initAdapter(spinner2, workModeArr);
+                    initAdapter(spinner3, workModeArr);
+                    initAdapter(spinner4, workModeArr);
+
+
+                    spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            fcnMode1 = String.valueOf(position);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            fcnMode2 = String.valueOf(position);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    spinner3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            fcnMode3 = String.valueOf(position);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    spinner4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            fcnMode4 = String.valueOf(position);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    spinner1.setSelection(Integer.parseInt(item.getFcnmode().get(0)));
+                    spinner2.setSelection(Integer.parseInt(item.getFcnmode().get(1)));
+                    spinner3.setSelection(Integer.parseInt(item.getFcnmode().get(2)));
+                    spinner4.setSelection(Integer.parseInt(item.getFcnmode().get(3)));
+
                 }
 
                 helper.setText(R.id.rt_pa_2g, item.getDlattn() == null ? "" : "" + item.getDlattn());
@@ -495,6 +570,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                         return;
                     }
 
+
                     Set2GParamsBean.Params params = new Set2GParamsBean.Params();
                     params.setBoardid(CacheManager.paramList.get(position).getBoardid());
                     params.setCarrierid(CacheManager.paramList.get(position).getCarrierid());
@@ -506,7 +582,19 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                     params.setCi(CacheManager.paramList.get(position).getCi());
                     params.setCro(CacheManager.paramList.get(position).getCro());
                     params.setCfgmode(CacheManager.paramList.get(position).getCfgmode());
-                    params.setFcnmode(CacheManager.paramList.get(position).getFcnmode());
+
+                    if (CacheManager.paramList.get(position).getBoardid().equals("1")) {
+                        List<String> fcnModeList = new ArrayList<>();
+                        fcnModeList.add(fcnMode1);
+                        fcnModeList.add(fcnMode2);
+                        fcnModeList.add(fcnMode3);
+                        fcnModeList.add(fcnMode4);
+
+                        params.setFcnmode(fcnModeList);
+                    } else {
+                        params.setFcnmode(CacheManager.paramList.get(position).getFcnmode());
+                    }
+
                     params.setFcn(fcn);
                     params.setDlattn(pa);
                     params.setUlattn(ga);
@@ -523,7 +611,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                             public void run() {
                                 CacheManager.redirect2G();
                             }
-                        },5000);
+                        }, 5000);
 
                     }
                 }
@@ -537,5 +625,15 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 popupWindow.dismiss();
             }
         });
+    }
+
+    private void initAdapter(Spinner spinner, Object[] values) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_select_item);
+
+        for (int i = 0; i < values.length; i++) {
+            adapter.add((String) values[i]);
+        }
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 }

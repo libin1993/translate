@@ -40,7 +40,6 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/text_ok"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/app_name"

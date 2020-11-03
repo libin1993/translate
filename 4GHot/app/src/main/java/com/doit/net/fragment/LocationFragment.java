@@ -143,20 +143,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
     }
 
-    private void startUpdateArfcn() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (CacheManager.getLocState()) {
-                    if ((int) (System.currentTimeMillis() - lastLocRptTime) > UPDATE_ARFCN_TIMEOUT) {
-                        LogUtils.log("定位上报超时，尝试重新设置频点和功率... ...");
-                        //ToastUtils.showMessage(getContext(),"搜寻上报超时，尝试更新频点和功率");
-                        Cellular.adjustArfcnPwrForLocTarget(CacheManager.getCurrentLoction().getImsi());
-                    }
-                }
-            }
-        }, 30000, 30000);
-    }
+
 
     private void stopSpeechBroadcastLoop() {
         if (speechTimer != null) {
@@ -212,7 +199,14 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
             LTESendManager.exchangeFcn(CacheManager.getCurrentLoction().getImsi());
 
-            CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi());
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.setNameList("on", "", "",
+                            "", "", "block", "", "");
+
+                }
+            }, 1000);
         }else {
 
 
@@ -243,11 +237,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
     void addLocation(String imsi) {
         LogUtils.log("开始定位,IMSI:" + imsi);
-        if ("".equals(lastLocateIMSI)) {
-            if (VersionManage.isPoliceVer()) {
-                startUpdateArfcn();
-            }
-        }
+
 
         cbLocSwitch.setOnCheckedChangeListener(null);
         cbLocSwitch.setChecked(true);
@@ -265,9 +255,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             restartLoc();
         }
 
-        if (VersionManage.isPoliceVer()) {
-            Cellular.adjustArfcnPwrForLocTarget(CacheManager.getCurrentLoction().getImsi());
-        }
         startSpeechBroadcastLoop();
 
         lastLocateIMSI = CacheManager.getCurrentLoction().getImsi();
@@ -365,7 +352,14 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
                 stopLoc();
 
-                CacheManager.resetMode();
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CacheManager.redirect2G();
+
+                    }
+                }, 1000);
 
 
                 if (CacheManager.currentLoction != null && !CacheManager.currentLoction.getImsi().equals("")) {
@@ -489,7 +483,13 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 stopLoc();
                 Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
 
-                CacheManager.resetMode();
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CacheManager.redirect2G();
+
+                    }
+                }, 1000);
             }
 
         }

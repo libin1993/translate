@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
-import com.doit.net.model.DBBlackInfo;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.LogUtils;
@@ -60,8 +59,14 @@ public class AddToLocationListener implements View.OnClickListener {
 
                 LTESendManager.exchangeFcn(imsi);
 
-                CacheManager.changeLocTarget(imsi);
-                CacheManager.startLoc(imsi);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.setNameList("on", "", "",
+                                "", "", "block", "", "");
+
+                    }
+                }, 1000);
 
 
             } else {

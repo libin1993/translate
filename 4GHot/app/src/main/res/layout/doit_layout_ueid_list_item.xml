@@ -61,7 +61,6 @@
 
 
         <ImageView
-            android:id="@+id/black_warn"
             android:src="@drawable/ueid_arrowhead"
             android:layout_width="9dp"
             android:layout_height="15dp"
