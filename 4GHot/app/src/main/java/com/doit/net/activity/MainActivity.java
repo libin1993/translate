@@ -126,8 +126,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
 
     //handler消息
-//    private final int FOUND_BLACK_NAME = 0;
-//    private final int SYS_RPT = 1;
     private final int TIP_MSG = 2;
     private final int SHOW_PROGRESS = 3;
     private final int CLOSE_PROGRESS = 4;
@@ -140,8 +138,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     private final int POWER_START = 11;
     private final int CHECK_LICENCE = 13;
     private final int BATTERY_STATE = 14;
-    private final int HEARTBEAT_RPT = 15;
-
+    private final int MP_STATE = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,16 +198,16 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         ServerSocketUtils.getInstance().startTCP(new OnSocketChangedListener() {
             @Override
             public void onChange(String ip) {
-                CacheManager.deviceState.setDeviceState(DeviceState.ON_INIT);
-
                 switch (ip) {
                     case ServerSocketUtils.REMOTE_4G_IP:
+                        CacheManager.deviceState.setDeviceState(DeviceState.ON_INIT);
                         heartbeatCount = false;    //一旦发现是连接就重置此标志以设置所有配置
                         //设备重启（重连）后需要重新检查设置默认参数
                         CacheManager.initSuccess4G = false;
                         CacheManager.clearCache4G();
                         break;
                     case ServerSocketUtils.REMOTE_2G_IP:
+                        CacheManager.deviceState.setDeviceState(DeviceState.ON_INIT);
                         CacheManager.initSuccess2G = false;
                         CacheManager.paramList.clear();
                         break;
@@ -291,6 +288,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         EventAdapter.register(EventAdapter.HEARTBEAT_RPT, this);
         EventAdapter.register(EventAdapter.BATTERY_STATE, this);
         EventAdapter.register(EventAdapter.INIT_SUCCESS, this);
+        EventAdapter.register(EventAdapter.MP_STATE, this);
 
     }
 
@@ -409,6 +407,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        LogUtils.log("退出操作："+keyCode);
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             new MySweetAlertDialog(this, MySweetAlertDialog.WARNING_TYPE)
                     .setTitleText(getString(R.string.exit_app))
@@ -867,7 +866,14 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             msg.what = BATTERY_STATE;
             msg.obj = val;
             mHandler.sendMessage(msg);
+        }else if (EventAdapter.MP_STATE.equals(key)){
+            Message msg = new Message();
+            msg.what = MP_STATE;
+            msg.obj = val;
+            mHandler.sendMessage(msg);
         }
+
+
     }
 
 
@@ -989,23 +995,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             if (msg.what == TIP_MSG) {
                 String tip = msg.obj.toString();
                 ToastUtils.showMessageLong(tip);
-            } else if (msg.what == HEARTBEAT_RPT) {
-//                boolean rfState = false;
-//
-//                for (LteChannelCfg channel : CacheManager.getChannels()) {
-//                    if (channel.getRFState()) {
-//                        rfState = true;
-//                        break;
-//                    }
-//                }
-//
-//
-//                if (rfState && !CacheManager.hasPressStartButton) {
-//                    CacheManager.hasPressStartButton = true;
-//                    turnToUeidPage();
-//                }
-
-            } else if (msg.what == SHOW_PROGRESS) {
+            }else if (msg.what == SHOW_PROGRESS) {
                 int dialogKeepTime = 5000;
                 if (msg.obj != null) {
                     dialogKeepTime = (int) msg.obj;
@@ -1066,6 +1056,13 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     lowBatteryWarn = false;
                     lowBatteryWarnning("当前电池电量过低，预计可用" + batteryBean.getUseTime()
                             + "分钟，已无法保证正常工作，请及时更换电池！");
+                }
+
+            }else if (msg.what == MP_STATE){
+                if ("1".equals(msg.obj)){
+                    ivSyncError.setVisibility(View.VISIBLE);
+                }else {
+                    ivSyncError.setVisibility(View.GONE);
                 }
 
             }

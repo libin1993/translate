@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import com.doit.net.application.MyApplication;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
+import com.doit.net.bean.MPStateBean;
 import com.doit.net.bean.Report2GIMSIBean;
 import com.doit.net.bean.Report2GLocBean;
 import com.doit.net.bean.Report2GNumberBean;
@@ -309,6 +310,10 @@ public class LTEReceiveManager {
                             case MsgType2G.RPT_IMSI_LOC_INFO:
                                 parseImsiLoc(receivePackage);
                                 break;
+                            case MsgType2G.GET_MP_STATE_ACK:
+                            case MsgType2G.RPT_MP_STATE:
+                                parseMPState(receivePackage);
+                                break;
                         }
                         break;
 
@@ -317,6 +322,7 @@ public class LTEReceiveManager {
                 break;
         }
     }
+
 
 
     /**
@@ -401,6 +407,7 @@ public class LTEReceiveManager {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
 
+                Send2GManager.getMPState();
 
                 if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
                     new Timer().schedule(new TimerTask() {
@@ -543,6 +550,17 @@ public class LTEReceiveManager {
             LogUtils.log("2G定位上报：IMSI:"+responseBean.getImsi()+",强度："+responseBean.getRssi());
         }
     }
+
+
+    /**
+     * @param receivePackage 猫池状态
+     */
+    private void parseMPState(LTEReceivePackage receivePackage) {
+        MPStateBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), MPStateBean.class);
+        EventAdapter.call(EventAdapter.MP_STATE, responseBean.getState());
+    }
+
 
 
     //获取short

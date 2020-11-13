@@ -507,7 +507,7 @@ public class ImsiMsisdnConvert {
                     result = "获取IMSI成功："+msisdn+"/"+imsi;
                     LogUtils.log("获取IMSI成功："+msisdn+"/"+imsi);
                     updatWhitelistToDB(imsi, msisdn);
-                    EventAdapter.call(EventAdapter.UPDATE_WHITELIST);
+                    EventAdapter.call(EventAdapter.UPDATE_BLACKLIST);
                 }else if (resultCode == 404){
                     LogUtils.log("还在转换中，2秒后重试！");
                     if (mapConvertTimes.containsKey(convertMsisdn)){

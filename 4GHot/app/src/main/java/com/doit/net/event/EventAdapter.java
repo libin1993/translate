@@ -27,7 +27,7 @@ public class EventAdapter {
     public final static String STOP_LOC = "STOP_LOC";
     public final static String ADD_BLACKBOX = "ADD_BLACKBOX";
     public final static String CHANGE_TAB = "CHANGE_TAB";
-    public final static String UPDATE_WHITELIST = "UPDATE_WHITELIST";
+    public final static String UPDATE_BLACKLIST = "UPDATE_BLACKLIST";
     public final static String POWER_START = "POWER_START";
     public final static String SCAN_CODE = "SCAN_CODE"; //扫码结果
     public final static String GET_NAME_LIST = "GET_NAME_LIST"; //获取白名单
@@ -42,6 +42,7 @@ public class EventAdapter {
     public final static String UPGRADE_STATUS = "UPGRADE_STATUS";  //升级结果
 
     public final static String REFRESH_DEVICE_2G = "REFRESH_DEVICE_2G";  //通道设置
+    public final static String MP_STATE = "MP_STATE";  //猫池状态
 
     public static void register(String key, EventCall call) {
         event.put(key,call);

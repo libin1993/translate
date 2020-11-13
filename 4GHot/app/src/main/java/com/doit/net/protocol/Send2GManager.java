@@ -120,6 +120,21 @@ public class Send2GManager {
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MCRF_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * 查询猫池状态
+     */
+    public static void getMPState(){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", MsgType2G.GET_MP_STATE_ID);
+
+            sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MP_STATE, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     /**

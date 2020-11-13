@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.event.EventAdapter;
@@ -29,8 +30,8 @@ import org.xutils.x;
 
 public class ClearHistoryTimeDialog extends Dialog {
     private View mView;
-    private EditText etStartTime;
-    private EditText etEndTime;
+    private TextView tvStartTime;
+    private TextView tvEndTime;
     private Button btSure;
     private Button btCancel;
 
@@ -60,21 +61,21 @@ public class ClearHistoryTimeDialog extends Dialog {
         mView = inflater.inflate(R.layout.layout_clear_history, null);
         setCancelable(false);
 
-        etStartTime = mView.findViewById(R.id.etStartTime);
-        etStartTime.setOnClickListener(new View.OnClickListener(){
+        tvStartTime = mView.findViewById(R.id.tv_start_time);
+        tvStartTime.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, etStartTime.getText().toString());
-                myTimePicKDialog.dateTimePicKDialog(etStartTime);
+                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, tvStartTime.getText().toString());
+                myTimePicKDialog.dateTimePicKDialog(tvStartTime);
             }
         });
 
-        etEndTime = mView.findViewById(R.id.etEndTime);
-        etEndTime.setOnClickListener(new View.OnClickListener(){
+        tvEndTime = mView.findViewById(R.id.tv_end_time);
+        tvEndTime.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, etEndTime.getText().toString());
-                myTimePicKDialog.dateTimePicKDialog(etEndTime);
+                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, tvEndTime.getText().toString());
+                myTimePicKDialog.dateTimePicKDialog(tvEndTime);
             }
         });
 
@@ -83,8 +84,8 @@ public class ClearHistoryTimeDialog extends Dialog {
         btSure.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                final String startTime = etStartTime.getText().toString();
-                final String endTime = etEndTime.getText().toString();
+                final String startTime = tvStartTime.getText().toString();
+                final String endTime = tvEndTime.getText().toString();
 
                 if ("".equals(startTime) || "".equals(endTime)) {
                     ToastUtils.showMessage("请确定开始时间和结束时间！");

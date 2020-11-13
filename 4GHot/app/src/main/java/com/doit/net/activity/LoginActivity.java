@@ -47,8 +47,6 @@ public class LoginActivity extends BaseActivity {
     boolean isRemember;
 
 
-    private final String TIME_DATUM = "TIME_DATUM";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

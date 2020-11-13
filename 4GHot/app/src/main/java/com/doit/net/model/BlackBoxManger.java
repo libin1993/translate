@@ -41,9 +41,6 @@ public class BlackBoxManger {
     public final static String REBOOT_2G_DEVICE = "重启2G设备...";
     public final static String SET_4G_POWER = "设置4G总功率为:";
     public final static String SET_2G_POWER = "设置2G总功率为:";
-    public final static String ADD_NAMELIST = "添加了一个名单，名单信息:";
-    public final static String DELTE_NAMELIST = "删除了一个名单，名单信息:";
-    public final static String MODIFY_NAMELIST = "修改了一个名单信息，";
     public final static String TIME_PERIOD_COLLIDE = "进行了一次时间段碰撞...";
     public final static String TIME_POINT_COLLIDE = "进行了一次打点碰撞...";
     public final static String GET_PARTNER = "进行了一次伴随分析...";
@@ -55,9 +52,9 @@ public class BlackBoxManger {
     public final static String START_LOCALTE = "开始搜寻，号码为:";
     public final static String STOP_LOCALTE = "停止搜寻，号码为:";
     public final static String EXPORT_HISTORT_DATA = "导出历史数据,文件名为:";
-    public final static String EXPORT_WHITELIST = "导出黑名单,文件名为:";
-    public final static String CLEAR_WHITELIST = "清空黑名单";
-    public final static String IMPORT_WHITELIST = "导入黑名单,文件名为:";
+    public final static String EXPORT_BLACKLIST = "导出黑名单,文件名为:";
+    public final static String CLEAR_BLACKLIST = "清空黑名单";
+    public final static String IMPORT_BLACKLIST = "导入黑名单,文件名为:";
     public final static String ADD_USER = "添加了一个用户:";
     public final static String DELTE_USER = "删除了一个用户:";
     public final static String MODIFY_USER = "修改一个用户信息，";

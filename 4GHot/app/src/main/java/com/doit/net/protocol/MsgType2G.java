@@ -30,6 +30,8 @@ public class MsgType2G {
     public static final byte GET_NTC_CONFIG_ACK = (byte) 0x91;   //查询基本环境参数应答
     public static final byte GET_MCRF_CONFIG = 0x12;   //查询运营商参数、工作模式
     public static final byte GET_MCRF_CONFIG_ACK = (byte) 0x92;   //查询运营商参数、工作模式应答
+    public static final byte GET_MP_STATE = 0x1E;   //查询猫池状态
+    public static final byte GET_MP_STATE_ACK = (byte) 0x9E;   //查询猫池状态应答
 
     public static final byte REBOOT_DEVICE = (byte) 0x31;   //重启设备
     public static final byte REBOOT_DEVICE_ACK = (byte) 0xB1;   //重启设备应答
@@ -37,7 +39,7 @@ public class MsgType2G {
     public static final byte RPT_IMSINUM_INFO = (byte) 0x21;   //号码翻译上报
     public static final byte RPT_IMSI_INFO = (byte) 0x22;   //imsi上报
     public static final byte RPT_IMSI_LOC_INFO = (byte) 0x2E;   //2G定位上报
-
+    public static final byte RPT_MP_STATE = (byte) 0x30;   //猫池状态上报
 
     //消息id
     public static final String SET_NTC_CONFIG_ID = "SET_NTC_CONFIG";  //设置基本环境参数id
@@ -47,4 +49,5 @@ public class MsgType2G {
     public static final String SET_RF_SWITCH_ID = "SET_RF_SWITCH";   //开关射频id
     public static final String SYS_REBOOT_ID = "SYS_REBOOT";   //重启设备id
     public static final String SET_LOC_IMSI_ID = "SET_LOC_IMSI";   //设置定位imsi  id
+    public static final String GET_MP_STATE_ID = "GET_MP_STATE";   //查询猫池状态id
 }

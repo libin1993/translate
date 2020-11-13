@@ -389,7 +389,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             }
         }
         for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            if (params.isRfState() && !params.getBoardid().equals("1")) {
+            if
+            (params.isRfState() && !params.getBoardid().equals("1")) {
                 rfState2G = true;
                 break;
             }

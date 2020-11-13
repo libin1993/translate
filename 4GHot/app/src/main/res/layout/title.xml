@@ -24,19 +24,19 @@
         android:visibility="gone" />
 
 
-    <ImageView
-        android:id="@+id/ivSyncError"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_marginStart="9dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/station_icon"
-        android:visibility="gone" />
-
     <View
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/ivSyncError"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:scaleType="centerCrop"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/station_icon"
+        android:visibility="gone" />
 
     <TextClock
         android:layout_width="wrap_content"

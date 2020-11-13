@@ -4,7 +4,6 @@ import com.doit.net.activity.Device2GParamActivity;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.FileUtils;
-import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.view.ClearHistoryTimeDialog;
 import com.doit.net.activity.CustomFcnActivity;
 import com.doit.net.activity.DeviceParamActivity;
@@ -179,10 +178,8 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         btBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
-                if (!NetWorkUtils.getNetworkState()) {
-                    ToastUtils.showMessage("设备未就绪");
+                if (!CacheManager.checkDevice(getActivity()))
                     return;
-                }
                 startActivity(new Intent(getActivity(), BlackBoxActivity.class));
             }
         });
@@ -328,7 +325,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
 
 
         Button btDeviceUpgrade = dialogView.findViewById(R.id.btDeviceUpgrade);
-        btDeviceUpgrade.setOnClickListener(upgradeListner);
+        btDeviceUpgrade.setOnClickListener(upgradeListener);
         lvPackageList = dialogView.findViewById(R.id.lvPackageList);
         layoutUpgradePackage = dialogView.findViewById(R.id.layoutUpgradePackage);
 
@@ -382,7 +379,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         return bi.toString(16);
     }
 
-    View.OnClickListener upgradeListner = new View.OnClickListener() {
+    View.OnClickListener upgradeListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             String UPGRADE_PACKAGE_PATH = "upgrade/";
@@ -468,12 +465,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         }
     };
 
-    private void createExportError(String obj) {
-        Message msg = new Message();
-        msg.what = UPGRADE_STATUS_RPT;
-        msg.obj = obj;
-        mHandler.sendMessage(msg);
-    }
+
 
 
     @Override

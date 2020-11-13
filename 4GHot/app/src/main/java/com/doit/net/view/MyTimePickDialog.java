@@ -10,6 +10,7 @@ import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 
@@ -89,7 +90,7 @@ public class MyTimePickDialog implements OnDateChangedListener, OnTimeChangedLis
      *            :为需要设置的日期时间文本编辑框
      * @return
      */
-    public AlertDialog dateTimePicKDialog(final EditText inputDate) {
+    public AlertDialog dateTimePicKDialog(TextView inputDate) {
         LinearLayout dateTimeLayout = (LinearLayout) activity
                 .getLayoutInflater().inflate(R.layout.date_time, null);
         datePicker = dateTimeLayout.findViewById(R.id.dpDatePicker);

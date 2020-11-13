@@ -241,9 +241,7 @@ public class LTE_PT_PARAM {
             if ((int) (System.currentTimeMillis() - lastRptSyncErrorTime) > 5 * 60 * 1000) {
                 LogUtils.log("同步状态异常");
                 lastRptSyncErrorTime = System.currentTimeMillis();
-                //EventAdapter.call(EventAdapter.SYNC_ERROR_RPT);
             }
-
         }
 
 

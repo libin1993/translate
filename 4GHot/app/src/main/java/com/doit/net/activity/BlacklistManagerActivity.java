@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
@@ -16,13 +15,11 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -34,12 +31,10 @@ import com.daimajia.swipe.util.Attributes;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.utils.FormatUtils;
 import com.doit.net.view.AddBlacklistDialog;
-import com.doit.net.adapter.HistoryListViewAdapter;
 import com.doit.net.adapter.BlacklistAdapter;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.utils.MySweetAlertDialog;
@@ -96,20 +91,16 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
 
     DbManager dbManager = UCSIDBManager.getDbManager();
 
-    private PopupWindow whitelistItemPop;
-    View whitelistItemPopView;
-    private TextView tvGetImsi;
-    private BlackListInfo selectedWhitelistItem = null;
     private List<BlackListInfo> listWhitelistInfo = new ArrayList<>();
 
     private int lastOpenSwipePos = -1;
 
-    private static final String WHITELIST_FILE_PATH = FileUtils.ROOT_PATH + "Blacklist.xls";
+    private static final String BLACKLIST_FILE_PATH = FileUtils.ROOT_PATH + "Blacklist.xls";
 
     //handler消息
     private final int REFRESH_LIST = 0;
     private final int UPDATE_LIST = 1;
-    private final int UPDATE_WHITELIST = 2;
+    private final int UPDATE_BLACKLIST = 2;
     private final int EXPORT_ERROR = -1;
     private final static  int IMPORT_SUCCESS =  3;  //导入成功
     private final static  int EXPORT_SUCCESS =  4;  //导出成功
@@ -126,7 +117,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         initView();
 
         updateListFromDB();
-        EventAdapter.register(EventAdapter.UPDATE_WHITELIST, this);
+        EventAdapter.register(EventAdapter.UPDATE_BLACKLIST, this);
         EventAdapter.register(EventAdapter.REFRESH_BLACKLIST, this);
     }
 
@@ -155,88 +146,12 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
             }
         });
 
-        whitelistItemPopView = LayoutInflater.from(activity).inflate(R.layout.whitelist_pop_windows, null);
-        whitelistItemPop = new PopupWindow(whitelistItemPopView, getResources().getDisplayMetrics().widthPixels / 3,
-                LinearLayout.LayoutParams.WRAP_CONTENT, true);   //宽度和屏幕成比例
-        whitelistItemPop.setContentView(whitelistItemPopView);
-        whitelistItemPop.setBackgroundDrawable(new ColorDrawable());  //据说不设在有些情况下会关不掉
-        mAdapter.setOnItemLongClickListener(new HistoryListViewAdapter.onItemLongClickListener() {
-            @Override
-            public void onItemLongClick(MotionEvent motionEvent, int position) {
-                selectedWhitelistItem = mAdapter.getWhitelistList().get(position);
-                showListPopWindow(lvWhitelistInfo, calcPopWindowPosX((int) motionEvent.getX()), calcPopWindowPosY((int) motionEvent.getY()));
-            }
-        });
-
-        tvGetImsi = whitelistItemPopView.findViewById(R.id.tvGetImsi);
-        tvGetImsi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String msisdn = selectedWhitelistItem.getMsisdn();
-                String imsi = selectedWhitelistItem.getImsi();
-                if (!"".equals(imsi)) {
-                    ToastUtils.showMessage("已知IMSI，无需翻译！");
-                    return;
-                }
-
-                if ("".equals(msisdn)) {
-                    ToastUtils.showMessage( "手机号为空，请确认后点击！");
-                    return;
-                }
-
-                LogUtils.log("点击了：" + msisdn);
-                if (!ImsiMsisdnConvert.isAuthenticated()) {
-                    ToastUtils.showMessageLong("尚未通过认证，请先进入“号码翻译设置”进行认证");
-                    whitelistItemPop.dismiss();
-                    return;
-                }
-
-                new Thread() {
-                    @Override
-                    public void run() {
-                        ImsiMsisdnConvert.requestConvertMsisdnToImsi(activity, selectedWhitelistItem.getMsisdn());
-                        //ImsiMsisdnConvert.queryMsisdnConvertImsiRes(activity, selectedWhitelistItem.getMsisdn());
-                    }
-                }.start();
-
-                whitelistItemPop.dismiss();
-            }
-        });
-
         mProgressDialog = new MySweetAlertDialog(this, MySweetAlertDialog.PROGRESS_TYPE);
         mProgressDialog.setTitleText("加载中，请耐心等待...");
         mProgressDialog.setCancelable(false);
     }
 
-    private void showListPopWindow(View anchorView, int posX, int posY) {
-        whitelistItemPop.showAtLocation(anchorView, Gravity.TOP | Gravity.START, posX, posY);
-    }
 
-    private int calcPopWindowPosY(int eventY) {
-        int listviewHeight = lvWhitelistInfo.getResources().getDisplayMetrics().heightPixels;
-        whitelistItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int popWinHeight = whitelistItemPop.getContentView().getMeasuredHeight();
-
-        boolean isNeedShowUpward = (eventY + popWinHeight > listviewHeight);  //超过范围就向上显示
-        if (isNeedShowUpward) {
-            return eventY - popWinHeight;
-        } else {
-            return eventY;
-        }
-    }
-
-    private int calcPopWindowPosX(int eventX) {
-        int listviewWidth = lvWhitelistInfo.getResources().getDisplayMetrics().widthPixels;
-        whitelistItemPop.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int windowWidth = whitelistItemPop.getContentView().getMeasuredWidth();
-
-        boolean isShowLeft = (eventX + windowWidth > listviewWidth);  //超过屏幕的话就向左边显示
-        if (isShowLeft) {
-            return eventX - windowWidth;
-        } else {
-            return eventX;
-        }
-    }
 
     View.OnClickListener addWhitelistClick = new View.OnClickListener() {
         @Override
@@ -275,31 +190,6 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         return pattern.matcher(str).matches();
     }
 
-    private boolean isFormatRight(String readline) {
-        //先判断行逗号的个数
-        if (readline.length() - readline.replace(",", "").length() != 2)
-            return false;
-
-        //如果是以，，开头，说明没有IMSI或手机号，也不行
-        if (readline.startsWith(",,"))
-            return false;
-
-        //判断长度和是否含有非数字
-        if (!"".equals(readline.split(",")[0]) &&
-                (readline.split(",")[0].length() != 15 ||
-                        !isNumeric(readline.split(",")[0]))) {
-            return false;
-        }
-
-        //判断手机号
-        if (readline.split(",").length >= 2) {
-            return "".equals(readline.split(",")[1]) ||
-                    (readline.split(",")[1].length() == 11 &&
-                            isNumeric(readline.split(",")[1]));
-        }
-
-        return true;
-    }
 
     View.OnClickListener importWhitelistClick = new View.OnClickListener() {
         @Override
@@ -329,7 +219,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
             }
 
             if (fileList.size() == 0) {
-                ToastUtils.showMessageLong("未找到黑名单，黑名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
+                ToastUtils.showMessageLong("\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下未找到黑名单，黑名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
                 return;
             }
 
@@ -477,7 +367,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                             repeatNum + "个重复的名单，忽略" + errorFormatNum + "行格式或号码错误";
                     mHandler.sendMessage(message);
 
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.IMPORT_WHITELIST + file.getName());
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.IMPORT_BLACKLIST + file.getName());
 
                 } catch (Exception e) {
                     /* proper exception handling to be here */
@@ -538,7 +428,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 @Override
                 public void run() {
                     try {
-                        File file = new File(WHITELIST_FILE_PATH);
+                        File file = new File(BLACKLIST_FILE_PATH);
                         if (file.exists()) {
                             file.delete();
                         }
@@ -571,14 +461,14 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                         outputStream.flush();
                         outputStream.close();
 
-                        EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, WHITELIST_FILE_PATH);
+                        EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, BLACKLIST_FILE_PATH);
 
                         Message message = new Message();
                         message.what = EXPORT_SUCCESS;
                         message.obj = "文件导出在：手机存储/"+FileUtils.ROOT_DIRECTORY+"/"+ file.getName();
                         mHandler.sendMessage(message);
 
-                        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.EXPORT_WHITELIST + WHITELIST_FILE_PATH);
+                        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.EXPORT_BLACKLIST + BLACKLIST_FILE_PATH);
 
                     } catch (Exception e) {
                         /* proper exception handling to be here */
@@ -602,7 +492,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 e.printStackTrace();
             }
             updateListFromDB();
-            EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLEAR_WHITELIST);
+            EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLEAR_BLACKLIST);
         }
     };
 
@@ -669,7 +559,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
             } else if (msg.what == UPDATE_LIST) {
                 updateListFromDB();
                 closeSwipe(lastOpenSwipePos);
-            } else if (msg.what == UPDATE_WHITELIST) {
+            } else if (msg.what == UPDATE_BLACKLIST) {
                 updateListFromDB();
 
             } else if (msg.what == EXPORT_ERROR) {
@@ -707,9 +597,9 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     @Override
     public void call(String key, Object val) {
         switch (key){
-            case EventAdapter.UPDATE_WHITELIST:
+            case EventAdapter.UPDATE_BLACKLIST:
                 Message msg = new Message();
-                msg.what = UPDATE_WHITELIST;
+                msg.what = UPDATE_BLACKLIST;
                 msg.obj = val;
                 mHandler.sendMessage(msg);
                 break;
@@ -719,3 +609,4 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         }
     }
 }
+

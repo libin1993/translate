@@ -68,18 +68,20 @@ public class ServerSocketUtils {
                         socket.setSoTimeout(READ_TIME_OUT);      //设置超时
                         String remoteIP = socket.getInetAddress().getHostAddress();  //远程ip
                         int remotePort = socket.getPort();    //远程端口
-                        map.put(remoteIP, socket);   //存储socket
 
-                        if (onSocketChangedListener != null) {
-                            onSocketChangedListener.onChange(remoteIP);
+                        if (remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) || remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP)){
+                            map.put(remoteIP, socket);   //存储socket
+
+                            if (onSocketChangedListener != null) {
+                                onSocketChangedListener.onChange(remoteIP);
+                            }
+
+                            LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
+
+
+                            ReceiveThread receiveThread = new ReceiveThread(remoteIP, onSocketChangedListener);
+                            receiveThread.start();
                         }
-
-                        LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
-
-
-                        ReceiveThread receiveThread = new ReceiveThread(remoteIP, onSocketChangedListener);
-                        receiveThread.start();
-
 
                     } catch (IOException e) {
                         e.printStackTrace();
