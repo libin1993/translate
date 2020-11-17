@@ -258,16 +258,6 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
 
 
-                                new Timer().schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        LTESendManager.setNameList("on",
-                                                "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn, "",
-                                                "", "", "redirect", "", "");
-
-                                    }
-                                }, 1000);
-
                             }
                         }).setNegativeButton("取消", null).show();
 
@@ -337,7 +327,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
                     tvTemperature.setText("温度：" + msg.obj);
                     break;
                 case 1:
-                    tvNameList.setText("白名单：" + CacheManager.namelist.toString());
+                    tvNameList.setText("名单：" + msg.obj);
                     break;
             }
 
@@ -356,6 +346,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             case GET_NAME_LIST:
                 Message msg1 = new Message();
                 msg1.what = 1;
+                msg1.obj = val;
                 mHandler.sendMessage(msg1);
                 break;
         }

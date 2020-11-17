@@ -28,9 +28,9 @@ public class LTESendManager {
 
 
 
-    public static void setNameList(String mode, String redirectConfig, String nameListReject,
+    public static void setNameList(String redirectConfig, String nameListReject,
                                    String nameListRedirect, String nameListBlock,
-                                   String nameListRestAction, String nameListRelease,String nameListFile) {
+                                   String nameListRestAction,String nameListFile) {
         //MODE:[on|off]
         // @REDIRECT_CONFIG:46000,4,38400#46001,4,300#46011,4,100#46002,2,98  //重定向
         // @NAMELIST_REJECT:460001234512345,460011234512345   //拒绝
@@ -40,44 +40,31 @@ public class LTESendManager {
         // @NAMELIST_REST_ACTION:block  //其余手机操作
 
 
-        String namelist = "MODE:"+mode;
+        String namelist = "MODE:on";
 
-
-        namelist += "@REDIRECT_CONFIG:";
-        if (!"".equals(redirectConfig)) {
-            namelist += redirectConfig;
+        if (redirectConfig !=null) {
+            namelist += "@REDIRECT_CONFIG:" +redirectConfig;
         }
 
-        namelist += "@NAMELIST_REJECT:";
-        if (!"".equals(nameListReject)) {
-            namelist += nameListReject;
+        if (nameListReject != null) {
+            namelist += "@NAMELIST_REJECT:"+nameListReject;
         }
 
-        namelist += "@NAMELIST_REDIRECT:";
-        if (!"".equals(nameListRedirect)) {
-            namelist += nameListRedirect;
+        if (nameListRedirect !=null) {
+            namelist += "@NAMELIST_REDIRECT:"+nameListRedirect;
         }
 
-        namelist += "@NAMELIST_BLOCK:";
-        if (!"".equals(nameListBlock)) {
-            namelist += nameListBlock;
+        if (nameListBlock!=null) {
+            namelist += "@NAMELIST_BLOCK:"+nameListBlock;
         }
 
-        namelist += "@NAMELIST_REST_ACTION:";
-        if (!"".equals(nameListRestAction)) {
-            namelist += nameListRestAction;
+        if (nameListRestAction!=null) {
+            namelist += "@NAMELIST_REST_ACTION:"+nameListRestAction;
         }
 
-        namelist += "@NAMELIST_RELEASE:";
-        if (!"".equals(nameListRelease)) {
-            namelist += nameListRelease;
+        if (nameListFile !=null){
+            namelist += "@NAMELIST_FILE:"+nameListFile;
         }
-
-        namelist += "@NAMELIST_FILE:";
-        if (!"".equals(nameListFile)) {
-            namelist += nameListFile;
-        }
-
 
         LogUtils.log("设置名单："+namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);

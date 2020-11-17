@@ -25,3 +25,4 @@ public class Set2GPowerLevelBean {
         this.level = level;
     }
 }
+

@@ -296,7 +296,8 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                             ToastUtils.showMessage("FCN格式输入有误,请检查");
                             return;
                         } else {
-                            if (!FormatUtils.getInstance().fcnRange(CacheManager.channels.get(position).getBand(), fcn)) {
+                            if (!FormatUtils.getInstance().
+                                    fcnRange(CacheManager.channels.get(position).getBand(), fcn)) {
                                 ToastUtils.showMessage("FCN格式输入范围有误,请检查");
                                 return;
                             }

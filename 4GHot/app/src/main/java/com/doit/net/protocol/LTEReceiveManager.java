@@ -324,7 +324,6 @@ public class LTEReceiveManager {
     }
 
 
-
     /**
      * @param receivePackage 解析2G基本环境参数
      */
@@ -407,17 +406,28 @@ public class LTEReceiveManager {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
 
-                Send2GManager.getMPState();
 
+                //2G切换成采集模式
+                Send2GManager.setLocIMSI("", "0");
+
+                //2G指派
                 if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            CacheManager.redirect2G();
+                            CacheManager.redirect2G("", "redirect");
                         }
                     }, 1000);
                 }
 
+                //查询猫池状态
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Send2GManager.getMPState();
+
+                    }
+                }, 2000);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -451,7 +461,7 @@ public class LTEReceiveManager {
 
             ueidList.add(ueidBean);
 
-            LogUtils.log("2G采号上报：IMSI:"+imsiList.get(0)+"    强度:"+ imsiList.get(2));
+            LogUtils.log("2G采号上报：IMSI:" + imsiList.get(0) + "    强度:" + imsiList.get(2));
         }
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
     }
@@ -478,16 +488,16 @@ public class LTEReceiveManager {
 
                 //修改白名单
                 BlackListInfo blackListInfo = dbManager.selector(BlackListInfo.class).where("msisdn", "=", imsiList.get(1)).findFirst();
-                if (blackListInfo !=null){
+                if (blackListInfo != null) {
                     blackListInfo.setImsi(imsiList.get(0));
                     dbManager.update(blackListInfo);
-                    notice( "手机号:"+imsiList.get(1)+"    IMSI:"+ imsiList.get(0));
+                    notice("手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
 
                 }
-                LogUtils.log("翻译上报：手机号:"+imsiList.get(1)+"    IMSI:"+ imsiList.get(0));
+                LogUtils.log("翻译上报：手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
 
                 for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
-                    if (ueidBean.getImsi().equals(imsiList.get(0))){
+                    if (ueidBean.getImsi().equals(imsiList.get(0))) {
                         ueidBean.setNumber(imsiList.get(1));
                     }
                 }
@@ -503,27 +513,27 @@ public class LTEReceiveManager {
     /**
      * 翻译上报，通知
      */
-    public static void notice(String content){
+    public static void notice(String content) {
         String id = "channel";
-        String name="号码翻译";
+        String name = "号码翻译";
         NotificationManager notificationManager = (NotificationManager) MyApplication.mContext.getSystemService(NOTIFICATION_SERVICE);
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel mChannel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(mChannel);
-            notification = new Notification.Builder(MyApplication.mContext,id)
+            notification = new Notification.Builder(MyApplication.mContext, id)
                     .setContentTitle("目标手机上报")
                     .setContentText(content)
                     .setSmallIcon(R.drawable.august_first)
                     .build();
         } else {
-            notification = new NotificationCompat.Builder(MyApplication.mContext,id)
+            notification = new NotificationCompat.Builder(MyApplication.mContext, id)
                     .setContentTitle("目标手机上报")
                     .setContentText(content)
                     .setSmallIcon(R.drawable.august_first)
                     .build();
         }
-        notification.flags=Notification.FLAG_AUTO_CANCEL;
+        notification.flags = Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(123, notification);
 
     }
@@ -538,7 +548,7 @@ public class LTEReceiveManager {
         if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLoction().getImsi())
                 && CacheManager.getCurrentLoction().getType() == 0) {
 
-            int rssi = Integer.parseInt(responseBean.getRssi())  + 125;
+            int rssi = Integer.parseInt(responseBean.getRssi()) + 125;
             if (rssi < 0) {
                 rssi = 0;
             }
@@ -547,7 +557,7 @@ public class LTEReceiveManager {
             }
             EventAdapter.call(EventAdapter.LOCATION_RPT, rssi + "");
 
-            LogUtils.log("2G定位上报：IMSI:"+responseBean.getImsi()+",强度："+responseBean.getRssi());
+            LogUtils.log("2G定位上报：IMSI:" + responseBean.getImsi() + ",强度：" + responseBean.getRssi());
         }
     }
 
@@ -560,7 +570,6 @@ public class LTEReceiveManager {
                 StandardCharsets.UTF_8), MPStateBean.class);
         EventAdapter.call(EventAdapter.MP_STATE, responseBean.getState());
     }
-
 
 
     //获取short

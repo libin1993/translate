@@ -62,8 +62,9 @@ public class AddToLocationListener implements View.OnClickListener {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        LTESendManager.setNameList("on", "", "",
-                                "", "", "block", "", "");
+                        //目标imsi吸附，其余的回公网
+                        LTESendManager.setNameList("", "",
+                                "", imsi, "reject", null);
 
                     }
                 }, 1000);
@@ -78,13 +79,13 @@ public class AddToLocationListener implements View.OnClickListener {
                         Send2GManager.setRFState("1");
                     }
                 }, 500);
-
+                //目标imsi重定向，其余的回公网
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        CacheManager.redirect2G();
+                        CacheManager.redirect2G(imsi, "reject");
                     }
-                },1000);
+                }, 1000);
 
             }
             ToastUtils.showMessage("搜寻开始");

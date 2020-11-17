@@ -159,45 +159,45 @@ public class LTE_PT_PARAM {
         // @NAMELIST_RELEASE:460001234512345
         // @NAMELIST_REST_ACTION:block
         String namelistAck = UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0);
-        LogUtils.log("获取白名单回复:" + namelistAck);
-        String[] splitStr = namelistAck.split("@");
-
-        Namelist namelist = new Namelist();
-
-
-        for (String s : splitStr) {
-            String[] split = s.split(":");
-            String value = split.length > 1 ? split[1] : "";
-            switch (split[0]) {
-                case "MODE":
-                    namelist.setMode(value);
-                    break;
-                case "REDIRECT_CONFIG":
-                    namelist.setRedirectConfig(value);
-                    break;
-                case "NAMELIST_REJECT":
-                    namelist.setNamelistReject(value);
-                    break;
-                case "NAMELIST_REDIRECT":
-                    namelist.setNamelistRedirect(value);
-                    break;
-                case "NAMELIST_BLOCK":
-                    namelist.setNamelistBlock(value);
-                    break;
-                case "NAMELIST_REST_ACTION":
-                    namelist.setNamelistRestAciton(value);
-                    break;
-                case "NAMELIST_RELEASE":
-                    namelist.setNamelistRelease(value);
-                    break;
-                case "NAMELIST_FILE":
-                    namelist.setNamelistFile(value);
-                    break;
-            }
-        }
-
-        CacheManager.setNamelist(namelist);
-        EventAdapter.call(EventAdapter.GET_NAME_LIST);
+        LogUtils.log("获取名单回复:" + namelistAck);
+//        String[] splitStr = namelistAck.split("@");
+//
+//        Namelist namelist = new Namelist();
+//
+//
+//        for (String s : splitStr) {
+//            String[] split = s.split(":");
+//            String value = split.length > 1 ? split[1] : "";
+//            switch (split[0]) {
+//                case "MODE":
+//                    namelist.setMode(value);
+//                    break;
+//                case "REDIRECT_CONFIG":
+//                    namelist.setRedirectConfig(value);
+//                    break;
+//                case "NAMELIST_REJECT":
+//                    namelist.setNamelistReject(value);
+//                    break;
+//                case "NAMELIST_REDIRECT":
+//                    namelist.setNamelistRedirect(value);
+//                    break;
+//                case "NAMELIST_BLOCK":
+//                    namelist.setNamelistBlock(value);
+//                    break;
+//                case "NAMELIST_REST_ACTION":
+//                    namelist.setNamelistRestAciton(value);
+//                    break;
+//                case "NAMELIST_RELEASE":
+//                    namelist.setNamelistRelease(value);
+//                    break;
+//                case "NAMELIST_FILE":
+//                    namelist.setNamelistFile(value);
+//                    break;
+//            }
+//        }
+//
+//        CacheManager.setNamelist(namelist);
+        EventAdapter.call(EventAdapter.GET_NAME_LIST,namelistAck);
     }
 
 
