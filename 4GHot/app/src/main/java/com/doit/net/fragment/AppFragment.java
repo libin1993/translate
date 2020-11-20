@@ -283,12 +283,13 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL2) {
             btUserManage.setVisibility(View.VISIBLE);
             btBlackBox.setVisibility(View.VISIBLE);
-            btClearUeid.setVisibility(View.VISIBLE);
+
         }
 
         if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL3) {
             just4Test.setVisibility(View.VISIBLE);
             tvSystemSetting.setVisibility(View.VISIBLE);
+            btClearUeid.setVisibility(View.VISIBLE);
         }
     }
 
