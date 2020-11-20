@@ -415,7 +415,7 @@ public class LTEReceiveManager {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            CacheManager.redirect2G("", "redirect");
+                            CacheManager.redirect2G("", "redirect",null);
                         }
                     }, 1000);
                 }

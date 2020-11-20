@@ -609,7 +609,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                CacheManager.redirect2G(null,null);
+                                CacheManager.redirect2G(null,null,null);
                             }
                         }, 5000);
 

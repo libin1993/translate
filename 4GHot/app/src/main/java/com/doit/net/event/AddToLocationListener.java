@@ -64,7 +64,7 @@ public class AddToLocationListener implements View.OnClickListener {
                     public void run() {
                         //目标imsi吸附，其余的回公网
                         LTESendManager.setNameList("", "",
-                                "", imsi, "reject", null);
+                                "", imsi, "reject", "");
 
                     }
                 }, 1000);
@@ -83,7 +83,7 @@ public class AddToLocationListener implements View.OnClickListener {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        CacheManager.redirect2G(imsi, "reject");
+                        CacheManager.redirect2G(imsi, "reject","");
                     }
                 }, 1000);
 

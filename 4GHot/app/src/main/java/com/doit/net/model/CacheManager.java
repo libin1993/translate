@@ -230,7 +230,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect,String nameListRestAction) {
+    public static void redirect2G(String nameListRedirect,String nameListRestAction,String nameListFile) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -251,7 +251,7 @@ public class CacheManager {
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
             LTESendManager.setNameList( redirectConfig, "",
-                    nameListRedirect, "", nameListRestAction, null);
+                    nameListRedirect, "", nameListRestAction, nameListFile);
         }
 
 

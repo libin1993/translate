@@ -16,7 +16,7 @@
 
         <ImageView
             android:id="@+id/add_to_localtion"
-            android:src="@drawable/icon_0000s_0000s_0002_location"
+            android:src="@drawable/ic_location_white"
             android:layout_width="60dp"
             android:background="#4cd964"
             android:paddingLeft="18dp"
@@ -24,7 +24,7 @@
             android:layout_height="60dp" />
         <ImageView
             android:id="@+id/add_to_black"
-            android:src="@drawable/icon_0000s_0002s_0005_user"
+            android:src="@drawable/ic_user_white"
             android:layout_width="60dp"
             android:background="@drawable/red"
             android:paddingLeft="18dp"

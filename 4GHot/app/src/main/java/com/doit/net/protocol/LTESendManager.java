@@ -27,10 +27,9 @@ import java.util.Date;
 public class LTESendManager {
 
 
-
     public static void setNameList(String redirectConfig, String nameListReject,
                                    String nameListRedirect, String nameListBlock,
-                                   String nameListRestAction,String nameListFile) {
+                                   String nameListRestAction, String nameListFile) {
         //MODE:[on|off]
         // @REDIRECT_CONFIG:46000,4,38400#46001,4,300#46011,4,100#46002,2,98  //重定向
         // @NAMELIST_REJECT:460001234512345,460011234512345   //拒绝
@@ -42,31 +41,33 @@ public class LTESendManager {
 
         String namelist = "MODE:on";
 
-        if (redirectConfig !=null) {
-            namelist += "@REDIRECT_CONFIG:" +redirectConfig;
+        if (redirectConfig != null) {
+            namelist += "@REDIRECT_CONFIG:" + redirectConfig;
         }
 
         if (nameListReject != null) {
-            namelist += "@NAMELIST_REJECT:"+nameListReject;
+            namelist += "@NAMELIST_REJECT:" + nameListReject;
         }
 
-        if (nameListRedirect !=null) {
-            namelist += "@NAMELIST_REDIRECT:"+nameListRedirect;
+        if (nameListRedirect != null) {
+            namelist += "@NAMELIST_REDIRECT:" + nameListRedirect;
         }
 
-        if (nameListBlock!=null) {
-            namelist += "@NAMELIST_BLOCK:"+nameListBlock;
+        if (nameListBlock != null) {
+            namelist += "@NAMELIST_BLOCK:" + nameListBlock;
         }
 
-        if (nameListRestAction!=null) {
-            namelist += "@NAMELIST_REST_ACTION:"+nameListRestAction;
+        if (nameListRestAction != null) {
+            namelist += "@NAMELIST_REST_ACTION:" + nameListRestAction;
         }
 
-        if (nameListFile !=null){
-            namelist += "@NAMELIST_FILE:"+nameListFile;
+        namelist += "@NAMELIST_RELEASE:";
+
+        if (nameListFile != null) {
+            namelist += "@NAMELIST_FILE:" + nameListFile;
         }
 
-        LogUtils.log("设置名单："+namelist);
+        LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);
     }
 
@@ -149,7 +150,7 @@ public class LTESendManager {
         content += idx;
         content += "@BAND:";
         content += changeBand;
-        LogUtils.log("切换band:"+content);
+        LogUtils.log("切换band:" + content);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_CHANGE_BAND, content);
     }
 
@@ -334,7 +335,7 @@ public class LTESendManager {
     }
 
     public static void openRf(String idx) {
-        LogUtils.log("开启射频："+idx);
+        LogUtils.log("开启射频：" + idx);
         //LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_ON, idx+"@HOLD:"+HOLD_VALUE);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_ON, idx);
         //setChannelConfig(idx,null,null,null,null, FlagConstant.RF_OPEN,null);
@@ -392,7 +393,7 @@ public class LTESendManager {
                 + FtpConfig.ftpMaxSize;
 
 
-        LogUtils.log("设置ftp:"+configContent);
+        LogUtils.log("设置ftp:" + configContent);
 
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_FTP_CONFIG, configContent);
     }
@@ -400,16 +401,16 @@ public class LTESendManager {
     /**
      * 更换fcn
      */
-    public static void exchangeFcn(String imsi){
+    public static void exchangeFcn(String imsi) {
 
         try {
             DbManager dbManager = UCSIDBManager.getDbManager();
             DBChannel dbChannel = dbManager.selector(DBChannel.class)
                     .where("band", "=", "3")
-                    .and("is_check","=","1")
+                    .and("is_check", "=", "1")
                     .findFirst();
-            if (dbChannel !=null){
-                if ("CTJ".equals(UtilOperator.getOperatorName(imsi))){
+            if (dbChannel != null) {
+                if ("CTJ".equals(UtilOperator.getOperatorName(imsi))) {
                     setChannelConfig(dbChannel.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(dbChannel.getIdx())) {
@@ -418,7 +419,7 @@ public class LTESendManager {
                             break;
                         }
                     }
-                }else {
+                } else {
                     setChannelConfig(dbChannel.getIdx(), dbChannel.getFcn(),
                             "46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
@@ -483,7 +484,7 @@ public class LTESendManager {
 
 
                     //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    if (Integer.parseInt(channel.getGa()) <= 8){
+                    if (Integer.parseInt(channel.getGa()) <= 8) {
                         defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
                     }
 
@@ -637,7 +638,7 @@ public class LTESendManager {
                     break;
             }
 
-            if ("3".equals(channel.getBand()) && CacheManager.getLocState()){
+            if ("3".equals(channel.getBand()) && CacheManager.getLocState()) {
                 LogUtils.log("当前正在定位且是band3，不设置band3频点");
                 continue;
             }
@@ -651,7 +652,7 @@ public class LTESendManager {
                 channel.setPa(defaultPower);
 
             }
-            if (!TextUtils.isEmpty(defaultGa)){
+            if (!TextUtils.isEmpty(defaultGa)) {
                 channel.setGa(defaultGa);
             }
 
@@ -685,10 +686,10 @@ public class LTESendManager {
     }
 
     /**
-     *保存默认频点
+     * 保存默认频点
      */
     public static void saveDefaultFcn() {
-        String fcn="";
+        String fcn = "";
         String band1Fcns = "100,350,550";
         String band3Fcns = "1300,1650,1506";//1300
         String band38Fcns = "37900,38098,38200";
@@ -698,6 +699,9 @@ public class LTESendManager {
 
 
         for (LteChannelCfg channel : CacheManager.channels) {
+            if (TextUtils.isEmpty(channel.getBand())){
+                continue;
+            }
             switch (channel.getBand()) {
                 case "1":
                     fcn = band1Fcns;
@@ -719,7 +723,7 @@ public class LTESendManager {
                     break;
 
             }
-            if (!TextUtils.isEmpty(fcn)){
+            if (!TextUtils.isEmpty(fcn)) {
                 try {
                     DbManager dbManager = UCSIDBManager.getDbManager();
                     DBChannel channel1 = dbManager.selector(DBChannel.class)
@@ -730,9 +734,9 @@ public class LTESendManager {
                         dbManager.save(new DBChannel(channel.getIdx(), channel.getBand(), fcn, 1, 1));
 
                         //band38和band40可切换，需将band38和band40都保存下来
-                        if (channel.getBand().equals("38")){
+                        if (channel.getBand().equals("38")) {
                             dbManager.save(new DBChannel(channel.getIdx(), "40", band40Fcns, 1, 1));
-                        }else if (channel.getBand().equals("40")){
+                        } else if (channel.getBand().equals("40")) {
                             dbManager.save(new DBChannel(channel.getIdx(), "38", band38Fcns, 1, 1));
                         }
 
@@ -798,7 +802,7 @@ public class LTESendManager {
             return;
         }
 
-        LogUtils.log("固件升级:"+upgradeCommand);
+        LogUtils.log("固件升级:" + upgradeCommand);
         LTE_PT_SYSTEM.setSystemParam(LTE_PT_SYSTEM.SYSTEM_UPGRADE, upgradeCommand);
     }
 }

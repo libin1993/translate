@@ -605,7 +605,9 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private void refreshDetectOperation() {
         if (CacheManager.getChannels().size() > 0) {
             String firstPlnm = CacheManager.getChannels().get(0).getPlmn();  //以第一个作为参考
-
+            if (TextUtils.isEmpty(firstPlnm)){
+                return;
+            }
             if (firstPlnm.contains("46000") && firstPlnm.contains("46001") && firstPlnm.contains("46011")) {
                 rbDetectAll.setChecked(true);
             } else if (firstPlnm.equals("46000,46000,46000")) {

@@ -204,7 +204,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 public void run() {
                     //目标imsi吸附，其余的回公网
                     LTESendManager.setNameList("", "",
-                            "", CacheManager.getCurrentLoction().getImsi(), "reject", null);
+                            "", CacheManager.getCurrentLoction().getImsi(), "reject", "");
 
                 }
             }, 1000);
@@ -224,7 +224,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    CacheManager.redirect2G(CacheManager.getCurrentLoction().getImsi(), "reject");
+                    CacheManager.redirect2G(CacheManager.getCurrentLoction().getImsi(), "reject","");
                 }
             },1000);
         }
@@ -357,7 +357,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        CacheManager.redirect2G("","redirect");
+                        CacheManager.redirect2G("","redirect",null);
 
                     }
                 }, 1000);
@@ -487,7 +487,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        CacheManager.redirect2G("","redirect");
+                        CacheManager.redirect2G("","redirect",null);
                     }
                 }, 1000);
             }

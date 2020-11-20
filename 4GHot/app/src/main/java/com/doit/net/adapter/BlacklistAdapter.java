@@ -3,16 +3,21 @@ package com.doit.net.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.doit.net.event.AddToLocationListener;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackListInfo;
+import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
+import com.doit.net.utils.ToastUtils;
 import com.doit.net.view.ModifyWhitelistDialog;
 import com.doit.net.ucsi.R;
 
@@ -79,6 +84,16 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
                 modifyUserInfoDialog.show();
             }
         });
+
+
+        ImageView ivLocation = convertView.findViewById(R.id.iv_location);
+        if(CacheManager.getLocMode() && !TextUtils.isEmpty(whitelistInfo.getImsi())){
+            ivLocation.setVisibility(View.VISIBLE);
+            ivLocation.setOnClickListener(new AddToLocationListener(mContext,whitelistInfo.getImsi(),1));
+        }else{
+            ivLocation.setVisibility(View.GONE);
+        }
+
 
         if (mOnItemLongClickListener != null) {
             //获取触摸点的坐标，以决定pop从哪里弹出

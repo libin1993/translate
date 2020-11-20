@@ -118,7 +118,7 @@
             android:layout_height="42dp"
             android:background="@color/deepgrey2"
             app:isShowRightText="false"
-            app:leftIcon="@drawable/icon_0000s_0002s_0005_user"
+            app:leftIcon="@drawable/ic_user_white"
             app:leftText="黑名单管理" />
 
         <View
