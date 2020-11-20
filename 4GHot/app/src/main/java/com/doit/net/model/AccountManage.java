@@ -56,7 +56,7 @@ public class AccountManage {
     public static final int PERMISSION_LEVEL2 = 2;
     public static final int PERMISSION_LEVEL3 = 3;
 
-    public static String getAdminAcount() {
+    public static String getAdminAccount() {
         return adminAccount;
     }
 

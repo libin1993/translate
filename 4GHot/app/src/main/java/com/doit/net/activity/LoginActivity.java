@@ -12,7 +12,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.doit.net.protocol.LTEReceiveManager;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.model.AccountManage;
@@ -20,17 +19,11 @@ import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.utils.FTPManager;
 import com.doit.net.model.PrefManage;
-import com.doit.net.utils.FormatUtils;
-import com.doit.net.utils.GsonUtils;
-import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.ucsi.R;
 
 import java.io.File;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.doit.net.activity.SystemSettingActivity.LOC_PREF_KEY;
 
@@ -124,7 +117,7 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 AccountManage.getAdminAccoutFromPref();
-                if (!userName.equals(AccountManage.getSuperAccount()) && !userName.equals(AccountManage.getAdminAcount())) {
+                if (!userName.equals(AccountManage.getSuperAccount()) && !userName.equals(AccountManage.getAdminAccount())) {
 
                     new Thread() {
                         public void run() {

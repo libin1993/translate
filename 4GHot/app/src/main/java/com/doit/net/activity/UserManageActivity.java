@@ -15,7 +15,6 @@ import android.widget.ListView;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.CacheManager;
 import com.doit.net.view.AddUserDialog;
 import com.doit.net.view.ModifyAdminAccountDialog;
 import com.doit.net.adapter.UserListAdapter;
@@ -23,7 +22,6 @@ import com.doit.net.base.BaseActivity;
 import com.doit.net.model.AccountManage;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.UserInfo;
-import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
 import org.xutils.ex.DbException;
@@ -93,7 +91,7 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
         @Override
         public void onClick(View v) {
             ModifyAdminAccountDialog modifyAdminAccountDialog = new ModifyAdminAccountDialog(activity,
-                    AccountManage.getAdminAcount(), AccountManage.getAdminPassword());
+                    AccountManage.getAdminAccount(), AccountManage.getAdminPassword());
             modifyAdminAccountDialog.show();
 
         }
