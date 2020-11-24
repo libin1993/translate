@@ -214,6 +214,7 @@ public class LTEReceiveManager {
                             case LTE_PT_PARAM.PARAM_SET_FTP_CONFIG_ACK:
                             case LTE_PT_PARAM.PARAM_CHANGE_TAG_ACK:
                             case LTE_PT_PARAM.PARAM_SET_NAMELIST_ACK:
+                            case LTE_PT_PARAM.PARAM_CHANGE_NAMELIST_ACK:
                             case LTE_PT_PARAM.PARAM_CHANGE_BAND_ACK:
                             case LTE_PT_PARAM.PARAM_SET_SCAN_FREQ_ACK:
                             case LTE_PT_PARAM.PARAM_SET_FAN_ACK:

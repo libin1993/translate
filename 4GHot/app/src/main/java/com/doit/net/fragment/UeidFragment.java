@@ -46,40 +46,20 @@ public class UeidFragment extends BaseFragment {
 
         listTitles = new ArrayList<>();
         listFragments = new ArrayList<>();
-//        if (VersionManage.isArmyVer()){
-            listTitles.add("实时上报");
-            listTitles.add("碰撞分析");
-            listTitles.add("伴随分析");
-            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(0)));
-            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(1)));
-            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(2)));
 
-            listFragments.add(new RealTimeUeidRptFragment());
-            listFragments.add(new CollideAnalysisFragment());
-            listFragments.add(new GetPartnerAnalysisFragment());
+        listTitles.add("实时上报");
+        listTitles.add("碰撞分析");
+        listTitles.add("伴随分析");
+        tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(0)));
+        tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(1)));
+        tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(2)));
 
-            tabLayout.setTabMode(TabLayout.MODE_FIXED);
-//        }else if(VersionManage.isPoliceVer()){
-//            listTitles.add("实时上报");
-//            //listTitles.add("中标记录");
-//            listTitles.add("碰撞分析");
-//            listTitles.add("伴随分析");
-//            //listTitles.add("实时碰撞");
-//
-//            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(0)));
-//            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(1)));
-//            tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(2)));
-//            //tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(3)));
-//            //tabLayout.addTab(tabLayout.newTab().setText(listTitles.get(4)));
-//
-//            listFragments.add(new RealTimeUeidRptFragment());
-//           // listFragments.add(new RealtimeNamelistRptFragment());
-//            listFragments.add(new CollideAnalysisFragment());
-//            listFragments.add(new GetPartnerAnalysisFragment());
-//            //listFragments.add(new RealTimeAnalysisFragment());
-//
-//            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-//        }
+        listFragments.add(new RealTimeUeidRptFragment());
+        listFragments.add(new CollideAnalysisFragment());
+        listFragments.add(new GetPartnerAnalysisFragment());
+
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+
 
         viewPagers.setOffscreenPageLimit(listTitles.size());
         viewPagers.setAdapter(new UeidTabLayoutAdapter(getChildFragmentManager(), listFragments, listTitles));
@@ -94,7 +74,7 @@ public class UeidFragment extends BaseFragment {
             }
         }
         tab = tabLayout.getTabAt(0);
-        if (tab != null  && tab.getCustomView() instanceof TextView) {
+        if (tab != null && tab.getCustomView() instanceof TextView) {
             ((TextView) tab.getCustomView()).setTextSize(22);
             ((TextView) tab.getCustomView()).setTextColor(getResources().getColor(R.color.black));
         }
@@ -102,9 +82,9 @@ public class UeidFragment extends BaseFragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                //viewPagers.setCurrentItem(tab.getPosition());
+
                 View view = tab.getCustomView();
-                if (null != view && view instanceof TextView) {
+                if (view instanceof TextView) {
                     ((TextView) view).setTextSize(22);
                     ((TextView) view).setTextColor(getResources().getColor(R.color.black));
                 }
@@ -113,7 +93,7 @@ public class UeidFragment extends BaseFragment {
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 View view = tab.getCustomView();
-                if (null != view && view instanceof TextView) {
+                if (view instanceof TextView) {
                     ((TextView) view).setTextSize(15);
                     ((TextView) view).setTextColor(getResources().getColor(R.color.white));
                 }
@@ -125,11 +105,6 @@ public class UeidFragment extends BaseFragment {
         });
     }
 
-//    @Override
-//    public void onFocus() {
-//        listFragments.get(0).onResume();  //刷新实时上报界面功率开关
-//
-//    }
 
     private View getTabView(int currentPosition) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.comman_text, null);

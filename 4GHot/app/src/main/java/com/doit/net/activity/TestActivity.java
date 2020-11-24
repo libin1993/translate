@@ -37,10 +37,9 @@ import static com.doit.net.event.EventAdapter.UPDATE_TMEPRATURE;
 public class TestActivity extends BaseActivity implements EventAdapter.EventCall {
     private Button test1;
     private Button test2;
-    private Button test3;
+
     private Button test4;
-    private Button test5;
-    private Button test6;
+    private EditText etIMSI;
     private Button test7;
 
     private Button btGetDeviceLog;
@@ -57,10 +56,10 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
         test1 = findViewById(R.id.test1);
         test2 = findViewById(R.id.test2);
-        test3 = findViewById(R.id.test3);
+
         test4 = findViewById(R.id.test4);
-        test5 = findViewById(R.id.test5);
-        test6 = findViewById(R.id.test6);
+        etIMSI = findViewById(R.id.et_change_nameList);
+
         test7 = findViewById(R.id.test7);
 
         btGetDeviceLog = findViewById(R.id.btGetDeviceLog);
@@ -93,14 +92,6 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             }
         });
 
-        test3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //EventAdapter.call(EventAdapter.UPDATE_BATTERY, 10800);
-//                UtilBaseLog.printLog(getSimIMSI((TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE),0)+","+
-//                        getSimIMSI((TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE),1));
-            }
-        });
 
         btGetDeviceLog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,28 +104,14 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
         test4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
-
+                String imsi = etIMSI.getText().toString().trim();
+                if (!TextUtils.isEmpty(imsi)){
+                    LTESendManager.setNameList(null,imsi,null,null,null,null);
+//                    LTESendManager.changeNameList("add","reject",imsi);
+                }
             }
         });
 
-        test5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-        });
-
-        test6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-        });
 
         test7.setOnClickListener(new View.OnClickListener() {
             @Override

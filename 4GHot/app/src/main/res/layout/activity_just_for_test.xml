@@ -15,30 +15,28 @@
 
         <Button
             android:id="@+id/test1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:text="更新频点" />
 
         <Button
             android:id="@+id/test2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:text="显示文件频点" />
 
-        <Button
-            android:id="@+id/test3"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:text="测试" />
 
         <Button
             android:id="@+id/btGetDeviceLog"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
             android:text="获取设备日志" />
     </LinearLayout>
 
@@ -50,35 +48,39 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/test4"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:text="侦码模式"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/test5"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:text="定位模式"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/test6"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:text="管控模式"
-            android:visibility="gone"/>
-
-        <Button
             android:id="@+id/test7"
-            android:layout_width="wrap_content"
+            android:layout_width="120dp"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
             android:text="获取名单" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/et_change_nameList"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.5"
+            android:maxLength="15"
+            android:inputType="number"
+            android:layout_marginStart="5dp"
+            android:hint="白名单IMSI,多个以,隔开"/>
+
+        <Button
+            android:id="@+id/test4"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:text="添加名单"
+            android:layout_marginEnd="5dp"/>
 
     </LinearLayout>
 

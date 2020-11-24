@@ -209,7 +209,7 @@ public class PointCollideFragment extends BaseFragment {
             listCollideResult.add(new AnalysisResultBean(tmpCollideResult.getKey(), String.valueOf(tmpCollideResult.getValue())));
             if (count >= MAX_COLLIDE_RESULT_TO_SHOW)
                 break;
-            //System.out.println("Key=" + tmpCollideResult.getKey() + ", Value=" + tmpCollideResult.getValue());
+
         }
     }
 

@@ -30,8 +30,8 @@ public class MsgType2G {
     public static final byte GET_NTC_CONFIG_ACK = (byte) 0x91;   //查询基本环境参数应答
     public static final byte GET_MCRF_CONFIG = 0x12;   //查询运营商参数、工作模式
     public static final byte GET_MCRF_CONFIG_ACK = (byte) 0x92;   //查询运营商参数、工作模式应答
-    public static final byte GET_MP_STATE = 0x1E;   //查询猫池状态
-    public static final byte GET_MP_STATE_ACK = (byte) 0x9E;   //查询猫池状态应答
+    public static final byte GET_MP_STATE = 0x1F;   //查询猫池状态
+    public static final byte GET_MP_STATE_ACK = (byte) 0x9F;   //查询猫池状态应答
 
     public static final byte REBOOT_DEVICE = (byte) 0x31;   //重启设备
     public static final byte REBOOT_DEVICE_ACK = (byte) 0xB1;   //重启设备应答

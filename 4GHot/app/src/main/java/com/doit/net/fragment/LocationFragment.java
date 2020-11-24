@@ -197,19 +197,26 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
             Send2GManager.setRFState("0");
 
-            LTESendManager.exchangeFcn(CacheManager.getCurrentLoction().getImsi());
+            //目标imsi吸附，其余的回公网
+            LTESendManager.setNameList("", "",
+                    "", CacheManager.getCurrentLoction().getImsi(), "reject", "");
+
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    //目标imsi吸附，其余的回公网
-                    LTESendManager.setNameList("", "",
-                            "", CacheManager.getCurrentLoction().getImsi(), "reject", "");
-
+                    LTESendManager.exchangeFcn(CacheManager.getCurrentLoction().getImsi());
                 }
             }, 1000);
-        }else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.openAllRf();
+                }
+            }, 2000);
 
+        }else {
+            CacheManager.redirect2G(CacheManager.getCurrentLoction().getImsi(), "reject","");
 
             Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "1");
 
@@ -218,15 +225,15 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 public void run() {
                     Send2GManager.setRFState("1");
                 }
-            }, 500);
+            }, 1000);
 
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    CacheManager.redirect2G(CacheManager.getCurrentLoction().getImsi(), "reject","");
+                    LTESendManager.openAllRf();
                 }
-            },1000);
+            }, 1000);
         }
 
 
@@ -340,7 +347,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 }
                 EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
 
-                LTESendManager.closeAllRf();
+
 
                 Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
 
@@ -349,9 +356,16 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     public void run() {
                         Send2GManager.setRFState("0");
                     }
-                }, 500);
+                }, 1000);
 
                 stopLoc();
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.closeAllRf();
+                    }
+                }, 1000);
 
 
                 new Timer().schedule(new TimerTask() {
@@ -360,7 +374,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                         CacheManager.redirect2G("","redirect",null);
 
                     }
-                }, 1000);
+                }, 2000);
 
 
                 if (CacheManager.currentLoction != null && !CacheManager.currentLoction.getImsi().equals("")) {

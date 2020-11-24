@@ -51,10 +51,8 @@ public class CacheManager {
 
     public static List<UeidBean> realtimeUeidList = new ArrayList<>();
 
-    public static List<LocationBean> locations = new ArrayList<>();
     public static LocationBean currentLoction = null;
 
-    public static Namelist namelist = new Namelist();
 
     public static boolean isReportBattery = false;  //是否上报电量
 
@@ -103,18 +101,36 @@ public class CacheManager {
 
         try {
             DbManager dbManager = UCSIDBManager.getDbManager();
-            DBChannel dbChannel = dbManager.selector(DBChannel.class)
+            //B3频段恢复默认频点
+            DBChannel channelB3 = dbManager.selector(DBChannel.class)
                     .where("band", "=", "3")
                     .and("is_check", "=", "1")
                     .findFirst();
-            if (dbChannel != null) {
-                LTESendManager.setChannelConfig(dbChannel.getIdx(), dbChannel.getFcn(),
+            if (channelB3 != null) {
+                LTESendManager.setChannelConfig(channelB3.getIdx(), channelB3.getFcn(),
                         "46001,46011", "", "", "", "", "");
 
                 for (LteChannelCfg channel : CacheManager.channels) {
-                    if (channel.getIdx().equals(dbChannel.getIdx())){
-                        channel.setFcn(dbChannel.getFcn());
+                    if (channel.getIdx().equals(channelB3.getIdx())){
+                        channel.setFcn(channelB3.getFcn());
                         channel.setPlmn("46001,46011");
+                        break;
+                    }
+                }
+            }
+
+            //B1频段恢复默认频点
+            DBChannel channelB1 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "1")
+                    .and("is_check", "=", "1")
+                    .findFirst();
+            if (channelB1 != null) {
+                LTESendManager.setChannelConfig(channelB1.getIdx(), channelB1.getFcn(),
+                        "", "", "", "", "", "");
+
+                for (LteChannelCfg channel : CacheManager.channels) {
+                    if (channel.getIdx().equals(channelB1.getIdx())){
+                        channel.setFcn(channelB1.getFcn());
                         break;
                     }
                 }
@@ -197,9 +213,6 @@ public class CacheManager {
         CacheManager.equipConfig = equipConfig;
     }
 
-    public static void setNamelist(Namelist list) {
-        namelist = list;
-    }
 
     public synchronized static void addChannel(LteChannelCfg cfg) {
         for (LteChannelCfg channel : channels) {

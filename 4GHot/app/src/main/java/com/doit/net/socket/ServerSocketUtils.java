@@ -132,12 +132,9 @@ public class ServerSocketUtils {
                 }
 
                 LogUtils.log(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
-//                ToastUtils.showMessage(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
 
             } catch (IOException ex) {
                 LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
-
-//                ToastUtils.showMessage(remoteIP + "：socket异常:" + ex.toString());
             }
 
             onSocketChangedListener.onChange(remoteIP);

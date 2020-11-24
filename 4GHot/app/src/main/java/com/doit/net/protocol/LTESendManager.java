@@ -27,6 +27,14 @@ import java.util.Date;
 public class LTESendManager {
 
 
+    /**
+     * @param redirectConfig
+     * @param nameListReject
+     * @param nameListRedirect
+     * @param nameListBlock
+     * @param nameListRestAction
+     * @param nameListFile       设置名单
+     */
     public static void setNameList(String redirectConfig, String nameListReject,
                                    String nameListRedirect, String nameListBlock,
                                    String nameListRestAction, String nameListFile) {
@@ -70,6 +78,20 @@ public class LTESendManager {
         LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);
     }
+
+
+    /**
+     * @param action add表示增加imsi列表到指定的动作中，del表示在指定的动作中删除imsi列表
+     * @param mode   可以取值为reject、redirect、block，分别表示拒绝回4G公网、重定向、吸附在4G
+     * @param imsi   修改名单
+     */
+    public static void changeNameList(String action, String mode, String imsi) {
+        String nameList = action + "#" + mode + "#" + imsi;
+
+        LogUtils.log("修改名单：" + nameList);
+        LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_CHANGE_NAMELIST, nameList);
+    }
+
 
     public static void getEquipAndAllChannelConfig() {
         LogUtils.log("查询设备配置");
@@ -209,7 +231,6 @@ public class LTESendManager {
         if (!"".equals(pa)) {
             configContent += "@PA:";
             configContent += pa;
-            //configContent += checkPa(idx, pa);
         }
 
         if (!"".equals(ga)) {
@@ -233,14 +254,10 @@ public class LTESendManager {
             configContent += AltFcn;
         }
 
-//        configContent += "@HOLD:";
-//        configContent += HOLD_VALUE;
-
 
         LogUtils.log("设置通道: " + configContent);
 
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_CONFIG, configContent);
-        //BlackBoxManger.recordOperation(BlackBoxManger.SET_CHANNEL_CONFIG+configContent);
     }
 
     //加入定位关闭非目标运营商频点加大目标运营商频点功率策略之后，
@@ -405,32 +422,61 @@ public class LTESendManager {
 
         try {
             DbManager dbManager = UCSIDBManager.getDbManager();
-            DBChannel dbChannel = dbManager.selector(DBChannel.class)
+            //移动定位，修改B3频点
+            DBChannel channelB3 = dbManager.selector(DBChannel.class)
                     .where("band", "=", "3")
                     .and("is_check", "=", "1")
                     .findFirst();
-            if (dbChannel != null) {
+            if (channelB3 != null) {
                 if ("CTJ".equals(UtilOperator.getOperatorName(imsi))) {
-                    setChannelConfig(dbChannel.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
+                    setChannelConfig(channelB3.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(dbChannel.getIdx())) {
+                        if (channel.getIdx().equals(channelB3.getIdx())) {
                             channel.setFcn("1300,1506,1650");
                             channel.setPlmn("46000");
                             break;
                         }
                     }
                 } else {
-                    setChannelConfig(dbChannel.getIdx(), dbChannel.getFcn(),
+                    setChannelConfig(channelB3.getIdx(), channelB3.getFcn(),
                             "46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(dbChannel.getIdx())) {
-                            channel.setFcn(dbChannel.getFcn());
+                        if (channel.getIdx().equals(channelB3.getIdx())) {
+                            channel.setFcn(channelB3.getFcn());
                             channel.setPlmn("46001,46011");
                             break;
                         }
                     }
                 }
             }
+
+
+            //电信定位，修改B1频点
+            DBChannel channelB1 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "1")
+                    .and("is_check", "=", "1")
+                    .findFirst();
+            if (channelB1 != null) {
+                if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+                    setChannelConfig(channelB1.getIdx(), "100,350,550", "", "", "", "", "", "");
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(channelB1.getIdx())) {
+                            channel.setFcn("100,350,550");
+                            break;
+                        }
+                    }
+                } else {
+                    setChannelConfig(channelB1.getIdx(), channelB1.getFcn(),
+                            "", "", "", "", "", "");
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(channelB1.getIdx())) {
+                            channel.setFcn(channelB1.getFcn());
+                            break;
+                        }
+                    }
+                }
+            }
+
 
         } catch (DbException e) {
             e.printStackTrace();
@@ -690,7 +736,8 @@ public class LTESendManager {
      */
     public static void saveDefaultFcn() {
         String fcn = "";
-        String band1Fcns = "100,350,550";
+//        String band1Fcns = "100,350,550";
+        String band1Fcns = "275,225,350";
         String band3Fcns = "1300,1650,1506";//1300
         String band38Fcns = "37900,38098,38200";
         String band39Fcns = "38400,38544,38300";
@@ -699,7 +746,7 @@ public class LTESendManager {
 
 
         for (LteChannelCfg channel : CacheManager.channels) {
-            if (TextUtils.isEmpty(channel.getBand())){
+            if (TextUtils.isEmpty(channel.getBand())) {
                 continue;
             }
             switch (channel.getBand()) {
@@ -726,11 +773,11 @@ public class LTESendManager {
             if (!TextUtils.isEmpty(fcn)) {
                 try {
                     DbManager dbManager = UCSIDBManager.getDbManager();
-                    DBChannel channel1 = dbManager.selector(DBChannel.class)
+                    DBChannel dbChannel = dbManager.selector(DBChannel.class)
                             .where("band", "=", channel.getBand())
                             .and("fcn", "=", fcn)
                             .findFirst();
-                    if (channel1 == null) {
+                    if (dbChannel == null) {
                         dbManager.save(new DBChannel(channel.getIdx(), channel.getBand(), fcn, 1, 1));
 
                         //band38和band40可切换，需将band38和band40都保存下来

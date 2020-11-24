@@ -64,6 +64,8 @@ public class LTE_PT_PARAM {
     public static final byte PARAM_SET_CHANNEL_OFF_ACK = 0x1c;
     public static final byte PARAM_SET_NAMELIST = 0x1d;    //设置名单
     public static final byte PARAM_SET_NAMELIST_ACK = 0x1e;
+    public static final byte PARAM_CHANGE_NAMELIST = 0x1f;    //修改名单
+    public static final byte PARAM_CHANGE_NAMELIST_ACK = 0x20;
     public static final byte PARAM_SET_RT_IMSI = 0x21;    //设置是否实时上报黑名单IMSI
     public static final byte PARAM_SET_RT_IMSI_ACK = 0x22;
     public static final byte PARAM_SET_SCAN_FREQ = 0x23; //下发扫频命令
@@ -487,10 +489,16 @@ public class LTE_PT_PARAM {
                 break;
 
             case LTE_PT_PARAM.PARAM_SET_NAMELIST_ACK:
-                String setNameListAsk = respContent;
-                if (setNameListAsk.charAt(0) == '0') {
+                if (respContent.charAt(0) == '0') {
                     LogUtils.log("设置名单成功");
-                } else if (setNameListAsk.charAt(0) == '1') {
+                } else if (respContent.charAt(0) == '1') {
+                    LogUtils.log("设置名单失败");
+                }
+                break;
+            case LTE_PT_PARAM.PARAM_CHANGE_NAMELIST_ACK:
+                if (respContent.charAt(0) == '0') {
+                    LogUtils.log("修改名单成功");
+                } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("设置名单失败");
                 }
                 break;
@@ -502,14 +510,12 @@ public class LTE_PT_PARAM {
                     ToastUtils.showMessage("更新TAC成功");
                 } else if (respContent.charAt(0) == 1) {
                     LogUtils.log("更新TAC失败");
-                    //ToastUtils.showMessage(GameApplication.appContext,"更新TAC失败");
                 }
                 break;
 
             case LTE_PT_PARAM.PARAM_SET_CHANNEL_CONFIG_ACK:
                 if (respContent.charAt(0) == '0') {
                     LogUtils.log("设置通道成功");
-//                    ProtocolManager.getEquipAndAllChannelConfig();
                 } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("设置通道失败");
                 }
@@ -542,7 +548,6 @@ public class LTE_PT_PARAM {
             case LTE_PT_PARAM.PARAM_CHANGE_BAND_ACK:
                 if (respContent.charAt(0) == '0') {
                     LogUtils.log("切换band成功");
-                    //ToastUtils.showMessageLong(GameApplication.appContext,"下发切换Band命令成功，请等待设备重启。");
                 } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("切换band失败");
                 }

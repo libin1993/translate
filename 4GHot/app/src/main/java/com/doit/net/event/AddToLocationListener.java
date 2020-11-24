@@ -52,25 +52,34 @@ public class AddToLocationListener implements View.OnClickListener {
             CacheManager.updateLoc(imsi, type);
 
             CacheManager.getCurrentLoction().setLocateStart(true);
-            LTESendManager.openAllRf();
+
             if (type == 1) {  //4G定位
 
                 Send2GManager.setRFState("0");
 
-                LTESendManager.exchangeFcn(imsi);
+                //目标imsi吸附，其余的回公网
+                LTESendManager.setNameList("", "",
+                        "", imsi, "reject", "");
 
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        //目标imsi吸附，其余的回公网
-                        LTESendManager.setNameList("", "",
-                                "", imsi, "reject", "");
-
+                        LTESendManager.exchangeFcn(imsi);
                     }
                 }, 1000);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.openAllRf();
+                    }
+                }, 2000);
 
 
             } else {
+
+                //目标imsi重定向，其余的回公网
+                CacheManager.redirect2G(imsi, "reject","");
+
                 Send2GManager.setLocIMSI(imsi, "1");
 
                 new Timer().schedule(new TimerTask() {
@@ -78,12 +87,14 @@ public class AddToLocationListener implements View.OnClickListener {
                     public void run() {
                         Send2GManager.setRFState("1");
                     }
-                }, 500);
-                //目标imsi重定向，其余的回公网
+                }, 1000);
+
+
+
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        CacheManager.redirect2G(imsi, "reject","");
+                        LTESendManager.openAllRf();
                     }
                 }, 1000);
 

@@ -54,14 +54,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     private TextView tvRealtimeCTUCount;
     private TextView tvRealtimeCTCCount;
 
-    private int realtimeCTJCount = 0;
-    private int realtimeCTUCount = 0;
-    private int realtimeCTCCount = 0;
-
-    private int translateCMCCNum = 0;  //移动翻译数量
-    private int translateCUNum = 0;    //联通翻译数量
-    private int translateCTNum = 0;    //电信翻译数量
-
     private CheckBox cbDetectSwitch;
 
     private long lastSortTime = 0;  //为了防止频繁上报排序导致列表错乱，定时排序一次
@@ -184,6 +176,9 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     };
 
 
+    /**
+     * @param ueidList 新增数据
+     */
     private void addShildRptList(List<UeidBean> ueidList) {
         for (UeidBean ueidBean : ueidList) {
             boolean isContain = false;
@@ -227,14 +222,20 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     }
 
 
+    /**
+     * 刷新列表
+     */
     private void updateView() {
-        realtimeCTJCount = 0;
-        realtimeCTUCount = 0;
-        realtimeCTCCount = 0;
+        int realtimeCTJCount = 0;
+        int realtimeCTUCount = 0;
+        int realtimeCTCCount = 0;
 
-        translateCMCCNum = 0;
-        translateCUNum = 0;
-        translateCTNum = 0;
+        //移动翻译数量
+        int translateCMCCNum = 0;
+        //联通翻译数量
+        int translateCUNum = 0;
+        //电信翻译数量
+        int translateCTNum = 0;
 
 
         for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
@@ -288,9 +289,9 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         }
 
 
-        tvRealtimeCTJCount.setText(translateCMCCNum +"/"+realtimeCTJCount);
-        tvRealtimeCTUCount.setText(translateCUNum+"/"+ realtimeCTUCount);
-        tvRealtimeCTCCount.setText(translateCTNum+"/"+realtimeCTCCount);
+        tvRealtimeCTJCount.setText(translateCMCCNum +"/"+ realtimeCTJCount);
+        tvRealtimeCTUCount.setText(translateCUNum +"/"+ realtimeCTUCount);
+        tvRealtimeCTCCount.setText(translateCTNum +"/"+ realtimeCTCCount);
 
 
 
