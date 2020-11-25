@@ -36,7 +36,12 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             });
 
             isShow = true;
-            EventAdapter.call(EventAdapter.STOP_LOC);
+
+            if (CacheManager.getCurrentLoction() != null) {
+                CacheManager.getCurrentLoction().setLocateStart(false);
+            }
+
+            EventAdapter.call(EventAdapter.RF_STATUS_LOC);
 
         }
 

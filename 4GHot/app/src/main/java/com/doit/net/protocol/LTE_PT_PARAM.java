@@ -473,7 +473,7 @@ public class LTE_PT_PARAM {
 
             case PARAM_SET_CHANNEL_OFF_ACK:
                 String[] offAsk = respContent.split("#");
-                //UtilBaseLog.printLog("关");
+
                 if (offAsk[0].charAt(0) == '0') {
                     for (LteChannelCfg channel : CacheManager.getChannels()) {
                         if (channel.getIdx().equals(offAsk[1])) {
@@ -499,7 +499,7 @@ public class LTE_PT_PARAM {
                 if (respContent.charAt(0) == '0') {
                     LogUtils.log("修改名单成功");
                 } else if (respContent.charAt(0) == '1') {
-                    LogUtils.log("设置名单失败");
+                    LogUtils.log("修改名单失败");
                 }
                 break;
 

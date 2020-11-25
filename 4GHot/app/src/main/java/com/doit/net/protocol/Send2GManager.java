@@ -1,11 +1,14 @@
 package com.doit.net.protocol;
 
+import com.doit.net.bean.BlackListBean;
 import com.doit.net.bean.Get2GCommonBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.Set2GRFBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
+import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
+import com.doit.net.model.UCSIDBManager;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
@@ -14,6 +17,8 @@ import com.doit.net.utils.UtilDataFormatChange;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.DbManager;
+import org.xutils.ex.DbException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -227,7 +232,6 @@ public class Send2GManager {
      */
     public static void setLocIMSI(String imsi, String state) {
 
-
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", MsgType2G.SET_LOC_IMSI_ID);
@@ -245,5 +249,29 @@ public class Send2GManager {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 设置黑名单
+     */
+    public static void setBlackList(){
+        DbManager dbManager = UCSIDBManager.getDbManager();
+        List<String> blackList = new ArrayList<>();
+        try {
+            List<BlackListInfo> blackInfoList = dbManager.selector(BlackListInfo.class).findAll();
+            if (blackInfoList != null){
+                for (int i = 0; i < blackInfoList.size(); i++) {
+                    blackList.add(blackInfoList.get(i).getMsisdn());
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        BlackListBean blackListBean = new BlackListBean();
+        blackListBean.setId(MsgType2G.SET_BLACK_NAMELIST_ID);
+        blackListBean.setNamelist(blackList);
+        LogUtils.log("修改名单(黑):" + GsonUtils.objectToString(blackListBean));
+        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_BLACK_NAMELIST, GsonUtils.objectToString(blackListBean).getBytes(StandardCharsets.UTF_8));
     }
 }

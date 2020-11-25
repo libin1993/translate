@@ -13,25 +13,20 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.doit.net.bean.Set2GParamsBean;
+import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.view.LocateChart;
 import com.doit.net.view.LocateCircle;
 import com.doit.net.base.BaseFragment;
 import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.protocol.LTESendManager;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
-import com.doit.net.model.VersionManage;
-import com.doit.net.utils.Cellular;
 import com.doit.net.utils.LogUtils;
-import com.doit.net.utils.UtilOperator;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.ToastUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -67,7 +62,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     //handler消息
     private final int UPDATE_VIEW = 0;
     private final int LOC_REPORT = 1;
-    private final int STOP_LOC = 3;
     private final int REFRESH_DEVICE = 4;
     private final int RF_STATUS_LOC = 5;
     private final int ADD_LOCATION = 6;
@@ -105,7 +99,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         EventAdapter.register(EventAdapter.REFRESH_DEVICE, this);
         EventAdapter.register(EventAdapter.LOCATION_RPT, this);
         EventAdapter.register(EventAdapter.ADD_LOCATION, this);
-        EventAdapter.register(EventAdapter.STOP_LOC, this);
         EventAdapter.register(EventAdapter.RF_STATUS_LOC, this);
 
     }
@@ -186,28 +179,13 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         return srsp;
     }
 
-    /**
-     * 开始定位
-     */
-    private void startLoc() {
-        CacheManager.getCurrentLoction().setLocateStart(true);
-
-        CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
-
-        startSpeechBroadcastLoop();
-
-        textContent = "正在搜寻：" + CacheManager.currentLoction.getImsi();
-        refreshPage();
-    }
-
-    void addLocation(String imsi) {
+    //开始定位
+    private void startLoc(String imsi) {
         LogUtils.log("开始定位,IMSI:" + imsi);
-
 
         cbLocSwitch.setOnCheckedChangeListener(null);
         cbLocSwitch.setChecked(true);
         cbLocSwitch.setOnCheckedChangeListener(rfLocSwitchListener);
-
 
         switchType.setOnCheckedChangeListener(null);
         switchType.setChecked(CacheManager.getCurrentLoction().getType() == 1);
@@ -217,38 +195,39 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         textContent = "正在搜寻" + imsi;
 
         if (!"".equals(lastLocateIMSI) && !lastLocateIMSI.equals(imsi)) {   //更换目标
-            restartLoc();
+            speech("搜寻目标更换");
+            currentSRSP = 0;
+            lastRptSRSP = 0;
+            textContent = "正在搜寻：" + CacheManager.getCurrentLoction().getImsi();
+            resetLocateChartValue();
         }
 
         startSpeechBroadcastLoop();
 
         lastLocateIMSI = CacheManager.getCurrentLoction().getImsi();
 
-
         refreshPage();
     }
 
-    private void restartLoc() {
-        speech("搜寻目标更换");
-        currentSRSP = 0;
-        lastRptSRSP = 0;
-        textContent = "正在搜寻：" + CacheManager.getCurrentLoction().getImsi();
-        resetLocateChartValue();
-        refreshPage();
-        startSpeechBroadcastLoop();  //从停止定位的状态添加定位，故语音手动再次开启
-    }
 
+    /**
+     * 停止定位
+     */
     private void stopLoc() {
         LogUtils.log("停止定位");
 
-        if (CacheManager.getLocState()) {
-            CacheManager.stopCurrentLoc();
+        CacheManager.stopLoc();
 
-            stopSpeechBroadcastLoop();
+        if (CacheManager.getCurrentLoction() !=null){
+            CacheManager.getCurrentLoction().setLocateStart(false);
             textContent = "搜寻暂停：" + CacheManager.getCurrentLoction().getImsi();
-            currentSRSP = 0;
-            resetLocateChartValue();
+        }else {
+            textContent = "搜寻未开始";
         }
+
+        stopSpeechBroadcastLoop();
+        currentSRSP = 0;
+        resetLocateChartValue();
 
         cbLocSwitch.setOnCheckedChangeListener(null);
         cbLocSwitch.setChecked(false);
@@ -278,7 +257,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 CacheManager.currentLoction.setType(isChecked ? 1 : 0);
 
                 if (CacheManager.getLocState()){
-                    startLoc();
+                    CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
+                    startLoc(CacheManager.getCurrentLoction().getImsi());
                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
                 }
             }
@@ -302,36 +282,19 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLoction == null || TextUtils.isEmpty(CacheManager.currentLoction.getImsi())) {
                     return;
                 }
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
 
+                LTESendManager.closeAllRf();
 
-
-                Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
+                Send2GManager.setRFState("0");
 
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        Send2GManager.setRFState("0");
+                        stopLoc();
                     }
                 }, 1000);
 
-                stopLoc();
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LTESendManager.closeAllRf();
-                    }
-                }, 1000);
-
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CacheManager.redirect2G("","redirect",null);
-
-                    }
-                }, 2000);
 
 
                 if (CacheManager.currentLoction != null && !CacheManager.currentLoction.getImsi().equals("")) {
@@ -341,8 +304,10 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLoction == null || CacheManager.currentLoction.getImsi().equals("")) {
                     ToastUtils.showMessage(R.string.button_loc_unstart);
                 } else {
-                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
-                    startLoc();
+                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
+                    CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
+                    startLoc(CacheManager.getCurrentLoction().getImsi());
+
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE + CacheManager.currentLoction.getImsi());
                 }
             }
@@ -386,34 +351,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     };
 
 
-    private void setLocationRF() {
-        if (!CacheManager.getLocState())
-            return;
-
-        String operator = UtilOperator.getOperatorName(CacheManager.getCurrentLoction().getImsi());
-        String setBand = "";
-        List<Integer> listBandInOpr;
-        if (operator.equals("CTJ")) {
-            listBandInOpr = Arrays.asList(38, 39, 40, 41);
-        } else if (operator.equals("CTU") || operator.equals("CTC")) {
-            listBandInOpr = Arrays.asList(1, 3);
-        } else {
-            return;
-        }
-
-        for (LteChannelCfg channel : CacheManager.getChannels()) {
-            if (listBandInOpr.contains(Integer.valueOf(channel.getBand()))) {
-                if (!channel.getRFState())
-                    LTESendManager.openRf(channel.getIdx());
-            } else {
-                if (channel.getRFState())
-                    LTESendManager.closeRf(channel.getIdx());
-            }
-        }
-    }
-
-
-
     @Override
     public void onFocus() {
         refreshPage();
@@ -426,7 +363,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     private void isRFOpen() {
 
         boolean rfState4G = false;
-        boolean rfState2G = false;
 
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             if (channel.getRFState()) {
@@ -434,40 +370,10 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 break;
             }
         }
-        for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            if (params.isRfState() && !params.getBoardid().equals("1")) {
-                rfState2G = true;
-                break;
-            }
+
+        if (!rfState4G) {
+            stopLoc();
         }
-
-
-        cbLocSwitch.setOnCheckedChangeListener(null);
-
-        if (!CacheManager.getLocState()) {
-            if (!rfState4G && !rfState2G) {
-                cbLocSwitch.setChecked(false);
-            }
-        } else {
-            cbLocSwitch.setChecked(rfState4G || rfState2G);
-            if (!rfState4G && !rfState2G) {
-                LogUtils.log("射频全关了，停止定位");
-                stopLoc();
-                Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "0");
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CacheManager.redirect2G("","redirect",null);
-                    }
-                }, 1000);
-            }
-
-        }
-
-
-        cbLocSwitch.setOnCheckedChangeListener(rfLocSwitchListener);
-
     }
 
 
@@ -494,16 +400,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     e.printStackTrace();
                 }
                 break;
-            case EventAdapter.STOP_LOC:
-                try {
-                    Message msg = new Message();
-                    msg.what = STOP_LOC;
-                    msg.obj = val;
-                    mHandler.sendMessage(msg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
             case EventAdapter.REFRESH_DEVICE:
                 mHandler.sendEmptyMessage(REFRESH_DEVICE);
                 break;
@@ -523,11 +419,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     vLocateCircle.setValue(currentSRSP);
                     updateLocateChart();
 
-//                    if (CacheManager.getLocState()) {
-//                        cbLocSwitch.setChecked(true);
-//                    } else {
-//                        cbLocSwitch.setChecked(false);
-//                    }
                     break;
                 case LOC_REPORT:
                     if (CacheManager.getCurrentLoction() != null && CacheManager.getCurrentLoction().isLocateStart()) {
@@ -545,11 +436,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                         refreshPage();
                     }
                     break;
-                case STOP_LOC:
-                    stopLoc();
-                    break;
                 case ADD_LOCATION:
-                    addLocation((String) msg.obj);
+                    startLoc((String) msg.obj);
                     break;
                 case REFRESH_DEVICE:
                     //ga <= 10为低增益,11-50为高增益

@@ -29,7 +29,6 @@ import static com.doit.net.activity.SystemSettingActivity.LOC_PREF_KEY;
 
 
 public class LoginActivity extends BaseActivity {
-    private Activity activity = this;
 
     private CheckBox ckRememberPass;
     private EditText etUserName;

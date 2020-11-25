@@ -143,11 +143,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                                 @Override
                                 public void onClick(MySweetAlertDialog sweetAlertDialog) {
                                     sweetAlertDialog.dismiss();
+
+                                    ToastUtils.showMessage(R.string.all_rf_close);
+                                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
                                     LTESendManager.closeAllRf();
                                     Send2GManager.setRFState("0");
 
-                                    ToastUtils.showMessage(R.string.all_rf_close);
-                                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
                                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                                 }
@@ -163,11 +164,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                             })
                             .show();
                 } else {
+                    ToastUtils.showMessageLong(R.string.all_rf_close);
+                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+
                     LTESendManager.closeAllRf();
                     Send2GManager.setRFState("0");
 
-                    ToastUtils.showMessageLong(R.string.all_rf_close);
-                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 6000);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_2G_RF);
                 }

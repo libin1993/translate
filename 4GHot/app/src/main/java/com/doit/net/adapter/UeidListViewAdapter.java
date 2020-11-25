@@ -32,8 +32,6 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         this.mContext = mContext;
     }
 
-
-
     @Override
     public int getSwipeLayoutResourceId(int position) {
         return R.id.swipe;
@@ -164,10 +162,6 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    public interface onItemLongClickListener {
-        void onItemLongClick(MotionEvent motionEvent, int position);
     }
 
 }

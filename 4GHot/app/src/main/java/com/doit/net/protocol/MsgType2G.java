@@ -25,6 +25,8 @@ public class MsgType2G {
     public static final byte SET_RF_SWITCH_ACK = (byte) 0x85;   //开关射频应答
     public static final byte SET_LOC_IMSI = (byte) 0x43;   //设置定位imsi
     public static final byte SET_LOC_IMSI_ACK = (byte) 0xC3;   //设置定位imsi应答
+    public static final byte SET_BLACK_NAMELIST = (byte) 0x47;   //设置黑名单手机号
+    public static final byte SET_BLACK_NAMELIST_ACK = (byte) 0xC7;   //设置黑名单手机号应答
 
     public static final byte GET_NTC_CONFIG = 0x11;   //查询基本环境参数
     public static final byte GET_NTC_CONFIG_ACK = (byte) 0x91;   //查询基本环境参数应答
@@ -50,4 +52,5 @@ public class MsgType2G {
     public static final String SYS_REBOOT_ID = "SYS_REBOOT";   //重启设备id
     public static final String SET_LOC_IMSI_ID = "SET_LOC_IMSI";   //设置定位imsi  id
     public static final String GET_MP_STATE_ID = "GET_MP_STATE";   //查询猫池状态id
+    public static final String SET_BLACK_NAMELIST_ID = "SET_BLACK_NAMELIST";   //设置黑名单id
 }

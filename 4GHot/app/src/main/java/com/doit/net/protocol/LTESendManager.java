@@ -35,11 +35,11 @@ public class LTESendManager {
      * @param nameListRedirect
      * @param nameListBlock
      * @param nameListRestAction
-     * @param nameListFile       设置名单
+     *    设置名单
      */
     public static void setNameList(String redirectConfig, String nameListReject,
                                    String nameListRedirect, String nameListBlock,
-                                   String nameListRestAction, String nameListFile) {
+                                   String nameListRestAction) {
         //MODE:[on|off]
         // @REDIRECT_CONFIG:46000,4,38400#46001,4,300#46011,4,100#46002,2,98  //重定向
         // @NAMELIST_REJECT:460001234512345,460011234512345   //拒绝
@@ -71,11 +71,9 @@ public class LTESendManager {
             namelist += "@NAMELIST_REST_ACTION:" + nameListRestAction;
         }
 
-        namelist += "@NAMELIST_RELEASE:";
+        namelist += "@NAMELIST_RELEASE:@NAMELIST_FILE:";
 
-        if (nameListFile != null) {
-            namelist += "@NAMELIST_FILE:" + nameListFile;
-        }
+
 
         LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);

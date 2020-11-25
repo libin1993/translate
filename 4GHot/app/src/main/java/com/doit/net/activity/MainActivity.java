@@ -886,7 +886,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    CacheManager.redirect2G("","redirect",null);  //重定向到2G
+                    CacheManager.redirect2G("","","redirect");  //重定向到2G
                 }
             }, 1000);
 

@@ -51,8 +51,6 @@ public class AddToLocationListener implements View.OnClickListener {
             EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);  //防止快速频繁更换定位目标
             CacheManager.updateLoc(imsi, type);
 
-            CacheManager.getCurrentLoction().setLocateStart(true);
-
             CacheManager.startLoc(imsi,type);
 
             ToastUtils.showMessage("搜寻开始");
@@ -61,6 +59,7 @@ public class AddToLocationListener implements View.OnClickListener {
         EventAdapter.call(EventAdapter.CHANGE_TAB, 1);
 
         EventAdapter.call(EventAdapter.ADD_LOCATION, imsi);
+
         EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE_FROM_NAMELIST + imsi);
 
 

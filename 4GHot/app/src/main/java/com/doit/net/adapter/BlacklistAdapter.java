@@ -17,6 +17,8 @@ import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
+import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.view.ModifyWhitelistDialog;
 import com.doit.net.ucsi.R;
@@ -79,6 +81,7 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
+
                     }
                 });
                 modifyUserInfoDialog.show();
@@ -170,6 +173,8 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
 
 
                 EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
+
+                Send2GManager.setBlackList();
 
                 //EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_USER+resp.getAccount());
             } catch (DbException e) {

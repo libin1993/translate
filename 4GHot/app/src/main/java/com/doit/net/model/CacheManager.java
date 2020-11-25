@@ -10,11 +10,9 @@ import android.text.TextUtils;
 
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.LocationBean;
-import com.doit.net.bean.LocationRptBean;
 import com.doit.net.bean.LteCellConfig;
 import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.LteEquipConfig;
-import com.doit.net.bean.Namelist;
 import com.doit.net.bean.ScanFreqRstBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
@@ -97,19 +95,43 @@ public class CacheManager {
         currentLoction.setType(type);
     }
 
+    //停止定位
+    public static void stopLoc(){
+        Send2GManager.setLocIMSI("", "0");
+
+        CacheManager.resetParams();
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                CacheManager.redirect2G("",null,"redirect");
+
+            }
+        }, 1000);
+    }
+
 
     /**
      * @param imsi
      * @param type 开始定位
      */
     public static void startLoc(String imsi, int type) {
+
+        CacheManager.getCurrentLoction().setLocateStart(true);
+
+        LogUtils.log("开始定位："+imsi+","+type);
         if (type == 1) {  //4G定位
 
-            Send2GManager.setRFState("0");
-
             //目标imsi吸附，其余的回公网
-            LTESendManager.setNameList("", "",
-                    "", imsi, "reject", "");
+            LTESendManager.setNameList("", null,
+                    "", imsi, "reject");
+
+
+//            LTESendManager.setNameList("", "",
+//                    "", imsi, "reject", "");
+
+//            LTESendManager.setNameList("", "",
+//                    "", "", "block", "");
 
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -117,6 +139,16 @@ public class CacheManager {
                     LTESendManager.exchangeFcn(imsi);
                 }
             }, 1000);
+
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    //添加管控imsi
+//                    LTESendManager.changeNameList("add","block",imsi);
+//                }
+//            }, 1500);
+
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -124,11 +156,38 @@ public class CacheManager {
                 }
             }, 2000);
 
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Send2GManager.setRFState("0");
+                }
+            }, 1000);
+
 
         } else {
 
             //目标imsi重定向，其余的回公网
-            CacheManager.redirect2G(imsi, "reject", "");
+            CacheManager.redirect2G(imsi, null,"reject");
+
+
+//            CacheManager.redirect2G("", "redirect", "");
+
+
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    //添加指派imsi
+//                    LTESendManager.changeNameList("add","redirect",imsi);
+//                }
+//            }, 1000);
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.openAllRf();
+                }
+            }, 1500);
+
 
             Send2GManager.setLocIMSI(imsi, "1");
 
@@ -140,19 +199,12 @@ public class CacheManager {
             }, 1000);
 
 
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LTESendManager.openAllRf();
-                }
-            }, 1000);
-
         }
     }
 
 
-    //停止定位，恢复默认频点
-    public static void stopCurrentLoc() {
+    //停止定位，恢复默认参数
+    public static void resetParams() {
 
         try {
             DbManager dbManager = UCSIDBManager.getDbManager();
@@ -201,7 +253,6 @@ public class CacheManager {
         }
 
     }
-
 
     public static boolean getLocState() {
         if (currentLoction == null)
@@ -297,7 +348,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect, String nameListRestAction, String nameListFile) {
+    public static void redirect2G(String nameListRedirect, String nameListReject, String nameListRestAction) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -317,8 +368,8 @@ public class CacheManager {
 
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
-            LTESendManager.setNameList(redirectConfig, "",
-                    nameListRedirect, "", nameListRestAction, nameListFile);
+            LTESendManager.setNameList(redirectConfig, nameListReject,
+                    nameListRedirect, "", nameListRestAction);
         }
 
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import com.doit.net.event.AddToBlacklistListener;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.BlackListInfo;
+import com.doit.net.protocol.LTESendManager;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
@@ -125,6 +126,7 @@ public class ModifyWhitelistDialog extends Dialog {
 
                     new AddToBlacklistListener(mContext, imsi, msisdn, remark).onClick(null);
 
+
                 } else {
                     try {
                         BlackListInfo blackListInfo = UCSIDBManager.getDbManager().selector(BlackListInfo.class)
@@ -139,6 +141,8 @@ public class ModifyWhitelistDialog extends Dialog {
                         blackListInfo.setMsisdn(etMsisdn.getText().toString());
                         blackListInfo.setRemark(etRemark.getText().toString());
                         UCSIDBManager.getDbManager().update(blackListInfo, "msisdn", "remark");
+
+                        LTESendManager.changeNameList("del","reject",imsi);
                     } catch (DbException e) {
                         new SweetAlertDialog(getContext(), SweetAlertDialog.ERROR_TYPE)
                                 .setTitleText(getContext().getString(R.string.modify_whitelist_fail))

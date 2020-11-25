@@ -28,6 +28,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
+import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.utils.FormatUtils;
 import com.doit.net.view.AddBlacklistDialog;
@@ -161,6 +163,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     updateListFromDB();
+
                 }
             });
             addBlacklistDialog.show();
@@ -353,12 +356,28 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                         }
                         listValidWhite.add(new BlackListInfo(imsiInLine, msisdnInLine, remark));
                         validImportNum++;
-                        if (validImportNum > 10000)  //白名单最大10000
+                        if (validImportNum > 100)  //白名单最大100
                             break;
 
                     }
                     stream.close();
                     dbManager.save(listValidWhite);
+
+                    Send2GManager.setBlackList();
+
+                    if (listValidWhite.size() > 0){
+                        StringBuilder imsi= new StringBuilder();
+                        for (int i = 0; i < listValidWhite.size(); i++) {
+                            if (i == listValidWhite.size() -1){
+                                imsi.append(listValidWhite.get(i).getMsisdn());
+                            }else {
+                                imsi.append(listValidWhite.get(i).getMsisdn()).append(",");
+                            }
+                        }
+
+                        LTESendManager.changeNameList("del","reject",imsi.toString());
+                    }
+
 
 
                     Message message = new Message();
@@ -486,11 +505,15 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         @Override
 
         public void onClick(View v) {
+
             try {
                 dbManager.delete(BlackListInfo.class);
             } catch (DbException e) {
                 e.printStackTrace();
             }
+
+            Send2GManager.setBlackList();
+
             updateListFromDB();
             EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLEAR_BLACKLIST);
         }

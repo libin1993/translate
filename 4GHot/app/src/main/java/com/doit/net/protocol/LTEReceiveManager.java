@@ -288,7 +288,6 @@ public class LTEReceiveManager {
                         switch (receivePackage.getPackageSubType()) {
                             case MsgType2G.GET_NTC_CONFIG_ACK:
                                 parseCommonConfig(receivePackage);
-
                                 break;
                             case MsgType2G.GET_MCRF_CONFIG_ACK:
                                 parseParamsConfig(receivePackage);
@@ -314,6 +313,9 @@ public class LTEReceiveManager {
                             case MsgType2G.GET_MP_STATE_ACK:
                             case MsgType2G.RPT_MP_STATE:
                                 parseMPState(receivePackage);
+                                break;
+                            case MsgType2G.SET_BLACK_NAMELIST_ACK:
+                                LogUtils.log("黑名单下发成功");
                                 break;
                         }
                         break;
@@ -363,8 +365,6 @@ public class LTEReceiveManager {
         }
 
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
-        EventAdapter.call(EventAdapter.RF_STATUS_LOC);
-
 
     }
 
@@ -416,19 +416,27 @@ public class LTEReceiveManager {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            CacheManager.redirect2G("", "redirect",null);
+                            CacheManager.redirect2G("", "","redirect");
                         }
                     }, 1000);
                 }
+
+                //设置黑名单
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Send2GManager.setBlackList();
+                    }
+                }, 2000);
 
                 //查询猫池状态
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
                         Send2GManager.getMPState();
-
                     }
-                }, 2000);
+                }, 3000);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -471,7 +479,7 @@ public class LTEReceiveManager {
     /**
      * 手机号上报
      */
-    private void parsePhoneNumber(LTEReceivePackage receivePackage) {
+    private synchronized void parsePhoneNumber(LTEReceivePackage receivePackage) {
         Report2GNumberBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), Report2GNumberBean.class);
 
@@ -497,13 +505,15 @@ public class LTEReceiveManager {
                 }
                 LogUtils.log("翻译上报：手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
 
-                for (UeidBean ueidBean : CacheManager.realtimeUeidList) {
-                    if (ueidBean.getImsi().equals(imsiList.get(0))) {
-                        ueidBean.setNumber(imsiList.get(1));
+
+                for (int i = 0; i < CacheManager.realtimeUeidList.size(); i++) {
+                    if (CacheManager.realtimeUeidList.get(i).getImsi().equals(imsiList.get(0))) {
+                        CacheManager.realtimeUeidList.get(i).setNumber(imsiList.get(1));
+                        break;
                     }
                 }
 
-            } catch (DbException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -24,7 +24,6 @@ public class EventAdapter {
     public final static String UPDATE_TMEPRATURE = "UPDATE_TMEPRATURE";
     public final static String ADD_LOCATION = "ADD_LOCATION";
     public final static String SCAN_FREQ_RPT = "SCAN_FREQ_RPT";
-    public final static String STOP_LOC = "STOP_LOC";
     public final static String ADD_BLACKBOX = "ADD_BLACKBOX";
     public final static String CHANGE_TAB = "CHANGE_TAB";
     public final static String UPDATE_BLACKLIST = "UPDATE_BLACKLIST";

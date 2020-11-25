@@ -540,9 +540,12 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                                 @Override
                                 public void onClick(MySweetAlertDialog sweetAlertDialog) {
                                     sweetAlertDialog.dismiss();
-                                    LTESendManager.closeAllRf();
+
                                     ToastUtils.showMessage(R.string.rf_close);
-                                    showProcess(6000);
+                                    showProcess(8000);
+
+                                    LTESendManager.closeAllRf();
+
                                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                                 }
                             })
@@ -550,7 +553,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 } else {
                     LTESendManager.closeAllRf();
                     ToastUtils.showMessageLong(R.string.rf_close);
-                    showProcess(6000);
+                    showProcess(8000);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                 }
 

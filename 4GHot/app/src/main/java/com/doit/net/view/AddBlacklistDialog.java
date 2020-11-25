@@ -11,6 +11,8 @@ import android.widget.EditText;
 
 import com.doit.net.event.AddToBlacklistListener;
 import com.doit.net.event.EventAdapter;
+import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
