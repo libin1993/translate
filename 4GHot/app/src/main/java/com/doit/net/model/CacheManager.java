@@ -20,6 +20,7 @@ import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.udp.g4.bean.G4MsgChannelCfg;
@@ -97,7 +98,60 @@ public class CacheManager {
     }
 
 
-    //恢复默认频点
+    /**
+     * @param imsi
+     * @param type 开始定位
+     */
+    public static void startLoc(String imsi, int type) {
+        if (type == 1) {  //4G定位
+
+            Send2GManager.setRFState("0");
+
+            //目标imsi吸附，其余的回公网
+            LTESendManager.setNameList("", "",
+                    "", imsi, "reject", "");
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.exchangeFcn(imsi);
+                }
+            }, 1000);
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.openAllRf();
+                }
+            }, 2000);
+
+
+        } else {
+
+            //目标imsi重定向，其余的回公网
+            CacheManager.redirect2G(imsi, "reject", "");
+
+            Send2GManager.setLocIMSI(imsi, "1");
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Send2GManager.setRFState("1");
+                }
+            }, 1000);
+
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.openAllRf();
+                }
+            }, 1000);
+
+        }
+    }
+
+
+    //停止定位，恢复默认频点
     public static void stopCurrentLoc() {
 
         try {
@@ -112,7 +166,7 @@ public class CacheManager {
                         "46000,46001,46011", "", "", "", "", "");
 
                 for (LteChannelCfg channel : CacheManager.channels) {
-                    if (channel.getIdx().equals(channelB3.getIdx())){
+                    if (channel.getIdx().equals(channelB3.getIdx())) {
                         channel.setFcn(channelB3.getFcn());
                         channel.setPlmn("46000,46001,46011");
                         break;
@@ -130,7 +184,7 @@ public class CacheManager {
                         "", "", "", "", "", "");
 
                 for (LteChannelCfg channel : CacheManager.channels) {
-                    if (channel.getIdx().equals(channelB1.getIdx())){
+                    if (channel.getIdx().equals(channelB1.getIdx())) {
                         channel.setFcn(channelB1.getFcn());
                         break;
                     }
@@ -142,7 +196,7 @@ public class CacheManager {
         }
 
 
-        if (CacheManager.getCurrentLoction() != null){
+        if (CacheManager.getCurrentLoction() != null) {
             CacheManager.getCurrentLoction().setLocateStart(false);
         }
 
@@ -159,7 +213,6 @@ public class CacheManager {
     public static LocationBean getCurrentLoction() {
         return currentLoction;
     }
-
 
 
     /**
@@ -244,7 +297,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect,String nameListRestAction,String nameListFile) {
+    public static void redirect2G(String nameListRedirect, String nameListRestAction, String nameListFile) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -260,11 +313,11 @@ public class CacheManager {
                 }
             }
         }
-        LogUtils.log("重定向到2G:"+mobileFcn+","+unicomFcn);
+        LogUtils.log("重定向到2G:" + mobileFcn + "," + unicomFcn);
 
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
-            LTESendManager.setNameList( redirectConfig, "",
+            LTESendManager.setNameList(redirectConfig, "",
                     nameListRedirect, "", nameListRestAction, nameListFile);
         }
 
@@ -313,7 +366,6 @@ public class CacheManager {
     }
 
 
-
     public static void changeBand(String idx, String changeBand) {
 
         LTESendManager.changeBand(idx, changeBand);
@@ -328,7 +380,7 @@ public class CacheManager {
                 }
                 LTESendManager.setChannelConfig(idx, fcn, "", "", "", "", "", "");
                 for (LteChannelCfg channel : CacheManager.channels) {
-                    if (idx.equals(channel.getIdx())){
+                    if (idx.equals(channel.getIdx())) {
                         channel.setFcn(fcn);
                         channel.setChangeBand(channel.getBand());
                         channel.setBand(changeBand);

@@ -191,51 +191,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
      */
     private void startLoc() {
         CacheManager.getCurrentLoction().setLocateStart(true);
-        LTESendManager.openAllRf();
 
-        if (CacheManager.currentLoction.getType() == 1){ //4G定位
-
-            Send2GManager.setRFState("0");
-
-            //目标imsi吸附，其余的回公网
-            LTESendManager.setNameList("", "",
-                    "", CacheManager.getCurrentLoction().getImsi(), "reject", "");
-
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LTESendManager.exchangeFcn(CacheManager.getCurrentLoction().getImsi());
-                }
-            }, 1000);
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LTESendManager.openAllRf();
-                }
-            }, 2000);
-
-        }else {
-            CacheManager.redirect2G(CacheManager.getCurrentLoction().getImsi(), "reject","");
-
-            Send2GManager.setLocIMSI(CacheManager.currentLoction.getImsi(), "1");
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Send2GManager.setRFState("1");
-                }
-            }, 1000);
-
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LTESendManager.openAllRf();
-                }
-            }, 1000);
-        }
-
+        CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
 
         startSpeechBroadcastLoop();
 

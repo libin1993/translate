@@ -53,52 +53,8 @@ public class AddToLocationListener implements View.OnClickListener {
 
             CacheManager.getCurrentLoction().setLocateStart(true);
 
-            if (type == 1) {  //4G定位
+            CacheManager.startLoc(imsi,type);
 
-                Send2GManager.setRFState("0");
-
-                //目标imsi吸附，其余的回公网
-                LTESendManager.setNameList("", "",
-                        "", imsi, "reject", "");
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LTESendManager.exchangeFcn(imsi);
-                    }
-                }, 1000);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LTESendManager.openAllRf();
-                    }
-                }, 2000);
-
-
-            } else {
-
-                //目标imsi重定向，其余的回公网
-                CacheManager.redirect2G(imsi, "reject","");
-
-                Send2GManager.setLocIMSI(imsi, "1");
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Send2GManager.setRFState("1");
-                    }
-                }, 1000);
-
-
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LTESendManager.openAllRf();
-                    }
-                }, 1000);
-
-            }
             ToastUtils.showMessage("搜寻开始");
         }
 
