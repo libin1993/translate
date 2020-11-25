@@ -51,6 +51,9 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ListHolder;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * 设备参数
@@ -427,9 +430,11 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 ToastUtils.showMessageLong("功率设置已下发，请等待其生效");
             }
 
+
+            showProcess(9000);
             switch (checkedId) {
                 case R.id.rbPowerHigh:
-                    //ProtocolManager.setAllPower(String.valueOf(-5*POWER_LEVEL_HIGH));
+
                     setPowerLevel(POWER_LEVEL_HIGH);
                     lastPowerPress = rbPowerHigh;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "高");
@@ -448,7 +453,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     break;
             }
 
-            showProcess(9000);
         }
     };
 
@@ -561,21 +565,20 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
         int powerAtt = powerLevel * -5;
 
-        for (LteChannelCfg channel : CacheManager.channels) {
-            int pa = powerAtt + Integer.parseInt(channel.getPMax());
+        for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+            int index = i;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LteChannelCfg channel = CacheManager.getChannels().get(index);
+                    int pa = powerAtt + Integer.parseInt(channel.getPMax());
 
-            LTESendManager.setChannelConfig(channel.getIdx(), "", "", pa + "," + pa + "," + pa,
-                    "", "", "", "");
-            channel.setPa(pa + "," + pa + "," + pa);
-
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", pa + "," + pa + "," + pa,
+                            "", "", "", "");
+                    channel.setPa(pa + "," + pa + "," + pa);
+                }
+            }, index*200);
         }
-
         refreshViews();
     }
 

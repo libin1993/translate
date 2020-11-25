@@ -97,6 +97,7 @@ public class CacheManager {
     }
 
 
+    //恢复默认频点
     public static void stopCurrentLoc() {
 
         try {
@@ -108,12 +109,12 @@ public class CacheManager {
                     .findFirst();
             if (channelB3 != null) {
                 LTESendManager.setChannelConfig(channelB3.getIdx(), channelB3.getFcn(),
-                        "46001,46011", "", "", "", "", "");
+                        "46000,46001,46011", "", "", "", "", "");
 
                 for (LteChannelCfg channel : CacheManager.channels) {
                     if (channel.getIdx().equals(channelB3.getIdx())){
                         channel.setFcn(channelB3.getFcn());
-                        channel.setPlmn("46001,46011");
+                        channel.setPlmn("46000,46001,46011");
                         break;
                     }
                 }

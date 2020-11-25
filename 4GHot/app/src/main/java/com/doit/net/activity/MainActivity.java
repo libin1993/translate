@@ -879,15 +879,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private void setDeviceWorkMode() {
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!CacheManager.getLocState()) {     //已设置定位模式，不能设置别的模式
-                    LTESendManager.setActiveMode();
-                }
-
-            }
-        }, 1000);
+        LTESendManager.setActiveMode();
 
 
         if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {

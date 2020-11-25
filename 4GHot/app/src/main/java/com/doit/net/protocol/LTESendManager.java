@@ -19,6 +19,8 @@ import org.xutils.ex.DbException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by wiker on 2017-06-25.
@@ -181,6 +183,7 @@ public class LTESendManager {
             return;
         }
 
+
         String plnmValue = "46000,46001,46011";
         if (carrierOpetation.equals("detect_ctj")) {
             plnmValue = "46000,46000,46000";
@@ -190,17 +193,22 @@ public class LTESendManager {
             plnmValue = "46011,46011,46011";
         }
 
-        for (LteChannelCfg channel : CacheManager.getChannels()) {
-            setChannelConfig(channel.getIdx(), "", plnmValue, "", "", "", "", "");
 
-            channel.setPlmn(plnmValue);
+        for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+            int index = i;
+            String finalPlnmValue = plnmValue;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LteChannelCfg channel = CacheManager.getChannels().get(index);
+                    setChannelConfig(channel.getIdx(), "", finalPlnmValue, "", "", "", "", "");
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                    channel.setPlmn(finalPlnmValue);
+                }
+            }, index*200);
         }
+
+
 
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
     }
@@ -341,48 +349,40 @@ public class LTESendManager {
 
 
     public static void openAllRf() {
-        for (LteChannelCfg channel : CacheManager.getChannels()) {
-            openRf(channel.getIdx());
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+            int index = i;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    openRf(CacheManager.getChannels().get(index).getIdx());
+                }
+            }, index*150);
         }
+
     }
 
     public static void openRf(String idx) {
         LogUtils.log("开启射频：" + idx);
-        //LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_ON, idx+"@HOLD:"+HOLD_VALUE);
+
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_ON, idx);
-        //setChannelConfig(idx,null,null,null,null, FlagConstant.RF_OPEN,null);
     }
 
     public static void closeRf(String idx) {
         LogUtils.log("关闭射频：" + idx);
-        //LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_OFF, idx+"@HOLD:"+HOLD_VALUE);
+
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_CHANNEL_OFF, idx);
     }
 
     public static void closeAllRf() {
-        for (LteChannelCfg channel : CacheManager.getChannels()) {
-            closeRf(channel.getIdx());
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+            int index = i;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    closeRf(CacheManager.getChannels().get(index).getIdx());
+                }
+            }, index*150);
         }
-    }
-
-    public static void setLocImsi(String imsi) {
-        if (!CacheManager.initSuccess4G) {
-            return;
-        }
-
-        LogUtils.log("设置定位IMSI：" + imsi);
-
-        LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_LOC_IMSI, imsi);
     }
 
 
@@ -421,6 +421,7 @@ public class LTESendManager {
     public static void exchangeFcn(String imsi) {
 
         try {
+
             DbManager dbManager = UCSIDBManager.getDbManager();
             //移动定位，修改B3频点
             DBChannel channelB3 = dbManager.selector(DBChannel.class)
@@ -438,12 +439,12 @@ public class LTESendManager {
                         }
                     }
                 } else {
-                    setChannelConfig(channelB3.getIdx(), channelB3.getFcn(),
-                            "46001,46011", "", "", "", "", "");
+                    setChannelConfig(channelB3.getIdx(), "1850,1506,1650",
+                            "46000,46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn(channelB3.getFcn());
-                            channel.setPlmn("46001,46011");
+                            channel.setFcn("1850,1506,1650");
+                            channel.setPlmn("46000,46001,46011");
                             break;
                         }
                     }
