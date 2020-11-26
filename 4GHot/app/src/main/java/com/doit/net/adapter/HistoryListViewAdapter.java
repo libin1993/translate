@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.doit.net.activity.HistoryListActivity;
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
@@ -65,7 +67,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
         index.setText((position + 1) + ".");
 
         TextView text_data = convertView.findViewById(R.id.tvUeidItemText);
-
+        SwipeLayout swipeLayout = convertView.findViewById(R.id.swipe);
         DBUeidInfo resp = ueidList.get(position);
         String content = "IMSI:"+resp.getImsi()+"\n";
         if (!TextUtils.isEmpty(resp.getMsisdn())){
@@ -78,25 +80,32 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
         convertView.findViewById(R.id.add_to_black).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
                     BlackListInfo info = dbManager.selector(BlackListInfo.class).where("msisdn","=",resp.getMsisdn()).or("imsi", "=", resp.getImsi()).findFirst();
                     if (info != null) {
+
                         ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
                                 resp.getImsi(), info.getMsisdn(), info.getRemark(),false);
                         modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                             @Override
                             public void onDismiss(DialogInterface dialog) {
                                 notifyDataSetChanged();
+                                if (swipeLayout !=null){
+                                    swipeLayout.close();
+                                }
                             }
                         });
                         modifyWhitelistDialog.show();
                     }else {
+
                         AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(mContext, resp.getImsi(),resp.getMsisdn());
                         addBlacklistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                             @Override
                             public void onDismiss(DialogInterface dialog) {
                                 notifyDataSetChanged();
+                                if (swipeLayout !=null){
+                                    swipeLayout.close();
+                                }
                             }
                         });
                         addBlacklistDialog.show();

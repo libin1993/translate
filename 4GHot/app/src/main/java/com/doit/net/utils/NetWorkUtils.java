@@ -50,14 +50,7 @@ public class NetWorkUtils {
         LogUtils.log("以太网网络状态："+ethernetState);
         LogUtils.log("WIFI网络状态："+wifiState);
 
-
-        if (ethernetState){
-            return true;
-        }
-
-
-        return wifiState;
-
+        return ethernetState || wifiState;
 
     }
 

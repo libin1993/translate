@@ -115,7 +115,7 @@ public class ServerSocketUtils {
             //接收到流的数量
             int receiveCount;
             LTEReceiveManager lteReceiveManager = new LTEReceiveManager();
-            Socket socket;
+            Socket socket = null;
             try {
                 //获取当前socket
                 socket = map.get(remoteIP);
@@ -139,26 +139,18 @@ public class ServerSocketUtils {
             }
 
             onSocketChangedListener.onChange(remoteIP);
-            closeSocket(remoteIP);  //关闭socket
+            try {
+                LogUtils.log(remoteIP + "关闭socket");
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                LogUtils.log(remoteIP + "：socket关闭失败:" + e.toString());
+            }
+
             lteReceiveManager.clearReceiveBuffer();
         }
     }
 
-    //关闭socket
-    public void closeSocket(String ip) {
-        Socket socket = map.get(ip);
-        if (socket != null && !socket.isClosed()) {
-            //关闭输入流
-            try {
-                socket.shutdownInput();
-                socket.close();//临时
-                map.remove(ip);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 
 
     /**

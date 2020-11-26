@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.event.EventAdapter;
@@ -65,6 +66,7 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
     public void fillValues(int position, View convertView) {
         TextView tvIndex = convertView.findViewById(R.id.tvIndex);
         TextView tvWhitelistInfo = convertView.findViewById(R.id.tvWhitelistInfo);
+        SwipeLayout swipeLayout = convertView.findViewById(R.id.layout_user_info);
 
         final BlackListInfo whitelistInfo = listBlacklistInfo.get(position);
         tvIndex.setText(" " +(position + 1) + ".");
@@ -81,7 +83,9 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
-
+                        if (swipeLayout !=null){
+                            swipeLayout.close();
+                        }
                     }
                 });
                 modifyUserInfoDialog.show();

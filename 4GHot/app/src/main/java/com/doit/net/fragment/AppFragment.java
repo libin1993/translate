@@ -401,7 +401,6 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             String tmpFileName = "";
             for (int i = 0; i < files.length; i++) {
                 tmpFileName = files[i].getName();
-                //UtilBaseLog.printLog("获取升级包：" + tmpFileName);
                 if (tmpFileName.endsWith(".tgz"))
                     fileList.add(tmpFileName);
             }

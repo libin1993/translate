@@ -170,8 +170,10 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
         if (NetWorkUtils.getNetworkState()) {
             LogUtils.log("wifi连接成功");
-            if (CacheManager.deviceState.getDeviceState().equals(DeviceState.WIFI_DISCONNECT))  //只有从wifi未连接到连接才出现这种状态
+            if (CacheManager.deviceState.getDeviceState().equals(DeviceState.WIFI_DISCONNECT)){
+                //只有从wifi未连接到连接才出现这种状态
                 CacheManager.deviceState.setDeviceState(DeviceState.WAIT_SOCKET);
+            }
         } else {
             LogUtils.log("wifi断开连接");
         }
@@ -529,7 +531,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private void wifiChangeEvent() {
 
-
         if (NetWorkUtils.getNetworkState()) {
             if (CacheManager.deviceState.getDeviceState().equals(DeviceState.WIFI_DISCONNECT)) {
                 CacheManager.deviceState.setDeviceState(DeviceState.WAIT_SOCKET);
@@ -838,14 +839,49 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         } else if (EventAdapter.INIT_SUCCESS.equals(key)) {
             if (!CacheManager.initSuccess4G && CacheManager.getChannels().size() > 0) {
 
-                setDeviceWorkMode();
+                //设置搜寻模式
+                LTESendManager.setActiveMode();
 
-                CacheManager.initSuccess4G = true;
+                if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                    //指派
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            CacheManager.redirect2G("",null,"redirect");  //重定向到2G
+                        }
+                    }, 1000);
+
+                    //删除黑名单
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            //添加管控imsi
+                            List<String> blackIMSIList = CacheManager.getBlackIMSIList();
+                            String imsiArr = "";
+                            for (int i = 0; i < blackIMSIList.size(); i++) {
+                                imsiArr += blackIMSIList.get(i) + ",";
+                            }
+
+                            if (!TextUtils.isEmpty(imsiArr)) {
+                                LTESendManager.changeNameList("del", "reject", imsiArr.substring(0, imsiArr.length() - 1));
+                            }
+                        }
+                    }, 2000);
+
+                }
+
 
                 LTESendManager.saveDefaultFcn();
 
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.setDefaultArfcnsAndPwr();
+                    }
+                }, 3000);
 
-                LTESendManager.setDefaultArfcnsAndPwr();
+
+                CacheManager.initSuccess4G = true;
 
                 if (CacheManager.initSuccess2G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
@@ -869,25 +905,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     }
 
 
-    /**
-     * 设置模式
-     */
-    private void setDeviceWorkMode() {
-
-        LTESendManager.setActiveMode();
-
-
-        if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    CacheManager.redirect2G("",null,"redirect");  //重定向到2G
-                }
-            }, 1000);
-
-        }
-
-    }
 
     /**
      * 校验设备证书是否存在，若不存在，生成30天证书上传；若存在，从设备下载证书校验是否过期

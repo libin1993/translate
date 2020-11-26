@@ -1,9 +1,11 @@
 package com.doit.net.event;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.doit.net.activity.MainActivity;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.protocol.LTESendManager;
@@ -54,6 +56,10 @@ public class AddToLocationListener implements View.OnClickListener {
             CacheManager.startLoc(imsi,type);
 
             ToastUtils.showMessage("搜寻开始");
+        }
+
+        if (!(mContext  instanceof  MainActivity)) {
+            ((Activity)mContext).finish();
         }
 
         EventAdapter.call(EventAdapter.CHANGE_TAB, 1);

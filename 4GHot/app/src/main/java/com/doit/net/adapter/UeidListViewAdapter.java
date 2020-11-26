@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.view.AddBlacklistDialog;
 import com.doit.net.view.ModifyWhitelistDialog;
@@ -59,6 +60,7 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         TextView tvContent = convertView.findViewById(R.id.tvUeidItemText);
         UeidBean resp = CacheManager.realtimeUeidList.get(position);
 
+        SwipeLayout swipeLayout = convertView.findViewById(R.id.swipe);
 
 
 
@@ -72,6 +74,10 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
                         @Override
                         public void onDismiss(DialogInterface dialog) {
                             notifyDataSetChanged();
+                            if (swipeLayout !=null){
+                                swipeLayout.close();
+                            }
+
                         }
                     });
                     modifyWhitelistDialog.show();
@@ -81,6 +87,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
                         @Override
                         public void onDismiss(DialogInterface dialog) {
                             notifyDataSetChanged();
+                            if (swipeLayout !=null){
+                                swipeLayout.close();
+                            }
                         }
                     });
                     addBlacklistDialog.show();

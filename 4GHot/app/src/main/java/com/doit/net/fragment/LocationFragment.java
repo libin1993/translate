@@ -293,7 +293,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     public void run() {
                         stopLoc();
                     }
-                }, 1000);
+                }, 2000);
 
 
 
