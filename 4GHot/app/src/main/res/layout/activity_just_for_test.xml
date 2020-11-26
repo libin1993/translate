@@ -17,16 +17,16 @@
             android:id="@+id/test1"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
+            android:layout_weight="1"
             android:text="更新频点" />
 
         <Button
             android:id="@+id/test2"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
+            android:layout_weight="1"
             android:text="显示文件频点" />
 
 
@@ -34,9 +34,9 @@
             android:id="@+id/btGetDeviceLog"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_weight="1"
             android:text="获取设备日志" />
     </LinearLayout>
 
@@ -67,19 +67,27 @@
             android:id="@+id/et_change_nameList"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_weight="1.5"
-            android:maxLength="15"
-            android:inputType="number"
             android:layout_marginStart="5dp"
-            android:hint="白名单IMSI,多个以,隔开"/>
+            android:layout_weight="2"
+            android:hint="白名单IMSI,多个以,隔开"
+            android:inputType="number"
+            android:maxLength="15" />
 
         <Button
             android:id="@+id/test4"
             android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:text="修改名单" />
+        <Button
+            android:id="@+id/test5"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
             android:layout_marginStart="5dp"
-            android:text="添加名单"
+            android:text="设置名单"
             android:layout_marginEnd="5dp"/>
 
     </LinearLayout>

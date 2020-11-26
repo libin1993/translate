@@ -142,7 +142,9 @@ public class ModifyWhitelistDialog extends Dialog {
                         blackListInfo.setRemark(etRemark.getText().toString());
                         UCSIDBManager.getDbManager().update(blackListInfo, "msisdn", "remark");
 
-                        LTESendManager.changeNameList("del","reject",imsi);
+                        if (!TextUtils.isEmpty(imsi)){
+                            LTESendManager.changeNameList("del","reject",imsi);
+                        }
                     } catch (DbException e) {
                         new SweetAlertDialog(getContext(), SweetAlertDialog.ERROR_TYPE)
                                 .setTitleText(getContext().getString(R.string.modify_whitelist_fail))

@@ -39,6 +39,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
     private Button test2;
 
     private Button test4;
+    private Button test5;
     private EditText etIMSI;
     private Button test7;
 
@@ -58,6 +59,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
         test2 = findViewById(R.id.test2);
 
         test4 = findViewById(R.id.test4);
+        test5 = findViewById(R.id.test5);
         etIMSI = findViewById(R.id.et_change_nameList);
 
         test7 = findViewById(R.id.test7);
@@ -108,6 +110,18 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
                 if (!TextUtils.isEmpty(imsi)){
 //                    LTESendManager.setNameList(null,imsi,null,null,null,null);
                     LTESendManager.changeNameList("add","reject",imsi);
+                }
+            }
+        });
+
+
+        test5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String imsi = etIMSI.getText().toString().trim();
+                if (!TextUtils.isEmpty(imsi)){
+                    LTESendManager.setNameList(null,imsi,null,null,null);
+
                 }
             }
         });

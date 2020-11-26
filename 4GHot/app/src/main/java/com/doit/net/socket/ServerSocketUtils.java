@@ -23,9 +23,9 @@ import java.util.Map;
 public class ServerSocketUtils {
     private static ServerSocketUtils mInstance;
     private ServerSocket mServerSocket;
-
+    public final static String LOCAL_IP = "192.168.1.133";   //本机ip
     public final static int LOCAL_PORT = 7003;   //本机端口
-    private final static int READ_TIME_OUT = 100000;  //超时时间
+    private final static int READ_TIME_OUT = 50000;  //超时时间
     public static final String REMOTE_4G_IP = "192.168.1.200";  //4G设备ip
     public static final String REMOTE_2G_IP = "192.168.1.1";     //2G设备ip
 
@@ -66,6 +66,7 @@ public class ServerSocketUtils {
 
                         Socket socket = mServerSocket.accept();  //获取socket
                         socket.setSoTimeout(READ_TIME_OUT);      //设置超时
+                        socket.setKeepAlive(true);
                         String remoteIP = socket.getInetAddress().getHostAddress();  //远程ip
                         int remotePort = socket.getPort();    //远程端口
 

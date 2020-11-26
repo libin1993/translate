@@ -104,8 +104,8 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     private final int UPDATE_LIST = 1;
     private final int UPDATE_BLACKLIST = 2;
     private final int EXPORT_ERROR = -1;
-    private final static  int IMPORT_SUCCESS =  3;  //导入成功
-    private final static  int EXPORT_SUCCESS =  4;  //导出成功
+    private final static int IMPORT_SUCCESS = 3;  //导入成功
+    private final static int EXPORT_SUCCESS = 4;  //导出成功
 
     private MySweetAlertDialog mProgressDialog;
 
@@ -154,7 +154,6 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     }
 
 
-
     View.OnClickListener addWhitelistClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -199,13 +198,13 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         public void onClick(View v) {
             File file = new File(FileUtils.ROOT_PATH);
             if (!file.exists()) {
-                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
+                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/" + FileUtils.ROOT_DIRECTORY + "\"目录下");
                 return;
             }
 
             File[] files = file.listFiles();
             if (files == null || files.length == 0) {
-                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下");
+                ToastUtils.showMessageLong("未找到黑名单，请确认已将黑名单放在\"手机存储/" + FileUtils.ROOT_DIRECTORY + "\"目录下");
                 return;
             }
 
@@ -222,7 +221,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
             }
 
             if (fileList.size() == 0) {
-                ToastUtils.showMessageLong("\"手机存储/"+FileUtils.ROOT_DIRECTORY+"\"目录下未找到黑名单，黑名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
+                ToastUtils.showMessageLong("\"手机存储/" + FileUtils.ROOT_DIRECTORY + "\"目录下未找到黑名单，黑名单必须是以\".xls\"或\".xlsx\"为后缀的文件");
                 return;
             }
 
@@ -291,11 +290,10 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     };
 
     /**
-     * @param fileList
-     * 导入白名单
+     * @param fileList 导入白名单
      */
     private void importWhitelist(List<FileBean> fileList) {
-        if (mProgressDialog !=null && !mProgressDialog.isShowing()){
+        if (mProgressDialog != null && !mProgressDialog.isShowing()) {
             mProgressDialog.show();
         }
         new Thread() {
@@ -339,7 +337,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                         }
 
 
-                        if ( TextUtils.isEmpty(msisdnInLine) ||
+                        if (TextUtils.isEmpty(msisdnInLine) ||
                                 !isNumeric(msisdnInLine) || msisdnInLine.length() != 11) {
                             errorFormatNum++;
                             continue;
@@ -351,8 +349,8 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                             continue;
                         }
 
-                        if (!TextUtils.isEmpty(remark) &&remark.length() > 8){
-                            remark = remark.substring(0,8);
+                        if (!TextUtils.isEmpty(remark) && remark.length() > 8) {
+                            remark = remark.substring(0, 8);
                         }
                         listValidWhite.add(new BlackListInfo(imsiInLine, msisdnInLine, remark));
                         validImportNum++;
@@ -365,19 +363,18 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
 
                     Send2GManager.setBlackList();
 
-                    if (listValidWhite.size() > 0){
-                        StringBuilder imsi= new StringBuilder();
+                    if (listValidWhite.size() > 0) {
+                        StringBuilder imsi = new StringBuilder();
                         for (int i = 0; i < listValidWhite.size(); i++) {
-                            if (i == listValidWhite.size() -1){
-                                imsi.append(listValidWhite.get(i).getMsisdn());
-                            }else {
-                                imsi.append(listValidWhite.get(i).getMsisdn()).append(",");
+                            if (!TextUtils.isEmpty(listValidWhite.get(i).getImsi())){
+                                imsi.append(listValidWhite.get(i).getImsi()).append(",");
                             }
                         }
 
-                        LTESendManager.changeNameList("del","reject",imsi.toString());
+                        if (!TextUtils.isEmpty(imsi.toString())){
+                            LTESendManager.changeNameList("del", "reject", imsi.substring(0,imsi.length()-1));
+                        }
                     }
-
 
 
                     Message message = new Message();
@@ -390,7 +387,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
 
                 } catch (Exception e) {
                     /* proper exception handling to be here */
-                    LogUtils.log("导入黑名单错误"+e.toString());
+                    LogUtils.log("导入黑名单错误" + e.toString());
                     createExportError("写入文件错误");
                 }
 
@@ -432,7 +429,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
             }
         } catch (NullPointerException e) {
             /* proper error handling should be here */
-            LogUtils.log("黑名单解析异常："+e.toString());
+            LogUtils.log("黑名单解析异常：" + e.toString());
         }
         return value;
     }
@@ -440,7 +437,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     View.OnClickListener exortWhitelistClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (mProgressDialog !=null && !mProgressDialog.isShowing()){
+            if (mProgressDialog != null && !mProgressDialog.isShowing()) {
                 mProgressDialog.show();
             }
             new Thread(new Runnable() {
@@ -468,10 +465,10 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                             ToastUtils.showMessageLong("当前名单为空，此次导出为模板");
                         } else {
                             for (int i = 0; i < listWhitelistInfo.size(); i++) {
-                                Row rowi = sheet.createRow(i+1);
-                                rowi.createCell(0).setCellValue(listWhitelistInfo.get(i).getImsi()+"");
-                                rowi.createCell(1).setCellValue(listWhitelistInfo.get(i).getMsisdn()+"");
-                                rowi.createCell(2).setCellValue(listWhitelistInfo.get(i).getRemark()+"");
+                                Row rowi = sheet.createRow(i + 1);
+                                rowi.createCell(0).setCellValue(listWhitelistInfo.get(i).getImsi() + "");
+                                rowi.createCell(1).setCellValue(listWhitelistInfo.get(i).getMsisdn() + "");
+                                rowi.createCell(2).setCellValue(listWhitelistInfo.get(i).getRemark() + "");
                             }
                         }
 
@@ -484,7 +481,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
 
                         Message message = new Message();
                         message.what = EXPORT_SUCCESS;
-                        message.obj = "文件导出在：手机存储/"+FileUtils.ROOT_DIRECTORY+"/"+ file.getName();
+                        message.obj = "文件导出在：手机存储/" + FileUtils.ROOT_DIRECTORY + "/" + file.getName();
                         mHandler.sendMessage(message);
 
                         EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.EXPORT_BLACKLIST + BLACKLIST_FILE_PATH);
@@ -586,15 +583,15 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 updateListFromDB();
 
             } else if (msg.what == EXPORT_ERROR) {
-                if (mProgressDialog !=null && mProgressDialog.isShowing()){
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
                 new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE)
                         .setTitleText("导出失败")
                         .setContentText("失败原因：" + msg.obj)
                         .show();
-            }else if (msg.what == IMPORT_SUCCESS){
-                if (mProgressDialog !=null && mProgressDialog.isShowing()){
+            } else if (msg.what == IMPORT_SUCCESS) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
                 new MySweetAlertDialog(activity, MySweetAlertDialog.TEXT_SUCCESS)
@@ -603,8 +600,8 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                         .show();
 
                 updateListFromDB();
-            } else if (msg.what == EXPORT_SUCCESS){
-                if (mProgressDialog !=null && mProgressDialog.isShowing()){
+            } else if (msg.what == EXPORT_SUCCESS) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
                 new MySweetAlertDialog(activity, MySweetAlertDialog.TEXT_SUCCESS)
@@ -616,10 +613,9 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     };
 
 
-
     @Override
     public void call(String key, Object val) {
-        switch (key){
+        switch (key) {
             case EventAdapter.UPDATE_BLACKLIST:
                 Message msg = new Message();
                 msg.what = UPDATE_BLACKLIST;

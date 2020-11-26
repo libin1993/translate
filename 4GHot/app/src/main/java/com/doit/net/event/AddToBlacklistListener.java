@@ -1,6 +1,7 @@
 package com.doit.net.event;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.doit.net.model.UCSIDBManager;
@@ -69,8 +70,10 @@ public class AddToBlacklistListener implements View.OnClickListener {
             dbManager.save(info);
 
             Send2GManager.setBlackList();
+            if (!TextUtils.isEmpty(imsi)){
+                LTESendManager.changeNameList("del","reject",imsi);
+            }
 
-            LTESendManager.changeNameList("del","reject",imsi);
 
             ToastUtils.showMessage(R.string.add_success);
         } catch (DbException e) {

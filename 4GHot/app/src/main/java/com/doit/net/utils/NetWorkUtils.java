@@ -40,10 +40,10 @@ public class NetWorkUtils {
     public static boolean getNetworkState() {
         ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-//        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
         NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);  //wifi
         NetworkInfo ethernetInfo =connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET); //以太网
-        NetworkInfo mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);   //流量
+
 
         boolean wifiState = wifiInfo != null && wifiInfo.isConnected();
         boolean ethernetState = ethernetInfo !=null && ethernetInfo.isConnected();
@@ -65,20 +65,38 @@ public class NetWorkUtils {
     /***
      * 使用WIFI时，获取本机IP地址
      *
-     * @param mContext
+     * @param
      * @return
      */
-    public static String getWIFILocalIpAddress(Context mContext) {
+//    public static String getLocalIpAddress(Context mContext) {
 
         //获取wifi服务  
-        WifiManager wifiManager = (WifiManager) mContext.getSystemService(WIFI_SERVICE);
-        //判断wifi是否开启  
-        if (!wifiManager.isWifiEnabled()) {
-            wifiManager.setWifiEnabled(true);
+//        ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//
+//        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);  //wifi
+//        NetworkInfo ethernetInfo =connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET); //以太网
+//
+//
+//
+//        boolean ethernetState = ethernetInfo !=null && ethernetInfo.isConnected();
+//
+//
+//        return formatIpAddress(ipAddress);
+//    }
+
+
+    public static String getWIFIIpAddress(Context context) {
+        try {
+
+            WifiManager wifiManager = (WifiManager) context
+                    .getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int i = wifiInfo.getIpAddress();
+            return formatIpAddress(i);
+        } catch (Exception ex) {
+            return " 获取IP出错鸟!!!!请保证是WIFI,或者请重新打开网络!\n" + ex.getMessage();
         }
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int ipAddress = wifiInfo.getIpAddress();
-        return formatIpAddress(ipAddress);
     }
 
     private static String formatIpAddress(int ipAdress) {

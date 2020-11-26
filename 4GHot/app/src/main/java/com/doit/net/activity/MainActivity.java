@@ -1,13 +1,9 @@
 package com.doit.net.activity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +28,6 @@ import android.widget.ImageView;
 
 import android.widget.TextView;
 
-import com.doit.net.protocol.LTEReceiveManager;
 import com.doit.net.socket.OnSocketChangedListener;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.socket.DatagramSocketUtils;
@@ -44,7 +39,6 @@ import com.doit.net.base.BaseActivity;
 import com.doit.net.base.BaseFragment;
 import com.doit.net.bean.BatteryBean;
 import com.doit.net.bean.DeviceState;
-import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.TabEntity;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.model.BlackBoxManger;
@@ -54,7 +48,6 @@ import com.doit.net.model.CacheManager;
 import com.doit.net.utils.FTPManager;
 import com.doit.net.utils.LicenceUtils;
 import com.doit.net.model.PrefManage;
-import com.doit.net.model.VersionManage;
 import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.FTPServerUtils;
 import com.doit.net.utils.FileUtils;
@@ -69,7 +62,6 @@ import com.doit.net.receiver.NetworkChangeReceiver;
 import com.doit.net.fragment.StartPageFragment;
 import com.doit.net.fragment.UeidFragment;
 import com.doit.net.ucsi.R;
-import com.doit.net.utils.SoundUtils;
 import com.doit.net.utils.ToastUtils;
 import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
@@ -606,7 +598,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     public void sendData() {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("ip", NetWorkUtils.getWIFILocalIpAddress(MyApplication.mContext));
+            jsonObject.put("ip", ServerSocketUtils.LOCAL_IP);
             jsonObject.put("port", DatagramSocketUtils.UDP_LOCAL_PORT);
             jsonObject.put("id", DatagramSocketUtils.SEND_LOCAL_IP);
             jsonObject.put("ok", true);
@@ -877,6 +869,9 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     }
 
 
+    /**
+     * 设置模式
+     */
     private void setDeviceWorkMode() {
 
         LTESendManager.setActiveMode();
@@ -886,7 +881,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    CacheManager.redirect2G("","","redirect");  //重定向到2G
+                    CacheManager.redirect2G("",null,"redirect");  //重定向到2G
                 }
             }, 1000);
 

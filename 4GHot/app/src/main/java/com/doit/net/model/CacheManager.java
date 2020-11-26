@@ -8,6 +8,7 @@ package com.doit.net.model;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.doit.net.bean.BlackListBean;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.LocationBean;
 import com.doit.net.bean.LteCellConfig;
@@ -18,7 +19,9 @@ import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.MsgType2G;
 import com.doit.net.protocol.Send2GManager;
+import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.udp.g4.bean.G4MsgChannelCfg;
@@ -27,6 +30,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,7 +100,7 @@ public class CacheManager {
     }
 
     //停止定位
-    public static void stopLoc(){
+    public static void stopLoc() {
         Send2GManager.setLocIMSI("", "0");
 
         CacheManager.resetParams();
@@ -104,7 +108,7 @@ public class CacheManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                CacheManager.redirect2G("",null,"redirect");
+                CacheManager.redirect2G("", null, "redirect");
 
             }
         }, 1000);
@@ -119,7 +123,7 @@ public class CacheManager {
 
         CacheManager.getCurrentLoction().setLocateStart(true);
 
-        LogUtils.log("开始定位："+imsi+","+type);
+        LogUtils.log("开始定位：" + imsi + "," + type);
         if (type == 1) {  //4G定位
 
             //目标imsi吸附，其余的回公网
@@ -140,13 +144,27 @@ public class CacheManager {
                 }
             }, 1000);
 
-//            new Timer().schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    //添加管控imsi
-//                    LTESendManager.changeNameList("add","block",imsi);
-//                }
-//            }, 1500);
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //添加管控imsi
+                    List<String> blackIMSIList = CacheManager.getBlackIMSIList();
+                    String imsiArr = "";
+                    for (int i = 0; i < blackIMSIList.size(); i++) {
+                        if (!blackIMSIList.get(i).equals(imsi)) {
+                            imsiArr += blackIMSIList.get(i) + ",";
+                        }
+                    }
+
+                    if (!TextUtils.isEmpty(imsiArr)) {
+                        imsiArr = imsi + "," + imsiArr.substring(0, imsiArr.length() - 1);
+                    } else {
+                        imsiArr = imsi;
+                    }
+
+                    LTESendManager.changeNameList("add", "block", imsiArr);
+                }
+            }, 1500);
 
 
             new Timer().schedule(new TimerTask() {
@@ -167,19 +185,19 @@ public class CacheManager {
         } else {
 
             //目标imsi重定向，其余的回公网
-            CacheManager.redirect2G(imsi, null,"reject");
+            CacheManager.redirect2G(imsi, null, "reject");
 
 
 //            CacheManager.redirect2G("", "redirect", "");
 
 
-//            new Timer().schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    //添加指派imsi
-//                    LTESendManager.changeNameList("add","redirect",imsi);
-//                }
-//            }, 1000);
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //添加指派imsi
+                    LTESendManager.changeNameList("add", "redirect", imsi);
+                }
+            }, 1000);
 
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -446,6 +464,27 @@ public class CacheManager {
 
 
         EventAdapter.call(EventAdapter.SHOW_PROGRESS, 13000);
+    }
+
+    /**
+     * 查询黑名单IMSI
+     */
+    public static List<String> getBlackIMSIList() {
+        DbManager dbManager = UCSIDBManager.getDbManager();
+        List<String> blackList = new ArrayList<>();
+        try {
+            List<BlackListInfo> blackInfoList = dbManager.selector(BlackListInfo.class).findAll();
+            if (blackInfoList != null) {
+                for (int i = 0; i < blackInfoList.size(); i++) {
+                    if (!TextUtils.isEmpty(blackInfoList.get(i).getImsi())) {
+                        blackList.add(blackInfoList.get(i).getImsi());
+                    }
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return blackList;
     }
 
 

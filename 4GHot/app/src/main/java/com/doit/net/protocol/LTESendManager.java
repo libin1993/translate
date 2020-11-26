@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.DBChannel;
 import com.doit.net.model.UCSIDBManager;
+import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.utils.UtilOperator;
 import com.doit.net.application.MyApplication;
@@ -395,7 +396,7 @@ public class LTESendManager {
      */
     public static void setFTPConfig() {
 
-        String configContent = NetWorkUtils.getWIFILocalIpAddress(MyApplication.mContext)
+        String configContent = ServerSocketUtils.LOCAL_IP
                 + "#"
                 + FtpConfig.ftpUser
                 + "#"
@@ -431,7 +432,7 @@ public class LTESendManager {
                     setChannelConfig(channelB3.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn("1300,1506,1650");
+                            channel.setFcn("1300,1300,1300");
                             channel.setPlmn("46000");
                             break;
                         }
