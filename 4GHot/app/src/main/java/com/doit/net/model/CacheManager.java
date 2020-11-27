@@ -124,11 +124,30 @@ public class CacheManager {
         CacheManager.getCurrentLoction().setLocateStart(true);
 
         LogUtils.log("开始定位：" + imsi + "," + type);
+
+
+        //添加管控imsi
+        List<String> blackIMSIList = CacheManager.getBlackIMSIList();
+        String imsiArr = "";
+        for (int i = 0; i < blackIMSIList.size(); i++) {
+            if (!blackIMSIList.get(i).equals(imsi)) {
+                imsiArr += blackIMSIList.get(i) + ",";
+            }
+        }
+
+        if (!TextUtils.isEmpty(imsiArr)) {
+            imsiArr = imsi + "," + imsiArr.substring(0, imsiArr.length() - 1);
+        } else {
+            imsiArr = imsi;
+        }
+
         if (type == 1) {  //4G定位
+
+            String blockIMSI = imsiArr;
 
             //目标imsi吸附，其余的回公网
             LTESendManager.setNameList("", null,
-                    "", imsi, "reject");
+                    "", blockIMSI, "reject");
 
 
 //            LTESendManager.setNameList("", "",
@@ -147,22 +166,7 @@ public class CacheManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    //添加管控imsi
-                    List<String> blackIMSIList = CacheManager.getBlackIMSIList();
-                    String imsiArr = "";
-                    for (int i = 0; i < blackIMSIList.size(); i++) {
-                        if (!blackIMSIList.get(i).equals(imsi)) {
-                            imsiArr += blackIMSIList.get(i) + ",";
-                        }
-                    }
-
-                    if (!TextUtils.isEmpty(imsiArr)) {
-                        imsiArr = imsi + "," + imsiArr.substring(0, imsiArr.length() - 1);
-                    } else {
-                        imsiArr = imsi;
-                    }
-
-                    LTESendManager.changeNameList("add", "block", imsiArr);
+                    LTESendManager.changeNameList("add", "block", blockIMSI);
                 }
             }, 1500);
 
@@ -183,19 +187,20 @@ public class CacheManager {
 
 
         } else {
-
+            String redirectIMSI = imsiArr;
             //目标imsi重定向，其余的回公网
-            CacheManager.redirect2G(imsi, null, "reject");
+            CacheManager.redirect2G(redirectIMSI, null, "reject");
 
 
 //            CacheManager.redirect2G("", "redirect", "");
+
 
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     //添加指派imsi
-                    LTESendManager.changeNameList("add", "redirect", imsi);
+                    LTESendManager.changeNameList("add", "redirect", redirectIMSI);
                 }
             }, 1000);
 
@@ -412,8 +417,6 @@ public class CacheManager {
         }
         return null;
     }
-
-    private static Map<String, List<G4MsgChannelCfg>> userChannels = new HashMap<>();
 
 
     public static void setHighGa(boolean on_off) {

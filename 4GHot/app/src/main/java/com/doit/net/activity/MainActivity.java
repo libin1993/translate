@@ -512,7 +512,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             LogUtils.log("语音播报中文：" + result);
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                ToastUtils.showMessage(R.string.tip_08);
                 PrefManage.supportPlay = false;
             } else {
                 PrefManage.supportPlay = true;

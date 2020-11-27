@@ -98,11 +98,10 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
         });
 
         if (CacheManager.getLocMode()) {
-            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext, resp.getImsi(), resp.getType()));
+            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext, resp.getImsi(), resp.getType(),swipeLayout));
         } else {
             convertView.findViewById(R.id.add_to_localtion).setVisibility(View.GONE);
         }
-
 
         checkBlackWhiteList(resp, tvContent);
 

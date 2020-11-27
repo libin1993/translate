@@ -96,7 +96,7 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
         ImageView ivLocation = convertView.findViewById(R.id.iv_location);
         if(CacheManager.getLocMode() && !TextUtils.isEmpty(whitelistInfo.getImsi())){
             ivLocation.setVisibility(View.VISIBLE);
-            ivLocation.setOnClickListener(new AddToLocationListener(mContext,whitelistInfo.getImsi(),1));
+            ivLocation.setOnClickListener(new AddToLocationListener(mContext,whitelistInfo.getImsi(),1,swipeLayout));
         }else{
             ivLocation.setVisibility(View.GONE);
         }

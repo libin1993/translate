@@ -42,13 +42,13 @@ public class NetWorkUtils {
 
 
         NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);  //wifi
-        NetworkInfo ethernetInfo =connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET); //以太网
+        NetworkInfo ethernetInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET); //以太网
 
 
         boolean wifiState = wifiInfo != null && wifiInfo.isConnected();
-        boolean ethernetState = ethernetInfo !=null && ethernetInfo.isConnected();
-        LogUtils.log("以太网网络状态："+ethernetState);
-        LogUtils.log("WIFI网络状态："+wifiState);
+        boolean ethernetState = ethernetInfo != null && ethernetInfo.isConnected();
+        LogUtils.log("以太网网络状态：" + ethernetState);
+        LogUtils.log("WIFI网络状态：" + wifiState);
 
         return ethernetState || wifiState;
 
@@ -63,7 +63,7 @@ public class NetWorkUtils {
      */
 //    public static String getLocalIpAddress(Context mContext) {
 
-        //获取wifi服务  
+    //获取wifi服务
 //        ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 //
 //
@@ -77,8 +77,6 @@ public class NetWorkUtils {
 //
 //        return formatIpAddress(ipAddress);
 //    }
-
-
     public static String getWIFIIpAddress(Context context) {
         try {
 

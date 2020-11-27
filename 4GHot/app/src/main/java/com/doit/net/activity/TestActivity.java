@@ -40,6 +40,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
     private Button test4;
     private Button test5;
+    private Button test6;
     private EditText etIMSI;
     private Button test7;
 
@@ -60,6 +61,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
         test4 = findViewById(R.id.test4);
         test5 = findViewById(R.id.test5);
+        test6 = findViewById(R.id.test6);
         etIMSI = findViewById(R.id.et_change_nameList);
 
         test7 = findViewById(R.id.test7);
@@ -108,8 +110,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-//                    LTESendManager.setNameList(null,imsi,null,null,null,null);
-                    LTESendManager.changeNameList("add","reject",imsi);
+                    LTESendManager.setNameList(null,imsi,null,null,null);
                 }
             }
         });
@@ -120,11 +121,23 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-                    LTESendManager.setNameList(null,imsi,null,null,null);
+                    LTESendManager.setNameList(null,null,null,imsi,null);
 
                 }
             }
         });
+
+        test6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String imsi = etIMSI.getText().toString().trim();
+                if (!TextUtils.isEmpty(imsi)){
+                    LTESendManager.setNameList(null,null,imsi,null,null);
+
+                }
+            }
+        });
+
 
 
         test7.setOnClickListener(new View.OnClickListener() {

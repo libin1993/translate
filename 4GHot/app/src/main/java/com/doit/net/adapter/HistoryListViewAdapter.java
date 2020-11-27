@@ -118,7 +118,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
 
 
         if(CacheManager.getLocMode()){
-            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),1));
+            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),1,swipeLayout));
         }else{
             convertView.findViewById(R.id.add_to_localtion).setVisibility(View.GONE);
         }

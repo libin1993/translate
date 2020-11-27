@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.doit.net.activity.MainActivity;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
@@ -24,11 +25,13 @@ public class AddToLocationListener implements View.OnClickListener {
     private Context mContext;
     private String imsi;
     private int type;
+    private SwipeLayout swipeLayout;
 
-    public AddToLocationListener(Context mContext, String imsi, int type) {
+    public AddToLocationListener(Context mContext, String imsi, int type, SwipeLayout swipeLayout) {
         this.mContext = mContext;
         this.imsi = imsi;
         this.type = type;
+        this.swipeLayout = swipeLayout;
     }
 
 
@@ -56,6 +59,10 @@ public class AddToLocationListener implements View.OnClickListener {
             CacheManager.startLoc(imsi,type);
 
             ToastUtils.showMessage("搜寻开始");
+        }
+
+        if (swipeLayout !=null){
+            swipeLayout.close();
         }
 
         if (!(mContext  instanceof  MainActivity)) {
