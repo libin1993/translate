@@ -194,6 +194,9 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
         tvSystemSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
+                if (!CacheManager.checkDevice(getActivity())) {
+                    return;
+                }
                 startActivity(new Intent(getActivity(), SystemSettingActivity.class));
             }
         });

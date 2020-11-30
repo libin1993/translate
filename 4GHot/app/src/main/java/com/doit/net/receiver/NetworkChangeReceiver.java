@@ -57,7 +57,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                             isShow = false;
                         }
                     }
-                },4000);
+                },5000);
 
             }
         }else {

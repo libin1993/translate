@@ -40,7 +40,6 @@ public class ServerSocketUtils {
         }
     }
 
-    //获取单例对象
     public static ServerSocketUtils getInstance() {
         if (mInstance == null) {
             synchronized (ServerSocketUtils.class) {
@@ -63,7 +62,6 @@ public class ServerSocketUtils {
             public void run() {
                 while (true) {
                     try {
-
                         Socket socket = mServerSocket.accept();  //获取socket
                         socket.setSoTimeout(READ_TIME_OUT);      //设置超时
                         socket.setKeepAlive(true);
@@ -79,15 +77,12 @@ public class ServerSocketUtils {
 
                             LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
 
-
-                            ReceiveThread receiveThread = new ReceiveThread(remoteIP, onSocketChangedListener);
-                            receiveThread.start();
+                            new ReceiveThread(socket,remoteIP).start();
                         }
 
                     } catch (IOException e) {
                         e.printStackTrace();
-                        LogUtils.log("tcp错误：" + e.getMessage());
-
+                        LogUtils.log("TCP异常：" + e.getMessage());
                     }
                 }
             }
@@ -99,12 +94,12 @@ public class ServerSocketUtils {
      * 接收线程
      */
     public class ReceiveThread extends Thread {
-        private OnSocketChangedListener onSocketChangedListener;
+        private Socket socket;
         private String remoteIP;
 
-        public ReceiveThread(String remoteIP, OnSocketChangedListener onSocketChangedListener) {
+        public ReceiveThread(Socket socket,String remoteIP) {
+            this.socket = socket;
             this.remoteIP = remoteIP;
-            this.onSocketChangedListener = onSocketChangedListener;
         }
 
         @Override
@@ -115,15 +110,7 @@ public class ServerSocketUtils {
             //接收到流的数量
             int receiveCount;
             LTEReceiveManager lteReceiveManager = new LTEReceiveManager();
-            Socket socket = null;
             try {
-                //获取当前socket
-                socket = map.get(remoteIP);
-                if (socket == null) {
-                    return;
-                }
-
-
                 //获取输入流
                 InputStream inputStream = socket.getInputStream();
 
@@ -138,7 +125,6 @@ public class ServerSocketUtils {
                 LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
             }
 
-            onSocketChangedListener.onChange(remoteIP);
             try {
                 LogUtils.log(remoteIP + "关闭socket");
                 socket.close();
@@ -156,10 +142,10 @@ public class ServerSocketUtils {
     /**
      * 发送数据
      *
-     * @param tempByte
+     * @param data
      * @return
      */
-    public void sendData(String ip, byte[] tempByte) {
+    public void sendData(String ip, byte[] data) {
 
         Socket socket = map.get(ip);
         if (socket != null && socket.isConnected()) {
@@ -169,7 +155,7 @@ public class ServerSocketUtils {
                 public void run() {
                     try {
                         OutputStream outputStream = socket.getOutputStream();
-                        outputStream.write(tempByte);
+                        outputStream.write(data);
                         outputStream.flush();
                     } catch (Exception e) {
                         e.printStackTrace();

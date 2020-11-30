@@ -195,7 +195,6 @@ public class CacheManager {
 //            CacheManager.redirect2G("", "redirect", "");
 
 
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

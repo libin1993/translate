@@ -42,7 +42,6 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
     private LSettingItem tvIfAutoOpenRF;
     private LSettingItem tvGeneralAdmin;
     private LSettingItem tvStaticIp;
-    //private SettingItemClickEvent settingItemLocSwitch = new SettingItemClickEvent();
 
     private BootstrapButton btSetFan;
     private BootstrapEditText etMaxWindSpeed;

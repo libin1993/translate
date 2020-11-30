@@ -353,7 +353,9 @@ public class LTESendManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    openRf(CacheManager.getChannels().get(index).getIdx());
+                    if (CacheManager.getChannels().size() > index){
+                        openRf(CacheManager.getChannels().get(index).getIdx());
+                    }
                 }
             }, index*150);
         }
@@ -378,7 +380,9 @@ public class LTESendManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    closeRf(CacheManager.getChannels().get(index).getIdx());
+                    if (CacheManager.getChannels().size() > index){
+                        closeRf(CacheManager.getChannels().get(index).getIdx());
+                    }
                 }
             }, index*150);
         }

@@ -264,25 +264,32 @@ public class LTEReceiveManager {
                 switch (receivePackage.getPackageMainType()) {
                     case MsgType2G.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
-                        break;
-                    case MsgType2G.PT_ADJUST:
-                        LTE_PT_ADJUST.response(receivePackage);
 
                         if (!CacheManager.initSuccess2G) {
-                            Send2GManager.getParamsConfig();
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    Send2GManager.getCommonConfig();
+                                    if(!CacheManager.initSuccess2G){
+                                        Send2GManager.getParamsConfig();
+                                        new Timer().schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                Send2GManager.getCommonConfig();
+                                            }
+                                        }, 500);
+                                    }else {
+                                        cancel();
+                                    }
                                 }
-                            }, 500);
-
+                            },0,5000);
                         }
+
+                        break;
+                    case MsgType2G.PT_ADJUST:
+                        LTE_PT_ADJUST.response(receivePackage);
                         break;
                     case MsgType2G.PT_RESP:
-
                         LogUtils.log("2G登录成功");
-
                         break;
                     case MsgType2G.PT_PARAM:
                         switch (receivePackage.getPackageSubType()) {
@@ -409,7 +416,9 @@ public class LTEReceiveManager {
 
 
                 //2G切换成采集模式
-                Send2GManager.setLocIMSI("", "0");
+                if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 0)){
+                    Send2GManager.setLocIMSI("", "0");
+                }
 
                 //2G指派
                 if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {

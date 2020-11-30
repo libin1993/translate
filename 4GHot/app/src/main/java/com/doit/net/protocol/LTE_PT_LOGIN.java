@@ -56,7 +56,7 @@ public class LTE_PT_LOGIN {
 
 		//获取整体的包
 		byte[] tempSendBytes=sendPackage.getPackageContent();
-		LogUtils.log("登录回复");
+		LogUtils.log(receivePackage.getIp()+":登录回复");
 
 		LogUtils.log("TCP发送：Type:" + sendPackage.getPackageMainType() + ";  SubType:0x" + Integer.toHexString(sendPackage.getPackageSubType())+ ";  子协议:" + Arrays.toString(sendPackage.getByteSubContent()));
 

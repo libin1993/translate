@@ -647,8 +647,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 viewAnit.cancel();
                 ivDeviceState.clearAnimation();
                 ivDeviceState.setVisibility(View.GONE);
-
-                //ivSyncError.setVisibility(View.GONE);
                 break;
 
             case DeviceState.ON_INIT:
