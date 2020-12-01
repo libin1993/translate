@@ -25,7 +25,7 @@ public class ServerSocketUtils {
     private ServerSocket mServerSocket;
     public final static String LOCAL_IP = "192.168.1.133";   //本机ip
     public final static int LOCAL_PORT = 7003;   //本机端口
-    private final static int READ_TIME_OUT = 50000;  //超时时间
+    private final static int READ_TIME_OUT = 60000;  //超时时间
     public static final String REMOTE_4G_IP = "192.168.1.200";  //4G设备ip
     public static final String REMOTE_2G_IP = "192.168.1.1";     //2G设备ip
 
@@ -63,8 +63,6 @@ public class ServerSocketUtils {
                 while (true) {
                     try {
                         Socket socket = mServerSocket.accept();  //获取socket
-                        socket.setSoTimeout(READ_TIME_OUT);      //设置超时
-                        socket.setKeepAlive(true);
                         String remoteIP = socket.getInetAddress().getHostAddress();  //远程ip
                         int remotePort = socket.getPort();    //远程端口
 
@@ -77,7 +75,7 @@ public class ServerSocketUtils {
 
                             LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
 
-                            new ReceiveThread(socket,remoteIP).start();
+                            new ReceiveThread(socket,remoteIP,onSocketChangedListener).start();
                         }
 
                     } catch (IOException e) {
@@ -96,21 +94,26 @@ public class ServerSocketUtils {
     public class ReceiveThread extends Thread {
         private Socket socket;
         private String remoteIP;
+        private OnSocketChangedListener onSocketChangedListener;
 
-        public ReceiveThread(Socket socket,String remoteIP) {
+        public ReceiveThread(Socket socket,String remoteIP,OnSocketChangedListener onSocketChangedListener) {
             this.socket = socket;
             this.remoteIP = remoteIP;
+            this.onSocketChangedListener = onSocketChangedListener;
         }
 
         @Override
         public void run() {
             super.run();
+
             //数据缓存
             byte[] bytesReceived = new byte[1024];
             //接收到流的数量
             int receiveCount;
             LTEReceiveManager lteReceiveManager = new LTEReceiveManager();
             try {
+                socket.setSoTimeout(READ_TIME_OUT);      //设置超时
+                socket.setKeepAlive(true);
                 //获取输入流
                 InputStream inputStream = socket.getInputStream();
 
@@ -126,14 +129,24 @@ public class ServerSocketUtils {
             }
 
             try {
-                LogUtils.log(remoteIP + "关闭socket");
-                socket.close();
+                if ((remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) && CacheManager.initSuccess4G)
+                        || (remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP) && CacheManager.initSuccess2G)){
+                    socket.close();
+                    if (onSocketChangedListener != null) {
+                        onSocketChangedListener.onChange(remoteIP);
+                    }
+                    map.remove(remoteIP);
+                    lteReceiveManager.clearReceiveBuffer();
+                    LogUtils.log(remoteIP + ":关闭socket");
+                }else {
+                    LogUtils.log("未初始化完成，无需断开");
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
                 LogUtils.log(remoteIP + "：socket关闭失败:" + e.toString());
             }
 
-            lteReceiveManager.clearReceiveBuffer();
         }
     }
 

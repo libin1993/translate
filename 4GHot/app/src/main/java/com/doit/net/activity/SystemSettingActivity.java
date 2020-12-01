@@ -104,11 +104,17 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
     }
 
     private void initView() {
-        etMaxWindSpeed.setText(CacheManager.getLteEquipConfig().getMaxFanSpeed());
-        etMinWindSpeed.setText(CacheManager.getLteEquipConfig().getMinFanSpeed());
-        etTempThreshold.setText(CacheManager.getLteEquipConfig().getTempThreshold());
+        if (CacheManager.getLteEquipConfig() !=null){
+            etMaxWindSpeed.setText(CacheManager.getLteEquipConfig().getMaxFanSpeed());
+            etMinWindSpeed.setText(CacheManager.getLteEquipConfig().getMinFanSpeed());
+            etTempThreshold.setText(CacheManager.getLteEquipConfig().getTempThreshold());
+        }
 
-        tvIfAutoOpenRF.setChecked(CacheManager.getChannels().get(0).getAutoOpen().equals("1"));
+        if (CacheManager.getChannels()!=null &CacheManager.getChannels().size() > 0){
+            tvIfAutoOpenRF.setChecked(CacheManager.getChannels().get(0).getAutoOpen().equals("1"));
+        }
+
+
     }
 
     private LSettingItem.OnLSettingItemClick settingItemLocSwitch = new LSettingItem.OnLSettingItemClick() {

@@ -424,7 +424,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private void appExit() {
 
-        //BlackBoxManger.uploadCurrentBlxFile(); //会卡顿一段时间，体验很差
         clearDataDir();
 
         unregisterReceiver(networkChangeReceiver);
@@ -535,9 +534,8 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 CacheManager.deviceState.setDeviceState(DeviceState.WAIT_SOCKET);
             } //只有从wifi未连接到连接才出现这种状态
 
-            initUDP();  //重连wifi后udp发送ip、端口
             downloadAccount();
-
+            initUDP();  //重连wifi后udp发送ip、端口
         } else {
             CacheManager.deviceState.setDeviceState(DeviceState.WIFI_DISCONNECT);
             CacheManager.clearCache4G();

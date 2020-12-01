@@ -265,28 +265,26 @@ public class LTEReceiveManager {
                     case MsgType2G.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
 
-                        if (!CacheManager.initSuccess2G) {
-                            new Timer().schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    if(!CacheManager.initSuccess2G){
-                                        Send2GManager.getParamsConfig();
-                                        new Timer().schedule(new TimerTask() {
-                                            @Override
-                                            public void run() {
-                                                Send2GManager.getCommonConfig();
-                                            }
-                                        }, 500);
-                                    }else {
-                                        cancel();
-                                    }
-                                }
-                            },0,5000);
-                        }
 
                         break;
                     case MsgType2G.PT_ADJUST:
                         LTE_PT_ADJUST.response(receivePackage);
+
+                        if (!CacheManager.initSuccess2G) {
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    Send2GManager.getParamsConfig();
+                                }
+                            }, 500);
+
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    Send2GManager.getCommonConfig();
+                                }
+                            }, 2000);
+                        }
                         break;
                     case MsgType2G.PT_RESP:
                         LogUtils.log("2G登录成功");

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.doit.net.bean.UeidBean;
+import com.doit.net.model.DBUeidInfo;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.protocol.LTESendManager;
@@ -60,6 +62,13 @@ public class AddToBlacklistListener implements View.OnClickListener {
                 if(count>0){
                     ToastUtils.showMessage( R.string.exist_whitelist);
                     return;
+                }else {
+                    DBUeidInfo ueidInfo = dbManager.selector(DBUeidInfo.class)
+                            .where("msisdn", "=", this.msisdn)
+                            .findFirst();
+                    if (ueidInfo!= null && !TextUtils.isEmpty(ueidInfo.getImsi())){
+                        imsi = ueidInfo.getImsi();
+                    }
                 }
             }
 
