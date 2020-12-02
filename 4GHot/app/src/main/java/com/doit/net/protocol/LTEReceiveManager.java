@@ -502,7 +502,7 @@ public class LTEReceiveManager {
                 KeyValue keyValue1 = new KeyValue("msisdn", imsiList.get(1));
                 dbManager.update(DBUeidInfo.class, WhereBuilder.b("imsi", "=", imsiList.get(0)), keyValue1);
 
-                //修改白名单
+                //修改黑名单
                 BlackListInfo blackListInfo = dbManager.selector(BlackListInfo.class).where("msisdn", "=", imsiList.get(1)).findFirst();
                 if (blackListInfo != null) {
                     blackListInfo.setImsi(imsiList.get(0));

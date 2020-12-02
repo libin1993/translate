@@ -34,7 +34,6 @@ import com.doit.net.socket.DatagramSocketUtils;
 import com.doit.net.utils.PermissionUtils;
 import com.doit.net.view.BatteryView;
 import com.doit.net.adapter.MainTabLayoutAdapter;
-import com.doit.net.application.MyApplication;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.base.BaseFragment;
 import com.doit.net.bean.BatteryBean;
@@ -107,7 +106,9 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     Animation viewAnit = new AlphaAnimation(0, 1);
     private ImageView ivWifiState;
     private ImageView ivBatteryLevel;
-    private ImageView ivSyncError;
+    private ImageView ivNetState;
+    private ImageView iv4GState;
+    private ImageView iv2GState;
     private BatteryView batteryView;
     private TextView tvBattery;
     private ImageView ivCharging;
@@ -131,6 +132,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     private final int CHECK_LICENCE = 13;
     private final int BATTERY_STATE = 14;
     private final int MP_STATE = 15;
+    private final int STATION_STATE_4G = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +253,9 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
         ivDeviceState = findViewById(R.id.ivDeviceState);
 
-        ivSyncError = findViewById(R.id.ivSyncError);
+        ivNetState = findViewById(R.id.iv_net_state);
+        iv4GState = findViewById(R.id.iv_4g_state);
+        iv2GState = findViewById(R.id.iv_2g_state);
 
         ivBatteryLevel = findViewById(R.id.ivBatteryLevel);
         batteryView = findViewById(R.id.battery_view);
@@ -830,6 +834,10 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 heartbeatCount = true;
             }
 
+            Message msg = new Message();
+            msg.what = STATION_STATE_4G;
+            msg.obj = val;
+            mHandler.sendMessage(msg);
 
         } else if (EventAdapter.INIT_SUCCESS.equals(key)) {
             if (!CacheManager.initSuccess4G && CacheManager.getChannels().size() > 0) {
@@ -1059,11 +1067,16 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
             }else if (msg.what == MP_STATE){
                 if ("1".equals(msg.obj)){
-                    ivSyncError.setVisibility(View.VISIBLE);
+                    ivNetState.setVisibility(View.VISIBLE);
                 }else {
-                    ivSyncError.setVisibility(View.GONE);
+                    ivNetState.setVisibility(View.GONE);
                 }
-
+            }else if (msg.what == STATION_STATE_4G){
+                if ("0".equals(msg.obj)){
+                    iv4GState.setVisibility(View.VISIBLE);
+                }else {
+                    iv4GState.setVisibility(View.GONE);
+                }
             }
         }
     };

@@ -15,13 +15,13 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.VersionManage;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTE_PT_SYSTEM;
 import com.doit.net.utils.Cellular;
 import com.doit.net.utils.ToastUtils;
@@ -74,7 +74,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
 
         initView();
 
-        EventAdapter.register(UPDATE_TMEPRATURE, this);
+        EventAdapter.register(EventAdapter.UPDATE_TMEPRATURE, this);
         EventAdapter.register(EventAdapter.GET_NAME_LIST, this);
 
     }
@@ -170,18 +170,19 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
     @Override
     public void call(String key, Object val) {
         switch (key) {
-            case UPDATE_TMEPRATURE:
+            case EventAdapter.UPDATE_TMEPRATURE:
                 Message msg = new Message();
                 msg.what = 0;
                 msg.obj = val;
                 mHandler.sendMessage(msg);
                 break;
-            case GET_NAME_LIST:
+            case EventAdapter.GET_NAME_LIST:
                 Message msg1 = new Message();
                 msg1.what = 1;
                 msg1.obj = val;
                 mHandler.sendMessage(msg1);
                 break;
+
         }
 
     }

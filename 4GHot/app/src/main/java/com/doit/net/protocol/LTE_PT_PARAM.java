@@ -89,7 +89,6 @@ public class LTE_PT_PARAM {
     public static final byte SET_IMSI_TRANS_OPTIONS = 0x45;    //设置定IMSI翻译
 //    public static final byte SET_IMSI_TRANS_OPTIONS_ACK = 0xc5;    //设置IMSI翻译回复
 
-    private static long lastRptSyncErrorTime = 0; //记录每次上报同步状态异常的时间
 
 
     //查询参数
@@ -237,14 +236,8 @@ public class LTE_PT_PARAM {
         String heartbeat = UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0);
         LogUtils.log("processRPTHeartbeat:" + heartbeat);
 
-        //同步状态
-        lastRptSyncErrorTime = System.currentTimeMillis();  //第一次不提示
-        if (heartbeat.split("SYNCSTATUS")[1].charAt(1) != '0') {
-            if ((int) (System.currentTimeMillis() - lastRptSyncErrorTime) > 5 * 60 * 1000) {
-                LogUtils.log("同步状态异常");
-                lastRptSyncErrorTime = System.currentTimeMillis();
-            }
-        }
+        //4G同步状态
+        String statonState = heartbeat.split("SYNCSTATUS")[1].charAt(1) == '0' ? "0": "-1";
 
 
         //更新射频状态
@@ -256,32 +249,32 @@ public class LTE_PT_PARAM {
             }
         }
 
-        BatteryBean batteryBean = new BatteryBean();
-        String[] split = heartbeat.split("@");
+//        BatteryBean batteryBean = new BatteryBean();
+//        String[] split = heartbeat.split("@");
+//
+//        for (String s : split) {
+//            String[] key = s.split(":");
+//            switch (key[0]) {
+//                case "TM":   //温度
+//                    String temperature = key[1];
+//                    EventAdapter.call(EventAdapter.UPDATE_TMEPRATURE, temperature);
+//                    break;
+//                case "COU_STATE":   //是否正在充电
+//                    batteryBean.setCharging("1".equals(key[1]));
+//                    break;
+//                case "COU_LEFT":   //剩余电量
+//                    batteryBean.setBatteryQuantity(Integer.parseInt(key[1].split("%")[0]));
+//
+//                    break;
+//                case "COU_USE_MIN":   //剩余电量可用分钟
+//                    batteryBean.setUseTime(Integer.parseInt(key[1]));
+//                    break;
+//            }
+//        }
+//        CacheManager.isReportBattery = batteryBean.getBatteryQuantity() > 0;
+//        EventAdapter.call(EventAdapter.BATTERY_STATE, batteryBean);
 
-        for (String s : split) {
-            String[] key = s.split(":");
-            switch (key[0]) {
-                case "TM":   //温度
-                    String temperature = key[1];
-                    EventAdapter.call(EventAdapter.UPDATE_TMEPRATURE, temperature);
-                    break;
-                case "COU_STATE":   //是否正在充电
-                    batteryBean.setCharging("1".equals(key[1]));
-                    break;
-                case "COU_LEFT":   //剩余电量
-                    batteryBean.setBatteryQuantity(Integer.parseInt(key[1].split("%")[0]));
-
-                    break;
-                case "COU_USE_MIN":   //剩余电量可用分钟
-                    batteryBean.setUseTime(Integer.parseInt(key[1]));
-                    break;
-            }
-        }
-        CacheManager.isReportBattery = batteryBean.getBatteryQuantity() > 0;
-        EventAdapter.call(EventAdapter.BATTERY_STATE, batteryBean);
-
-        EventAdapter.call(EventAdapter.HEARTBEAT_RPT);
+        EventAdapter.call(EventAdapter.HEARTBEAT_RPT,statonState);
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
 

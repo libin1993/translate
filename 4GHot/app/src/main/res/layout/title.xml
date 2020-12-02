@@ -9,17 +9,17 @@
     <ImageView
         android:id="@+id/ivWifiState"
         android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginStart="10dp"
-        android:scaleType="centerCrop"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/wifi_disconnect" />
 
     <ImageView
         android:id="@+id/ivDeviceState"
         android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_marginStart="9dp"
-        android:scaleType="centerCrop"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/small_device_icon"
         android:visibility="gone" />
 
@@ -30,12 +30,28 @@
         android:layout_weight="1" />
 
     <ImageView
-        android:id="@+id/ivSyncError"
+        android:id="@+id/iv_net_state"
         android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:scaleType="centerCrop"
-        android:layout_marginRight="20dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
         android:src="@drawable/station_icon"
+        android:visibility="gone" />
+    <ImageView
+        android:id="@+id/iv_4g_state"
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/ic_4g_state"
+        android:visibility="gone" />
+    <ImageView
+        android:id="@+id/iv_2g_state"
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/ic_2g_state"
         android:visibility="gone" />
 
     <TextClock
