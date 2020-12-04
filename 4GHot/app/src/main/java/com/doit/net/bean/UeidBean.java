@@ -29,7 +29,7 @@ public class UeidBean {
 
     //为管控而加
     private int rptTimes = 1; //上报次数累积
-    private String srsp = "";  //最近一次场强
+    private int srsp;  //最近一次场强
 
     public UeidBean(){
 
@@ -78,7 +78,7 @@ public class UeidBean {
         return rptTimes;
     }
 
-    public String getSrsp() {
+    public int getSrsp() {
         return srsp;
     }
 
@@ -86,7 +86,7 @@ public class UeidBean {
         this.rptTimes = rptTimes;
     }
 
-    public void setSrsp(String srsp) {
+    public void setSrsp(int srsp) {
         this.srsp = srsp;
     }
 }

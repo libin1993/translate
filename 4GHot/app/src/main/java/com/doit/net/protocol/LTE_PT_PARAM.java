@@ -761,7 +761,7 @@ public class LTE_PT_PARAM {
                 UeidBean ueidBean = new UeidBean();
                 ueidBean.setType(1);
                 ueidBean.setImsi(split[0]);
-                ueidBean.setSrsp(rssi);
+                ueidBean.setSrsp(Integer.parseInt(rssi));
 
                 ueidList.add(ueidBean);
 

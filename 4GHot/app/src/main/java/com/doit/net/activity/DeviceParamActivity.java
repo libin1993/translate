@@ -10,6 +10,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.ScreenUtils;
+import com.doit.net.view.ChangeFcnDialog;
 import com.doit.net.view.SystemSetupDialog;
 import com.doit.net.adapter.UserChannelListAdapter;
 import com.doit.net.base.BaseActivity;
@@ -67,6 +68,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private Button btUpdateTac;
     private Button btRebootDevice;
     private Button btRefreshParam;
+    private Button btnCTCFcn;
     private RecyclerView rvBand;
     private long lastRefreshParamTime = 0; //防止频繁刷新参数
 
@@ -123,6 +125,17 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         btRebootDevice.setOnClickListener(rebootDeviceClick);
         btRefreshParam = findViewById(R.id.btRefreshParam);
         btRefreshParam.setOnClickListener(refreshParamClick);
+        btnCTCFcn = findViewById(R.id.btn_ctc_fcn);
+
+
+        btnCTCFcn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ChangeFcnDialog(DeviceParamActivity.this).show();
+            }
+        });
+
+
         rvBand = findViewById(R.id.rv_band);
 
         rgPowerLevel = findViewById(R.id.rgPowerLevel);

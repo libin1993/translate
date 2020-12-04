@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.DBChannel;
+import com.doit.net.model.PrefManage;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.NetWorkUtils;
@@ -432,21 +433,23 @@ public class LTESendManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB3 != null) {
-                if ("CTJ".equals(UtilOperator.getOperatorName(imsi))) {
-                    setChannelConfig(channelB3.getIdx(), "1300,1506,1650", "46000", "", "", "", "", "");
+                if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+
+                    String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
+                    setChannelConfig(channelB3.getIdx(), fcn+",1506,1650",
+                            "46000,46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn("1300,1300,1300");
-                            channel.setPlmn("46000");
+                            channel.setFcn(fcn+",1506,1650");
+                            channel.setPlmn("46000,46001,46011");
                             break;
                         }
                     }
                 } else {
-                    setChannelConfig(channelB3.getIdx(), "1850,1506,1650",
-                            "46000,46001,46011", "", "", "", "", "");
+                    setChannelConfig(channelB3.getIdx(), channelB3.getFcn(), "46000,46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn("1850,1506,1650");
+                            channel.setFcn(channelB3.getFcn());
                             channel.setPlmn("46000,46001,46011");
                             break;
                         }

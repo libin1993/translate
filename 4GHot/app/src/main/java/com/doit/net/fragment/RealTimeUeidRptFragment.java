@@ -87,7 +87,6 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
         EventAdapter.register(EventAdapter.RF_STATUS_RPT, this);
 
         EventAdapter.register(EventAdapter.SHIELD_RPT, this);
-        EventAdapter.register(EventAdapter.REFRESH_IMSI, this);
         dbManager = UCSIDBManager.getDbManager();
 
         return rootView;
@@ -187,17 +186,24 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             LogUtils.log("侦码上报: IMSI：" + ueidBean.getImsi() + "强度：" + ueidBean.getSrsp() + ",类型" + ueidBean.getType());
             for (int i = 0; i < CacheManager.realtimeUeidList.size(); i++) {
                 if (CacheManager.realtimeUeidList.get(i).getImsi().equals(ueidBean.getImsi())) {
-                    int times = CacheManager.realtimeUeidList.get(i).getRptTimes();
-                    if (times > 1000) {
-                        times = 0;
-                    }
-                    CacheManager.realtimeUeidList.get(i).setRptTimes(times + 1);
-                    CacheManager.realtimeUeidList.get(i).setSrsp("" + Integer.parseInt(ueidBean.getSrsp()) * 5 / 6);
-                    if (ueidBean.getType() == 1) {
-                        CacheManager.realtimeUeidList.get(i).setType(ueidBean.getType());
-                    }
-                    CacheManager.realtimeUeidList.get(i).setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
 
+                    if (ueidBean.getSrsp() < 0){
+                        CacheManager.realtimeUeidList.get(i).setNumber(ueidBean.getNumber());  //翻译上报的，只更新手机号
+                    }else {
+                        int times = CacheManager.realtimeUeidList.get(i).getRptTimes();
+                        if (times > 1000) {
+                            times = 0;
+                        }
+                        CacheManager.realtimeUeidList.get(i).setRptTimes(times + 1);
+
+                        CacheManager.realtimeUeidList.get(i).setSrsp(ueidBean.getSrsp() * 5 / 6);
+
+                        if (ueidBean.getType() == 1) {
+                            CacheManager.realtimeUeidList.get(i).setType(ueidBean.getType());
+                        }
+
+                        CacheManager.realtimeUeidList.get(i).setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
+                    }
                     isContain = true;
                     break;
                 }
@@ -206,7 +212,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             if (!isContain) {
                 UeidBean newUeid = new UeidBean();
                 newUeid.setImsi(ueidBean.getImsi());
-                newUeid.setSrsp("" + Integer.parseInt(ueidBean.getSrsp()) * 5 / 6);
+                if (ueidBean.getSrsp() < 0){
+                    newUeid.setSrsp(80);
+                }else {
+                    newUeid.setSrsp(ueidBean.getSrsp() * 5 / 6);
+                }
+
                 newUeid.setRptTime(DateUtils.convert2String(new Date().getTime(), DateUtils.LOCAL_DATE));
                 newUeid.setRptTimes(1);
                 if (ueidBean.getType() == 1) {
@@ -214,8 +225,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 }
                 CacheManager.realtimeUeidList.add(newUeid);
 
-
-                UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), "",
+                UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), !TextUtils.isEmpty(ueidBean.getNumber()) ? ueidBean.getNumber():"",
                         new Date().getTime(), ueidBean.getType());
             }
 
@@ -311,16 +321,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             switch (msg.what) {
                 case SHIELD_RPT:
                     List<UeidBean> ueidList = (List<UeidBean>) msg.obj;
-
                     addShildRptList(ueidList);
                     sortRealtimeRpt();
                     updateView();
                     break;
                 case RF_STATUS_RPT:
                     isRFOpen();
-                    break;
-                case REFRESH_IMSI:
-                    updateView();
                     break;
 
             }
@@ -336,12 +342,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 public int compare(UeidBean o1, UeidBean o2) {
 
                     boolean isBlack1 = o1.isBlack();
-                    int rssi1 = Integer.parseInt(o1.getSrsp());
+                    int rssi1 = o1.getSrsp();
                     String phoneNumber1  = o1.getNumber();
 
 
                     boolean isBlack2 = o2.isBlack();
-                    int rssi2 = Integer.parseInt(o2.getSrsp());
+                    int rssi2 = o2.getSrsp();
                     String phoneNumber2 = o2.getNumber();
 
 
@@ -426,9 +432,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
             case EventAdapter.RF_STATUS_RPT:
                 mHandler.sendEmptyMessage(RF_STATUS_RPT);
                 break;
-            case EventAdapter.REFRESH_IMSI:
-                mHandler.sendEmptyMessage(REFRESH_IMSI);
-                break;
+
         }
 
     }

@@ -10,6 +10,7 @@ public class PrefManage {
 
     private static SharedPreferences settings;
     private static SharedPreferences.Editor editor;
+    public static final String CTC_FCN = "CTC_FCN";
     public static void init(Context context){
         settings = context.getSharedPreferences("config", Context.MODE_PRIVATE);
         editor = settings.edit();

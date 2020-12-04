@@ -1,7 +1,6 @@
 package com.doit.net.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -83,7 +82,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.doit.net.activity.SystemSettingActivity.SET_STATIC_IP;
 
 public class MainActivity extends BaseActivity implements TextToSpeech.OnInitListener, EventAdapter.EventCall {
-    private Activity activity = this;
 
     private ViewPager mViewPager;
     private List<BaseFragment> mTabs = new ArrayList<BaseFragment>();
@@ -140,8 +138,8 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
             LogUtils.log("没有读取手机权限");
         }
 
@@ -225,7 +223,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     }
 
     private void initProgressDialog() {
-        mProgressDialog = new MySweetAlertDialog(activity, MySweetAlertDialog.PROGRESS_TYPE);
+        mProgressDialog = new MySweetAlertDialog(this, MySweetAlertDialog.PROGRESS_TYPE);
         mProgressDialog.setTitleText("Loading...");
         mProgressDialog.setCancelable(false);
     }
@@ -685,7 +683,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         }
     }
 
-    private void lowBatteryWarnning(String content) {
+    private void lowBatteryWarning(String content) {
         if (batteryWarningDialog == null) {
             batteryWarningDialog = new MySweetAlertDialog(this, MySweetAlertDialog.WARNING_TYPE)
                     .setTitleText(getString(R.string.low_power))
@@ -756,7 +754,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 ivBatteryLevel.startAnimation(batteryViewAnit);
             }
 
-            lowBatteryWarnning(getString(R.string.low_power_warning));
+            lowBatteryWarning(getString(R.string.low_power_warning));
         }
     }
 
@@ -1061,7 +1059,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
                 if (batteryBean.getBatteryQuantity() <= 20 && lowBatteryWarn) {
                     lowBatteryWarn = false;
-                    lowBatteryWarnning("当前电池电量过低，预计可用" + batteryBean.getUseTime()
+                    lowBatteryWarning("当前电池电量过低，预计可用" + batteryBean.getUseTime()
                             + "分钟，已无法保证正常工作，请及时更换电池！");
                 }
 

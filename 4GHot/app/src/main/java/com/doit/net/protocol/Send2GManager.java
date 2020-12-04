@@ -84,6 +84,7 @@ public class Send2GManager {
         bean.setId(MsgType2G.GET_NTC_CONFIG_ID);
         bean.setBoardid(boardId);
 
+        LogUtils.log("查询MCRF");
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_NTC_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
 
     }
@@ -121,7 +122,7 @@ public class Send2GManager {
         bean.setId(MsgType2G.GET_MCRF_CONFIG_ID);
         bean.setBoardid(boardId);
         bean.setCarrierid(carrierId);
-
+        LogUtils.log("查询NTC");
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MCRF_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
     }
 
