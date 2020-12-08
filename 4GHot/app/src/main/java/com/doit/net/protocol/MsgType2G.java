@@ -32,16 +32,15 @@ public class MsgType2G {
     public static final byte GET_NTC_CONFIG_ACK = (byte) 0x91;   //查询基本环境参数应答
     public static final byte GET_MCRF_CONFIG = 0x12;   //查询运营商参数、工作模式
     public static final byte GET_MCRF_CONFIG_ACK = (byte) 0x92;   //查询运营商参数、工作模式应答
-    public static final byte GET_MP_STATE = 0x1F;   //查询猫池状态
-    public static final byte GET_MP_STATE_ACK = (byte) 0x9F;   //查询猫池状态应答
 
     public static final byte REBOOT_DEVICE = (byte) 0x31;   //重启设备
     public static final byte REBOOT_DEVICE_ACK = (byte) 0xB1;   //重启设备应答
 
     public static final byte RPT_IMSINUM_INFO = (byte) 0x21;   //号码翻译上报
     public static final byte RPT_IMSI_INFO = (byte) 0x22;   //imsi上报
+    public static final byte RPT_HEARTBEAT_INFO = (byte) 0x24;   //心跳
     public static final byte RPT_IMSI_LOC_INFO = (byte) 0x2E;   //2G定位上报
-    public static final byte RPT_MP_STATE = (byte) 0x30;   //猫池状态上报
+
 
     //消息id
     public static final String SET_NTC_CONFIG_ID = "SET_NTC_CONFIG";  //设置基本环境参数id

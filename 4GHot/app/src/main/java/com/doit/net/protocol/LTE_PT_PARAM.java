@@ -3,38 +3,26 @@ package com.doit.net.protocol;
 
 import android.text.TextUtils;
 
-import com.doit.net.model.VersionManage;
 import com.doit.net.socket.ServerSocketUtils;
-import com.doit.net.bean.BatteryBean;
 import com.doit.net.bean.LteCellConfig;
-import com.doit.net.bean.Namelist;
 import com.doit.net.bean.UeidBean;
 import com.doit.net.bean.BlackNameBean;
 import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.LteEquipConfig;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.CacheManager;
-import com.doit.net.model.ImsiMsisdnConvert;
 import com.doit.net.model.ScanFreqManager;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.UtilDataFormatChange;
 import com.doit.net.utils.UtilOperator;
 import com.doit.net.ucsi.R;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Zxc on 2018/10/18.
@@ -237,7 +225,7 @@ public class LTE_PT_PARAM {
         LogUtils.log("processRPTHeartbeat:" + heartbeat);
 
         //4G同步状态
-        String statonState = heartbeat.split("SYNCSTATUS")[1].charAt(1) == '0' ? "0": "-1";
+        String stationState = heartbeat.split("SYNCSTATUS")[1].charAt(1) == '0' ? "0": "-1";
 
 
         //更新射频状态
@@ -274,7 +262,7 @@ public class LTE_PT_PARAM {
 //        CacheManager.isReportBattery = batteryBean.getBatteryQuantity() > 0;
 //        EventAdapter.call(EventAdapter.BATTERY_STATE, batteryBean);
 
-        EventAdapter.call(EventAdapter.HEARTBEAT_RPT,statonState);
+        EventAdapter.call(EventAdapter.RPT_HEARTBEAT_4G,stationState);
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
 

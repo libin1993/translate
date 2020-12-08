@@ -33,14 +33,14 @@ public class EventAdapter {
     public final static String INIT_SUCCESS = "INIT_SUCCESS";  //通道初始化成功
     public final static String RF_STATUS_RPT = "RF_STATUS_RPT";  //射频状态,是否停止侦码
     public final static String RF_STATUS_LOC = "RF_STATUS_LOC";  //射频状态,是否关闭定位
-    public final static String HEARTBEAT_RPT = "HEARTBEAT_RPT"; //设备心跳
+    public final static String RPT_HEARTBEAT_4G = "RPT_HEARTBEAT_4G"; //4G设备心跳
+    public final static String RPT_HEARTBEAT_2G = "RPT_HEARTBEAT_2G"; //2G设备心跳
     public final static String REFRESH_USER_LIST ="REFRESH_USER_LIST"; //用户列表
     public final static String RESEARCH_HISTORY_LIST ="RESEARCH_HISTORY_LIST"; //历史记录
     public final static String REFRESH_BLACKLIST = "REFRESH_BLACKLIST";  //黑名单列表
     public final static String UPGRADE_STATUS = "UPGRADE_STATUS";  //升级结果
 
     public final static String REFRESH_DEVICE_2G = "REFRESH_DEVICE_2G";  //通道设置
-    public final static String MP_STATE = "MP_STATE";  //猫池状态
 
     public static void register(String key, EventCall call) {
         event.put(key,call);

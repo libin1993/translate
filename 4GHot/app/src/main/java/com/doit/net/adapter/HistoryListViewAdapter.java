@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
-import com.doit.net.activity.HistoryListActivity;
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
@@ -19,7 +18,7 @@ import com.doit.net.model.UCSIDBManager;
 
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.view.AddBlacklistDialog;
-import com.doit.net.view.ModifyWhitelistDialog;
+import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.DateUtils;
 
@@ -84,9 +83,9 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
                     BlackListInfo info = dbManager.selector(BlackListInfo.class).where("msisdn","=",resp.getMsisdn()).or("imsi", "=", resp.getImsi()).findFirst();
                     if (info != null) {
 
-                        ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
+                        ModifyBlackListDialog modifyBlackListDialog = new ModifyBlackListDialog(mContext,
                                 resp.getImsi(), info.getMsisdn(), info.getRemark(),false);
-                        modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        modifyBlackListDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                             @Override
                             public void onDismiss(DialogInterface dialog) {
                                 notifyDataSetChanged();
@@ -95,7 +94,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
                                 }
                             }
                         });
-                        modifyWhitelistDialog.show();
+                        modifyBlackListDialog.show();
                     }else {
 
                         AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(mContext, resp.getImsi(),resp.getMsisdn());

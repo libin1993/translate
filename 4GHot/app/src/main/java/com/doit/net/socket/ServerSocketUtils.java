@@ -125,6 +125,7 @@ public class ServerSocketUtils {
                 LogUtils.log(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
 
             } catch (IOException ex) {
+                ex.printStackTrace();
                 LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
             }
 

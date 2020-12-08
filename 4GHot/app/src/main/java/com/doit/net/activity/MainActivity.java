@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import android.widget.TextView;
 
+import com.doit.net.bean.HeartBeatBean;
 import com.doit.net.socket.OnSocketChangedListener;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.socket.DatagramSocketUtils;
@@ -95,7 +96,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private MySweetAlertDialog mProgressDialog;
 
-    private boolean heartbeatCount = false;
     private boolean isCheckDeviceStateThreadRun = true;
     private boolean lowBatteryWarn = true;  //低电量提醒
 
@@ -129,7 +129,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     private final int POWER_START = 11;
     private final int CHECK_LICENCE = 13;
     private final int BATTERY_STATE = 14;
-    private final int MP_STATE = 15;
+    private final int RPT_HEARTBEAT_2G = 15;
     private final int STATION_STATE_4G = 16;
 
     @Override
@@ -184,6 +184,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
         BlackBoxManger.setCurrentAccount(AccountManage.getCurrentLoginAccount());
         BlackBoxManger.initBlx();
+        BlackBoxManger.recordOperation(BlackBoxManger.LOGIN + AccountManage.getCurrentLoginAccount());
 
     }
 
@@ -195,7 +196,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 switch (ip) {
                     case ServerSocketUtils.REMOTE_4G_IP:
                         CacheManager.deviceState.setDeviceState(DeviceState.ON_INIT);
-                        heartbeatCount = false;    //一旦发现是连接就重置此标志以设置所有配置
                         //设备重启（重连）后需要重新检查设置默认参数
                         CacheManager.initSuccess4G = false;
                         CacheManager.clearCache4G();
@@ -281,11 +281,10 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         EventAdapter.register(EventAdapter.CHANGE_TAB, this);
         EventAdapter.register(EventAdapter.WIFI_CHANGE, this);
         EventAdapter.register(EventAdapter.POWER_START, this);
-        EventAdapter.register(EventAdapter.HEARTBEAT_RPT, this);
+        EventAdapter.register(EventAdapter.RPT_HEARTBEAT_4G, this);
         EventAdapter.register(EventAdapter.BATTERY_STATE, this);
         EventAdapter.register(EventAdapter.INIT_SUCCESS, this);
-        EventAdapter.register(EventAdapter.MP_STATE, this);
-
+        EventAdapter.register(EventAdapter.RPT_HEARTBEAT_2G, this);
     }
 
     private void checkDataDir() {
@@ -539,6 +538,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             downloadAccount();
             initUDP();  //重连wifi后udp发送ip、端口
         } else {
+            ToastUtils.showMessageLong("网络连接已断开！请检查网络是否正常连接！");
             CacheManager.deviceState.setDeviceState(DeviceState.WIFI_DISCONNECT);
             CacheManager.clearCache4G();
             CacheManager.paramList.clear();
@@ -816,20 +816,11 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             wifiChangeEvent();
         } else if (EventAdapter.POWER_START.equals(key)) {
             mHandler.sendEmptyMessage(POWER_START);
-        } else if (EventAdapter.HEARTBEAT_RPT.equals(key)) {
-            if (!heartbeatCount) {
-                LTESendManager.setNowTime();
-                LogUtils.log("首次下发查询以获取小区信息：");
+        } else if (EventAdapter.RPT_HEARTBEAT_4G.equals(key)) {
+            LogUtils.log("4G初始化："+CacheManager.initSuccess4G);
+
+            if (!CacheManager.initSuccess4G) {
                 LTESendManager.getEquipAndAllChannelConfig();
-
-                LTESendManager.setFTPConfig(); //设置ftp配置
-
-
-                if (CacheManager.checkLicense) {
-                    CacheManager.checkLicense = false;
-                    checkLicence();
-                }
-                heartbeatCount = true;
             }
 
             Message msg = new Message();
@@ -881,9 +872,27 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     }
                 }, 3000);
 
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.setFTPConfig(); //设置ftp配置
+                    }
+                },4000);
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.setNowTime();
+                    }
+                },5000);
+
+                if (CacheManager.checkLicense) {
+                    CacheManager.checkLicense = false;
+                    checkLicence();
+                }
 
                 CacheManager.initSuccess4G = true;
-
+                LogUtils.log("4G初始化成功，2G初始化结果："+CacheManager.initSuccess2G);
                 if (CacheManager.initSuccess2G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
@@ -895,9 +904,9 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             msg.what = BATTERY_STATE;
             msg.obj = val;
             mHandler.sendMessage(msg);
-        }else if (EventAdapter.MP_STATE.equals(key)){
+        }else if (EventAdapter.RPT_HEARTBEAT_2G.equals(key)){
             Message msg = new Message();
-            msg.what = MP_STATE;
+            msg.what = RPT_HEARTBEAT_2G;
             msg.obj = val;
             mHandler.sendMessage(msg);
         }
@@ -1063,12 +1072,20 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                             + "分钟，已无法保证正常工作，请及时更换电池！");
                 }
 
-            }else if (msg.what == MP_STATE){
-                if ("1".equals(msg.obj)){
+            }else if (msg.what == RPT_HEARTBEAT_2G){
+                HeartBeatBean heartBeatBean = (HeartBeatBean) msg.obj;
+                if (heartBeatBean.getCdma_sync() == 0){
+                    iv2GState.setVisibility(View.VISIBLE);
+                }else {
+                    iv2GState.setVisibility(View.GONE);
+                }
+
+                if (heartBeatBean.getMp_state() == 0){
                     ivNetState.setVisibility(View.VISIBLE);
                 }else {
                     ivNetState.setVisibility(View.GONE);
                 }
+
             }else if (msg.what == STATION_STATE_4G){
                 if ("0".equals(msg.obj)){
                     iv4GState.setVisibility(View.VISIBLE);

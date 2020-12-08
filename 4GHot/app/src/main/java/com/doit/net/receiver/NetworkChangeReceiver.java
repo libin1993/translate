@@ -24,7 +24,7 @@ import java.util.TimerTask;
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static boolean isShow = false;
-    private MySweetAlertDialog myDialog;
+//    private MySweetAlertDialog myDialog;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -33,29 +33,38 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (!NetWorkUtils.getNetworkState() && myDialog==null){
-                            myDialog = new MySweetAlertDialog(context, MySweetAlertDialog.WARNING_TYPE);
-                            myDialog.setTitleText("网络异常");
-                            myDialog.setContentText("网络连接已断开！设备断开连接！");
-                            myDialog.show();
-                            myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-                                    isShow = false;
-                                    myDialog= null;
-                                }
-                            });
+//                        if (!NetWorkUtils.getNetworkState() && myDialog==null){
+//                            myDialog = new MySweetAlertDialog(context, MySweetAlertDialog.WARNING_TYPE);
+//                            myDialog.setTitleText("网络异常");
+//                            myDialog.setContentText("网络连接已断开！设备断开连接！");
+//                            myDialog.show();
+//                            myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                                @Override
+//                                public void onDismiss(DialogInterface dialog) {
+//                                    isShow = false;
+//                                    myDialog= null;
+//                                }
+//                            });
+//
+//                            if (CacheManager.getCurrentLoction() != null) {
+//                                CacheManager.getCurrentLoction().setLocateStart(false);
+//                            }
+//
+//                            EventAdapter.call(EventAdapter.RF_STATUS_LOC);
+//
+//                            EventAdapter.call(EventAdapter.WIFI_CHANGE);
+//                        }else {
+//                            isShow = false;
+//                        }
 
-                            if (CacheManager.getCurrentLoction() != null) {
-                                CacheManager.getCurrentLoction().setLocateStart(false);
-                            }
 
-                            EventAdapter.call(EventAdapter.RF_STATUS_LOC);
-
-                            EventAdapter.call(EventAdapter.WIFI_CHANGE);
-                        }else {
-                            isShow = false;
+                        if (CacheManager.getCurrentLoction() != null) {
+                            CacheManager.getCurrentLoction().setLocateStart(false);
                         }
+
+                        EventAdapter.call(EventAdapter.RF_STATUS_LOC);
+
+                        EventAdapter.call(EventAdapter.WIFI_CHANGE);
                     }
                 },5000);
 

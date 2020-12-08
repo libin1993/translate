@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.view.AddBlacklistDialog;
-import com.doit.net.view.ModifyWhitelistDialog;
+import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.application.MyApplication;
 import com.doit.net.bean.UeidBean;
 
@@ -68,9 +67,9 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
             @Override
             public void onClick(View v) {
                 if (resp.isBlack()){
-                    ModifyWhitelistDialog modifyWhitelistDialog = new ModifyWhitelistDialog(mContext,
+                    ModifyBlackListDialog modifyBlackListDialog = new ModifyBlackListDialog(mContext,
                             resp.getImsi(), resp.getNumber(), resp.getRemark(),false);
-                    modifyWhitelistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    modifyBlackListDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @Override
                         public void onDismiss(DialogInterface dialog) {
                             notifyDataSetChanged();
@@ -80,7 +79,7 @@ public class UeidListViewAdapter extends BaseSwipeAdapter {
 
                         }
                     });
-                    modifyWhitelistDialog.show();
+                    modifyBlackListDialog.show();
                 }else {
                     AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(mContext, resp.getImsi(),resp.getNumber());
                     addBlacklistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {

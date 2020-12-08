@@ -52,6 +52,9 @@ public class BlackBoxManger {
     public final static String START_LOCALTE = "开始搜寻，号码为:";
     public final static String STOP_LOCALTE = "停止搜寻，号码为:";
     public final static String EXPORT_HISTORT_DATA = "导出历史数据,文件名为:";
+    public final static String ADD_BLACK_LIST = "添加了一个黑名单，名单信息:";
+    public final static String DELTE_BLACK_LIST = "删除了一个黑名单，名单信息:";
+    public final static String MODIFY_BLACK_LIST = "修改了一个黑名单:";
     public final static String EXPORT_BLACKLIST = "导出黑名单,文件名为:";
     public final static String CLEAR_BLACKLIST = "清空黑名单";
     public final static String IMPORT_BLACKLIST = "导入黑名单,文件名为:";
@@ -222,13 +225,8 @@ public class BlackBoxManger {
             public void run() {
                 try {
                     if (FTPManager.getInstance().connect()) {
-                        boolean isDownloaded = FTPManager.getInstance().downloadFile(LOCAL_FTP_BLX_PATH, currentBlxFileName);
-                        if (isDownloaded){
-                            recordOperation(BlackBoxManger.LOGIN + AccountManage.getCurrentLoginAccount());
-                        }
+                        FTPManager.getInstance().downloadFile(LOCAL_FTP_BLX_PATH, currentBlxFileName);
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

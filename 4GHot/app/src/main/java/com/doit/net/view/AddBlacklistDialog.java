@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import com.doit.net.event.AddToBlacklistListener;
 import com.doit.net.event.EventAdapter;
+import com.doit.net.model.BlackBoxManger;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.ToastUtils;
@@ -99,7 +100,7 @@ public class AddBlacklistDialog extends Dialog {
 
                 new AddToBlacklistListener(getContext(), imsi, msisdn, remark).onClick(null);
 
-
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.ADD_BLACK_LIST+imsi+"+"+msisdn);
                 EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
                 dismiss();
 

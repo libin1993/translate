@@ -126,22 +126,6 @@ public class Send2GManager {
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MCRF_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
-     * 查询猫池状态
-     */
-    public static void getMPState(){
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", MsgType2G.GET_MP_STATE_ID);
-
-            sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MP_STATE, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
     /**
      * 设置运营商参数、工作模式
@@ -189,6 +173,27 @@ public class Send2GManager {
             param.setCarrierid(params.getCarrierid());
             param.setState(state);
             paramList.add(param);
+        }
+
+        bean.setParams(paramList);
+        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * 设置GSM运营商参数、工作模式
+     */
+    public static void setGSMRFState(String state) {
+        Set2GRFBean bean = new Set2GRFBean();
+        bean.setId(MsgType2G.SET_RF_SWITCH_ID);
+        List<Set2GRFBean.Params> paramList = new ArrayList<>();
+        for (Set2GParamsBean.Params params : CacheManager.paramList) {
+            if (params.getBoardid().equals("0")){
+                Set2GRFBean.Params param = new Set2GRFBean.Params();
+                param.setBoardid(params.getBoardid());
+                param.setCarrierid(params.getCarrierid());
+                param.setState(state);
+                paramList.add(param);
+            }
         }
 
         bean.setParams(paramList);

@@ -25,6 +25,7 @@ import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.udp.g4.bean.G4MsgChannelCfg;
+import com.doit.net.utils.UtilOperator;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.xutils.DbManager;
@@ -216,7 +217,12 @@ public class CacheManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Send2GManager.setRFState("1");
+                    if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+                        Send2GManager.setRFState("1");
+                    } else {
+                        Send2GManager.setGSMRFState("1");
+                    }
+
                 }
             }, 1000);
 

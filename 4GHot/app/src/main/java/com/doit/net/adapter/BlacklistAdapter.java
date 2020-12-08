@@ -15,13 +15,12 @@ import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.event.EventAdapter;
+import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
-import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
-import com.doit.net.utils.ToastUtils;
-import com.doit.net.view.ModifyWhitelistDialog;
+import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;
 
 import org.xutils.ex.DbException;
@@ -78,7 +77,7 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
         convertView.findViewById(R.id.ivModify).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ModifyWhitelistDialog modifyUserInfoDialog = new ModifyWhitelistDialog(mContext, whitelistInfo.getImsi(), whitelistInfo.getMsisdn(), whitelistInfo.getRemark());
+                ModifyBlackListDialog modifyUserInfoDialog = new ModifyBlackListDialog(mContext, whitelistInfo.getImsi(), whitelistInfo.getMsisdn(), whitelistInfo.getRemark());
                 modifyUserInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -180,7 +179,8 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
 
                 Send2GManager.setBlackList();
 
-                //EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_USER+resp.getAccount());
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_BLACK_LIST
+                        + resp.getImsi() + "+" + resp.getMsisdn());
             } catch (DbException e) {
                 new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE)
                         .setTitleText(mContext.getString(R.string.del_white_list_fail))

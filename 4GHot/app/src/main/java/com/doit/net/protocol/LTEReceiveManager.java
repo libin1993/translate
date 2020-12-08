@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import com.doit.net.application.MyApplication;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
+import com.doit.net.bean.HeartBeatBean;
 import com.doit.net.bean.MPStateBean;
 import com.doit.net.bean.Report2GIMSIBean;
 import com.doit.net.bean.Report2GLocBean;
@@ -32,7 +33,6 @@ import com.doit.net.utils.UtilDataFormatChange;
 import org.xutils.DbManager;
 import org.xutils.common.util.KeyValue;
 import org.xutils.db.sqlite.WhereBuilder;
-import org.xutils.ex.DbException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -275,14 +275,18 @@ public class LTEReceiveManager {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    Send2GManager.getParamsConfig();
+                                    if (!CacheManager.initSuccess2G){
+                                        Send2GManager.getParamsConfig();
+                                    }
                                 }
                             }, 500);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    Send2GManager.getCommonConfig();
+                                    if (!CacheManager.initSuccess2G){
+                                        Send2GManager.getCommonConfig();
+                                    }
                                 }
                             }, 2000);
                         }
@@ -316,12 +320,11 @@ public class LTEReceiveManager {
                             case MsgType2G.RPT_IMSI_LOC_INFO:
                                 parseImsiLoc(receivePackage);
                                 break;
-                            case MsgType2G.GET_MP_STATE_ACK:
-                            case MsgType2G.RPT_MP_STATE:
-                                parseMPState(receivePackage);
-                                break;
                             case MsgType2G.SET_BLACK_NAMELIST_ACK:
                                 LogUtils.log("黑名单下发成功");
+                                break;
+                            case MsgType2G.RPT_HEARTBEAT_INFO:
+                                parseHeartBeat(receivePackage);
                                 break;
                         }
                         break;
@@ -409,10 +412,10 @@ public class LTEReceiveManager {
             if (CacheManager.paramList.size() == 3 && !initSuccess) {
                 initSuccess = true;
                 CacheManager.initSuccess2G = true;
+                LogUtils.log("2G初始化成功，4G初始化结果："+CacheManager.initSuccess4G);
                 if (CacheManager.initSuccess4G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
-
 
                 //2G切换成采集模式
                 if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 0)){
@@ -436,14 +439,6 @@ public class LTEReceiveManager {
                         Send2GManager.setBlackList();
                     }
                 }, 2000);
-
-                //查询猫池状态
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Send2GManager.getMPState();
-                    }
-                }, 3000);
 
             }
         } catch (Exception e) {
@@ -590,14 +585,13 @@ public class LTEReceiveManager {
         }
     }
 
-
     /**
-     * @param receivePackage 猫池状态
+     * @param receivePackage 2G状态
      */
-    private void parseMPState(LTEReceivePackage receivePackage) {
-        MPStateBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
-                StandardCharsets.UTF_8), MPStateBean.class);
-        EventAdapter.call(EventAdapter.MP_STATE, responseBean.getState());
+    private void parseHeartBeat(LTEReceivePackage receivePackage) {
+        HeartBeatBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), HeartBeatBean.class);
+        EventAdapter.call(EventAdapter.RPT_HEARTBEAT_2G, responseBean);
     }
 
 
