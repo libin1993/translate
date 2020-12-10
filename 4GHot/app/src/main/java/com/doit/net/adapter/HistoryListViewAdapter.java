@@ -56,7 +56,6 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
     @Override
     public View generateView(final int position, ViewGroup parent) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.doit_layout_ueid_list_item, null);
-
         return v;
     }
 
@@ -117,7 +116,7 @@ public class HistoryListViewAdapter extends BaseSwipeAdapter {
 
 
         if(CacheManager.getLocMode()){
-            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),1,swipeLayout));
+            convertView.findViewById(R.id.add_to_localtion).setOnClickListener(new AddToLocationListener(mContext,resp.getImsi(),1));
         }else{
             convertView.findViewById(R.id.add_to_localtion).setVisibility(View.GONE);
         }

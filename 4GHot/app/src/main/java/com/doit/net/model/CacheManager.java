@@ -53,7 +53,6 @@ public class CacheManager {
     public static String GSMSoftwareVersion;  //GSM软件版本
     public static String CDMASoftwareVersion;  //CDMA软件版本
 
-    public static List<UeidBean> realtimeUeidList = new ArrayList<>();
 
     public static LocationBean currentLoction = null;
 

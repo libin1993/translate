@@ -31,28 +31,25 @@
 
     <ImageView
         android:id="@+id/iv_net_state"
-        android:layout_width="12dp"
+        android:layout_width="15dp"
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:layout_marginRight="10dp"
-        android:src="@drawable/station_icon"
-        android:visibility="gone" />
+        android:src="@mipmap/ic_network_error"/>
     <ImageView
         android:id="@+id/iv_4g_state"
         android:layout_width="15dp"
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:layout_marginRight="10dp"
-        android:src="@mipmap/ic_4g_state"
-        android:visibility="gone" />
+        android:src="@mipmap/sync_fail_4g"/>
     <ImageView
         android:id="@+id/iv_2g_state"
         android:layout_width="15dp"
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:layout_marginRight="10dp"
-        android:src="@mipmap/ic_2g_state"
-        android:visibility="gone" />
+        android:src="@mipmap/sync_fail_2g" />
 
     <TextClock
         android:layout_width="wrap_content"

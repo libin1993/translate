@@ -469,6 +469,7 @@ public class LTEReceiveManager {
                 rssi = 100;
             }
             ueidBean.setSrsp(rssi);
+            ueidBean.setRedirect(true);
 
             ueidList.add(ueidBean);
 
@@ -509,20 +510,12 @@ public class LTEReceiveManager {
                 LogUtils.log("翻译上报：手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
 
 
-//                for (int i = 0; i < CacheManager.realtimeUeidList.size(); i++) {
-//                    if (CacheManager.realtimeUeidList.get(i).getImsi().equals(imsiList.get(0))) {
-//                        CacheManager.realtimeUeidList.get(i).setNumber(imsiList.get(1));
-//                        break;
-//                    }
-//                }
-
-
                 UeidBean ueidBean = new UeidBean();
 
                 ueidBean.setImsi(imsiList.get(0));
-
                 ueidBean.setSrsp(-1);
                 ueidBean.setNumber(imsiList.get(1));
+                ueidBean.setRedirect(true);
 
                 ueidList.add(ueidBean);
 

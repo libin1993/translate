@@ -135,6 +135,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
@@ -1075,22 +1076,24 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             }else if (msg.what == RPT_HEARTBEAT_2G){
                 HeartBeatBean heartBeatBean = (HeartBeatBean) msg.obj;
                 if (heartBeatBean.getCdma_sync() == 0){
-                    iv2GState.setVisibility(View.VISIBLE);
+                    iv2GState.setImageResource(R.mipmap.sync_success_2g);
                 }else {
-                    iv2GState.setVisibility(View.GONE);
+                    iv2GState.setImageResource(R.mipmap.sync_fail_2g);
                 }
 
                 if (heartBeatBean.getMp_state() == 0){
-                    ivNetState.setVisibility(View.VISIBLE);
+                    ivNetState.setImageResource(R.mipmap.ic_network_ok);
                 }else {
-                    ivNetState.setVisibility(View.GONE);
+                    ivNetState.setImageResource(R.mipmap.ic_network_error);
                 }
 
             }else if (msg.what == STATION_STATE_4G){
                 if ("0".equals(msg.obj)){
-                    iv4GState.setVisibility(View.VISIBLE);
+                    iv4GState.setImageResource(R.mipmap.sync_success_4g);
+                }else if ("1".equals(msg.obj)){
+                    iv4GState.setImageResource(R.mipmap.sync_fail_4g);
                 }else {
-                    iv4GState.setVisibility(View.GONE);
+                    iv4GState.setImageResource(R.mipmap.sync_loss_4g);
                 }
             }
         }

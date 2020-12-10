@@ -36,7 +36,7 @@ public class StartPageFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.start_page_fragment, null);
         ivPowerStart = rootView.findViewById(R.id.ivPowerStart);
         initWidget();
-
+//        turnToDetectPage();
         return rootView;
     }
 
@@ -64,27 +64,6 @@ public class StartPageFragment extends BaseFragment {
                             }
                         }, 1000);
                     }
-//                    else{
-//                        ToastUtils.showMessage("设备未初始化完成，请稍候...");
-//                        new MySweetAlertDialog(getContext(), MySweetAlertDialog.WARNING_TYPE)
-//                                .setTitleText("提示")
-//                                .setContentText("设备未连接或未初始化完成，是否进入工作页面？")
-//                                .setCancelText(getContext().getString(R.string.cancel))
-//                                .setConfirmText(getContext().getString(R.string.sure))
-//                                .showCancelButton(true)
-//                                .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
-//                                    @Override
-//                                    public void onClick(MySweetAlertDialog sweetAlertDialog) {
-//                                        CacheManager.setPressStartButtonFlag(true);
-//                                        turnToDetectPage();
-//                                        sweetAlertDialog.dismiss();
-//                                    }
-//
-//                                })
-//                                .show();
-//                    }
-
-
                 }
 
 

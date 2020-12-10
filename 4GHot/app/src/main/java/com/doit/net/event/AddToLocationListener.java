@@ -9,13 +9,7 @@ import com.daimajia.swipe.SwipeLayout;
 import com.doit.net.activity.MainActivity;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
-import com.doit.net.protocol.LTESendManager;
-import com.doit.net.protocol.Send2GManager;
-import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.ToastUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by wiker on 2016/4/27.
@@ -34,6 +28,11 @@ public class AddToLocationListener implements View.OnClickListener {
         this.swipeLayout = swipeLayout;
     }
 
+    public AddToLocationListener(Context mContext, String imsi, int type) {
+        this.mContext = mContext;
+        this.imsi = imsi;
+        this.type = type;
+    }
 
     @Override
     public void onClick(View v) {

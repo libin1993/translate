@@ -10,6 +10,7 @@ public class UeidBean {
     private int type;  //0:2G    1:4G
     private String remark;
     private boolean isBlack;
+    private boolean isRedirect;
 
     public boolean isBlack() {
         return isBlack;
@@ -89,4 +90,13 @@ public class UeidBean {
     public void setSrsp(int srsp) {
         this.srsp = srsp;
     }
+
+    public boolean isRedirect() {
+        return isRedirect;
+    }
+
+    public void setRedirect(boolean redirect) {
+        isRedirect = redirect;
+    }
+
 }

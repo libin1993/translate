@@ -78,7 +78,6 @@ public class LTE_PT_PARAM {
 //    public static final byte SET_IMSI_TRANS_OPTIONS_ACK = 0xc5;    //设置IMSI翻译回复
 
 
-
     //查询参数
     public static void queryCommonParam(byte queryType) {
 
@@ -186,7 +185,7 @@ public class LTE_PT_PARAM {
 //        }
 //
 //        CacheManager.setNamelist(namelist);
-        EventAdapter.call(EventAdapter.GET_NAME_LIST,namelistAck);
+        EventAdapter.call(EventAdapter.GET_NAME_LIST, namelistAck);
     }
 
 
@@ -222,10 +221,10 @@ public class LTE_PT_PARAM {
         // IDX:60@STATE:0#IDX:61@STATE:0#IDX:72@STATE:0#IP:192.168.0.1@ID:BL001@TM:55:66:77,45:55:65@G1:12.123456@G2:12.123456
         // @DATANUM:30@RPTSTATUS:1@ENBSTATUS:1@FTPERRCNT:10@SYNCSTATUS:0
         String heartbeat = UtilDataFormatChange.bytesToString(receivePackage.getByteSubContent(), 0);
-        LogUtils.log("processRPTHeartbeat:" + heartbeat);
+        LogUtils.log("4G心跳:" + heartbeat);
 
         //4G同步状态
-        String stationState = heartbeat.split("SYNCSTATUS")[1].charAt(1) == '0' ? "0": "-1";
+        String stationState = String.valueOf(heartbeat.split("SYNCSTATUS")[1].charAt(1));
 
 
         //更新射频状态
@@ -262,7 +261,7 @@ public class LTE_PT_PARAM {
 //        CacheManager.isReportBattery = batteryBean.getBatteryQuantity() > 0;
 //        EventAdapter.call(EventAdapter.BATTERY_STATE, batteryBean);
 
-        EventAdapter.call(EventAdapter.RPT_HEARTBEAT_4G,stationState);
+        EventAdapter.call(EventAdapter.RPT_HEARTBEAT_4G, stationState);
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
 
@@ -364,7 +363,6 @@ public class LTE_PT_PARAM {
 //            }
 //        }
 //    }
-
 
 
     //搜网结果上报
@@ -749,13 +747,14 @@ public class LTE_PT_PARAM {
                 UeidBean ueidBean = new UeidBean();
                 ueidBean.setType(1);
                 ueidBean.setImsi(split[0]);
-                ueidBean.setSrsp(Integer.parseInt(rssi));
+                ueidBean.setSrsp(Integer.parseInt(rssi) * 5 / 6);
+                ueidBean.setRedirect(false);
 
                 ueidList.add(ueidBean);
 
             }
         }
-        LogUtils.log("4G采号数量："+ueidList.size());
+        LogUtils.log("4G采号数量：" + ueidList.size());
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
 
     }

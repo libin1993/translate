@@ -110,7 +110,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-                    LTESendManager.setNameList(null,imsi,null,null,null);
+                    LTESendManager.changeNameList("add", "reject", imsi);
                 }
             }
         });
@@ -121,8 +121,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-                    LTESendManager.setNameList(null,null,null,imsi,null);
-
+                    LTESendManager.changeNameList("add", "block", imsi);
                 }
             }
         });
@@ -132,7 +131,7 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-                    LTESendManager.setNameList(null,null,imsi,null,null);
+                    LTESendManager.changeNameList("add", "redirect", imsi);
 
                 }
             }
@@ -144,7 +143,6 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             @Override
             public void onClick(View v) {
                 LTESendManager.getNameList();
-
             }
         });
 
