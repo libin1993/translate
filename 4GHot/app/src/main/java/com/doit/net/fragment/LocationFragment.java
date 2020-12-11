@@ -443,7 +443,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     //ga <= 10为低增益,11-50为高增益
                     if (CacheManager.channels != null && CacheManager.channels.size() > 0) {
                         cbGainSwitch.setOnCheckedChangeListener(null);
-                        for (LteChannelCfg channel : CacheManager.channels) {
+                        for (int i = 0; i < CacheManager.channels.size(); i++) {
+                            LteChannelCfg channel = CacheManager.channels.get(i);
                             LogUtils.log(channel.toString());
                             int ga = Integer.parseInt(channel.getGa());
                             if (ga <= 10) {

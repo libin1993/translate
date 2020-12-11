@@ -262,7 +262,7 @@ private UeidListViewAdapter mAdapter;
     /**
      * @param ueidList 新增数据
      */
-    private synchronized void addRptList(List<UeidBean> ueidList) {
+    private  void addRptList(List<UeidBean> ueidList) {
         for (UeidBean ueidBean : ueidList) {
             boolean isContain = false;
             LogUtils.log("侦码上报: IMSI：" + ueidBean.getImsi() + "强度：" + ueidBean.getSrsp() + ",类型" + ueidBean.getType());
@@ -318,12 +318,8 @@ private UeidListViewAdapter mAdapter;
                 UCSIDBManager.saveUeidToDB(ueidBean.getImsi(), !TextUtils.isEmpty(ueidBean.getNumber()) ? ueidBean.getNumber() : "",
                         new Date().getTime(), ueidBean.getType());
             }
-
         }
 
-        sortRptList();
-        translateCount();
-        mHandler.sendEmptyMessage(SHIELD_RPT);
 
     }
 
@@ -412,10 +408,7 @@ private UeidListViewAdapter mAdapter;
                     break;
             }
         }
-
-
     }
-
 
     /**
      * 刷新列表
@@ -436,6 +429,10 @@ private UeidListViewAdapter mAdapter;
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SHIELD_RPT:
+                    List<UeidBean> ueidList = (List<UeidBean>) msg.obj;
+                    addRptList(ueidList);
+                    sortRptList();
+                    translateCount();
                     updateView();
                     break;
                 case RF_STATUS_RPT:
@@ -556,8 +553,10 @@ private UeidListViewAdapter mAdapter;
     public void call(String key, Object val) {
         switch (key) {
             case EventAdapter.SHIELD_RPT:
-                List<UeidBean> ueidList = (List<UeidBean>) val;
-                addRptList(ueidList);
+                Message msg = new Message();
+                msg.what = SHIELD_RPT;
+                msg.obj = val;
+                mHandler.sendMessage(msg);
                 break;
             case EventAdapter.RF_STATUS_RPT:
                 mHandler.sendEmptyMessage(RF_STATUS_RPT);
