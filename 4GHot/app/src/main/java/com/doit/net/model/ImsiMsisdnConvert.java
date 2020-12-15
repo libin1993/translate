@@ -8,11 +8,13 @@ import android.net.NetworkRequest;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.text.TextUtils;
 
 import com.doit.net.event.EventAdapter;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.LogUtils;
 
+import org.apache.ftpserver.command.impl.LIST;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.DbManager;
@@ -654,12 +656,18 @@ public class ImsiMsisdnConvert {
     }
 
     public static String getMsisdnFromLocal(String imsi) {
+        String msiddn="";
         try {
-            DBUeidInfo info = UCSIDBManager.getDbManager().selector(DBUeidInfo.class)
-                    .where("imsi","=", imsi).findFirst();
+            List<DBUeidInfo> ueidInfoList = UCSIDBManager.getDbManager().selector(DBUeidInfo.class)
+                    .where("imsi","=", imsi).findAll();
 
-            if (info != null){
-                return info.getMsisdn();
+            if (ueidInfoList != null && ueidInfoList.size() > 0){
+                for (int i = 0; i < ueidInfoList.size(); i++) {
+                    if (!TextUtils.isEmpty(ueidInfoList.get(i).getMsisdn())){
+                        msiddn = ueidInfoList.get(i).getMsisdn();
+                        break;
+                    }
+                }
             }else{
                 return "";
             }
@@ -667,7 +675,7 @@ public class ImsiMsisdnConvert {
             e.printStackTrace();
         }
 
-        return "";
+        return msiddn;
     }
 
     public static int getRestConvertTimes(){

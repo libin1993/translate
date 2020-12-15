@@ -368,9 +368,11 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 e.printStackTrace();
             }
 
-            String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(ueidBean.getImsi());
-            if (!TextUtils.isEmpty(msisdn)) {
-                ueidBean.setNumber(msisdn);
+            if (TextUtils.isEmpty(ueidBean.getNumber())){
+                String msisdn = ImsiMsisdnConvert.getMsisdnFromLocal(ueidBean.getImsi());
+                if (!TextUtils.isEmpty(msisdn)) {
+                    ueidBean.setNumber(msisdn);
+                }
             }
 
             if (!TextUtils.isEmpty(ueidBean.getNumber())) {

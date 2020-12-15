@@ -58,7 +58,7 @@ android {
     signingConfigs {
         relealse {
             //这样写就得把demo.jk文件放在项目目录
-            storeFile file("../4GHot.jks")
+            storeFile file('../4GHot.jks')
             storePassword "88861158"
             keyAlias "key"
             keyPassword "88861158"
@@ -72,6 +72,10 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+
+        debug {
+            signingConfig signingConfigs.relealse
+        }
     }
 
     sourceSets {
@@ -83,18 +87,6 @@ android {
         abortOnError false
     }
 
-    productFlavors {
-        army {
-            minSdkVersion 21
-            applicationId 'com.synway.translate.loc'
-            targetSdkVersion 28
-            versionCode android.defaultConfig.versionCode
-            versionName android.defaultConfig.versionName
-            signingConfig signingConfigs.relealse
-
-        }
-        
-    }
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
