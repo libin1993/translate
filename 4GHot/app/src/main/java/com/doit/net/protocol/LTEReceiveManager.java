@@ -170,7 +170,6 @@ public class LTEReceiveManager {
         }
         receivePackage.setByteSubContent(byteSubContent);
 
-
         LogUtils.log("TCP接收：ip:" + ip + ",Type:" + packageMainType + ";  SubType:0x" + Integer.toHexString(receivePackage.getPackageSubType())
                 + ";  子协议:" + new String(receivePackage.getByteSubContent(), StandardCharsets.UTF_8));
         //实时解析协议

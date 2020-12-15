@@ -2,33 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-<!--    <android.support.v7.widget.RecyclerView-->
-<!--        android:id="@+id/rv_ueid"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_marginBottom="2dp"-->
-<!--        android:layout_weight="1"-->
-<!--        android:background="@drawable/ueid_bkg"-->
-<!--        android:scrollbarThumbVertical="@drawable/scrollbar_style"-->
-<!--        android:scrollbars="vertical" />-->
+    <!--    <android.support.v7.widget.RecyclerView-->
+    <!--        android:id="@+id/rv_ueid"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_marginBottom="2dp"-->
+    <!--        android:layout_weight="1"-->
+    <!--        android:background="@drawable/ueid_bkg"-->
+    <!--        android:scrollbarThumbVertical="@drawable/scrollbar_style"-->
+    <!--        android:scrollbars="vertical" />-->
+
 
     <ListView
         android:id="@+id/listview"
-        android:background="@drawable/ueid_bkg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginBottom="2dp"
         android:layout_weight="1"
-        android:scrollbars="vertical"
-        android:scrollbarThumbVertical="@drawable/scrollbar_style"
+        android:background="@drawable/ueid_bkg"
         android:divider="@drawable/comman_listview_divider"
         android:dividerHeight="1dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:scrollbarThumbVertical="@drawable/scrollbar_style"
+        android:scrollbars="vertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +42,8 @@
             android:gravity="center"
             android:text="汇总:"
             android:textColor="@color/darkgrey"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"/>
 
         <ImageView
             android:layout_width="18dp"
@@ -138,4 +138,6 @@
             android:text=""
             android:textSize="1sp" />
     </LinearLayout>
+
+
 </LinearLayout>

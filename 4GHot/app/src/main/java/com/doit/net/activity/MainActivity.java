@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.doit.net.bean.HeartBeatBean;
+import com.doit.net.fragment.RealTimeUeidRptFragment;
 import com.doit.net.socket.OnSocketChangedListener;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.socket.DatagramSocketUtils;
@@ -126,7 +127,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
     private final int UPDATE_BATTERY = 8;
     private final int ADD_BLACKBOX = 9;
     private final int CHANGE_TAB = 10;
-    private final int POWER_START = 11;
     private final int CHECK_LICENCE = 13;
     private final int BATTERY_STATE = 14;
     private final int RPT_HEARTBEAT_2G = 15;
@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         }
         listUnselectIcon.add(R.drawable.setting_lable_unselect);
 
-        mTabs.add(new StartPageFragment());
+        mTabs.add(new UeidFragment());
         if (CacheManager.getLocMode()) {
             mTabs.add(new LocationFragment());
         }
@@ -496,12 +496,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
 
     private NetworkChangeReceiver networkChangeReceiver;
 
-
-    private void turnToUeidPage() {
-        LogUtils.log("开启侦码页面");
-        mTabs.set(0, new UeidFragment());
-        adapter.exchangeFragment();
-    }
 
     @Override
     public void onInit(int status) {
@@ -815,9 +809,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             mHandler.sendMessage(msg);
         } else if (EventAdapter.WIFI_CHANGE.equals(key)) {
             wifiChangeEvent();
-        } else if (EventAdapter.POWER_START.equals(key)) {
-            mHandler.sendEmptyMessage(POWER_START);
-        } else if (EventAdapter.RPT_HEARTBEAT_4G.equals(key)) {
+        }else if (EventAdapter.RPT_HEARTBEAT_4G.equals(key)) {
             LogUtils.log("4G初始化："+CacheManager.initSuccess4G);
 
             if (!CacheManager.initSuccess4G) {
@@ -1042,9 +1034,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 BlackBoxManger.recordOperation((String) msg.obj);
             } else if (msg.what == CHANGE_TAB) {
                 mViewPager.setCurrentItem((int) msg.obj, true);
-            } else if (msg.what == POWER_START) {
-                turnToUeidPage();
-            } else if (msg.what == CHECK_LICENCE) {
+            }else if (msg.what == CHECK_LICENCE) {
                 checkAuthorize();
             } else if (msg.what == BATTERY_STATE) {
                 BatteryBean batteryBean = (BatteryBean) msg.obj;

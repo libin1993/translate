@@ -8,14 +8,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -57,8 +61,9 @@ import java.util.TimerTask;
 public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapter.EventCall {
 
     private Button btClearRealtimeUeid;
-//    private RecyclerView recyclerView;
+    //    private RecyclerView recyclerView;
     private ListView mListView;
+
 
     private TextView tvRealtimeCTJCount;
     private TextView tvRealtimeCTUCount;
@@ -74,12 +79,12 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
 
     private DbManager dbManager;
 
-    //移动采集数量
-    private int realtimeCTJCount = 0;
-    //联通采集数量
-    private int realtimeCTUCount = 0;
-    //电信采集数量
-    private int realtimeCTCCount = 0;
+//    //移动采集数量
+//    private int realtimeCTJCount = 0;
+//    //联通采集数量
+//    private int realtimeCTUCount = 0;
+//    //电信采集数量
+//    private int realtimeCTCCount = 0;
 
     //移动翻译+指派数量
     private int redirectCTJCount = 0;
@@ -95,9 +100,8 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
     //电信翻译数量
     private int translateCTCCount = 0;
 
-//    private UeidAdapter adapter;
-private UeidListViewAdapter mAdapter;
-    private  List<UeidBean> dataList = new ArrayList<>();
+    private UeidListViewAdapter mAdapter;
+    private List<UeidBean> dataList = new ArrayList<>();
 
 
     public RealTimeUeidRptFragment() {
@@ -118,6 +122,8 @@ private UeidListViewAdapter mAdapter;
         tvRealtimeCTUCount = rootView.findViewById(R.id.tvCTUCount);
         tvRealtimeCTCCount = rootView.findViewById(R.id.tvCTCCount);
         cbDetectSwitch = rootView.findViewById(R.id.cbDetectSwitch);
+
+
         initView();
 
         EventAdapter.register(EventAdapter.RF_STATUS_RPT, this);
@@ -177,7 +183,8 @@ private UeidListViewAdapter mAdapter;
 //            }
 //        });
 
-        mAdapter = new UeidListViewAdapter(getActivity(),dataList);
+
+        mAdapter = new UeidListViewAdapter(getActivity(), dataList);
         mListView.setAdapter(mAdapter);
         mAdapter.setMode(Attributes.Mode.Single);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -262,7 +269,7 @@ private UeidListViewAdapter mAdapter;
     /**
      * @param ueidList 新增数据
      */
-    private  void addRptList(List<UeidBean> ueidList) {
+    private void addRptList(List<UeidBean> ueidList) {
         for (UeidBean ueidBean : ueidList) {
             boolean isContain = false;
             LogUtils.log("侦码上报: IMSI：" + ueidBean.getImsi() + "强度：" + ueidBean.getSrsp() + ",类型" + ueidBean.getType());
@@ -327,9 +334,9 @@ private UeidListViewAdapter mAdapter;
      * 翻译数量
      */
     private void translateCount() {
-        realtimeCTJCount = 0;
-        realtimeCTUCount = 0;
-        realtimeCTCCount = 0;
+//        realtimeCTJCount = 0;
+//        realtimeCTUCount = 0;
+//        realtimeCTCCount = 0;
 
         //移动翻译+指派数量
         redirectCTJCount = 0;
@@ -394,19 +401,19 @@ private UeidListViewAdapter mAdapter;
                 }
             }
 
-            switch (UtilOperator.getOperatorName(ueidBean.getImsi())) {
-                case "CTJ":
-                    realtimeCTJCount++;
-                    break;
-                case "CTU":
-                    realtimeCTUCount++;
-                    break;
-                case "CTC":
-                    if (!ueidBean.getImsi().startsWith("46011")) {   //电信4G和2G同时存在，4G无法翻译，过滤掉46011
-                        realtimeCTCCount++;
-                    }
-                    break;
-            }
+//            switch (UtilOperator.getOperatorName(ueidBean.getImsi())) {
+//                case "CTJ":
+//                    realtimeCTJCount++;
+//                    break;
+//                case "CTU":
+//                    realtimeCTUCount++;
+//                    break;
+//                case "CTC":
+//                    if (!ueidBean.getImsi().startsWith("46011")) {   //电信4G和2G同时存在，4G无法翻译，过滤掉46011
+//                        realtimeCTCCount++;
+//                    }
+//                    break;
+//            }
         }
     }
 
@@ -414,9 +421,9 @@ private UeidListViewAdapter mAdapter;
      * 刷新列表
      */
     private void updateView() {
-        tvRealtimeCTJCount.setText(translateCTJCount + "/" + redirectCTJCount + "/" + realtimeCTJCount);
-        tvRealtimeCTUCount.setText(translateCTUCount + "/" + redirectCTUCount + "/" + realtimeCTUCount);
-        tvRealtimeCTCCount.setText(translateCTCCount + "/" + redirectCTCCount + "/" + realtimeCTCCount);
+        tvRealtimeCTJCount.setText(translateCTJCount + "/" + redirectCTJCount);
+        tvRealtimeCTUCount.setText(translateCTUCount + "/" + redirectCTUCount);
+        tvRealtimeCTCCount.setText(translateCTCCount + "/" + redirectCTCCount);
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
@@ -527,9 +534,9 @@ private UeidListViewAdapter mAdapter;
             dataList.clear();
             lastSortTime = new Date().getTime();
 
-            realtimeCTJCount = 0;
-            realtimeCTUCount = 0;
-            realtimeCTCCount = 0;
+//            realtimeCTJCount = 0;
+//            realtimeCTUCount = 0;
+//            realtimeCTCCount = 0;
 
             //移动翻译+指派数量
             redirectCTJCount = 0;

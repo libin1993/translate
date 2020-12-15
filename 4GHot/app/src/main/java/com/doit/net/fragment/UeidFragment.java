@@ -8,14 +8,21 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.doit.net.adapter.UeidTabLayoutAdapter;
 import com.doit.net.base.BaseFragment;
+import com.doit.net.model.CacheManager;
+import com.doit.net.protocol.LTESendManager;
+import com.doit.net.protocol.Send2GManager;
 import com.doit.net.ucsi.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Zxc on 2018/11/21.
@@ -27,6 +34,8 @@ public class UeidFragment extends BaseFragment {
     private ViewPager viewPagers;
     private List<Fragment> listFragments;
     private List<String> listTitles;
+    private RelativeLayout rlStart;
+    private ImageView ivStart;
 
     public UeidFragment() {
     }
@@ -38,6 +47,8 @@ public class UeidFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.layout_ueid_all, container, false);
         tabLayout = rootView.findViewById(R.id.tabLayoutTab);
         viewPagers = rootView.findViewById(R.id.vpViewPaper);
+        rlStart = rootView.findViewById(R.id.rl_start);
+        ivStart = rootView.findViewById(R.id.iv_start);
         initView();
         return rootView;
     }
@@ -101,6 +112,25 @@ public class UeidFragment extends BaseFragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+        ivStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!CacheManager.checkDevice(getActivity())){
+                    return;
+                }
+                rlStart.setVisibility(View.GONE);
+                LTESendManager.openAllRf();
+                Send2GManager.setRFState("1");
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CacheManager.redirect2G("",null,"redirect");
+                    }
+                }, 1000);
             }
         });
     }

@@ -76,9 +76,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private RadioButton rbPowerHigh;
     private RadioButton rbPowerMedium;
     private RadioButton rbPowerLow;
-    private final int POWER_LEVEL_HIGH = 0; //功率等级乘-5+Pmax作为功率设置下去
-    private final int POWER_LEVEL_MEDIUM = 3;
-    private final int POWER_LEVEL_LOW = 6;
+
     private RadioButton lastPowerPress;
 
     private RadioGroup rgDetectCarrierOperate;
@@ -448,19 +446,19 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             switch (checkedId) {
                 case R.id.rbPowerHigh:
 
-                    setPowerLevel(POWER_LEVEL_HIGH);
+                    setPowerLevel(0);
                     lastPowerPress = rbPowerHigh;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "高");
                     break;
 
                 case R.id.rbPowerMedium:
-                    setPowerLevel(POWER_LEVEL_MEDIUM);
+                    setPowerLevel(-10);
                     lastPowerPress = rbPowerMedium;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "中");
                     break;
 
                 case R.id.rbPowerLow:
-                    setPowerLevel(POWER_LEVEL_LOW);
+                    setPowerLevel(-20);
                     lastPowerPress = rbPowerLow;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "低");
                     break;
@@ -579,15 +577,13 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             return;
         }
 
-        int powerAtt = powerLevel * -5;
-
         for (int i = 0; i < CacheManager.getChannels().size(); i++) {
             int index = i;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     LteChannelCfg channel = CacheManager.getChannels().get(index);
-                    int pa = powerAtt + Integer.parseInt(channel.getPMax());
+                    int pa = powerLevel + Integer.parseInt(channel.getPMax());
 
                     LTESendManager.setChannelConfig(channel.getIdx(), "", "", pa + "," + pa + "," + pa,
                             "", "", "", "");
