@@ -130,18 +130,26 @@ public class ServerSocketUtils {
             }
 
             try {
-                if ((remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) && CacheManager.initSuccess4G)
-                        || (remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP) && CacheManager.initSuccess2G)){
-                    socket.close();
-                    if (onSocketChangedListener != null) {
-                        onSocketChangedListener.onChange(remoteIP);
-                    }
-                    map.remove(remoteIP);
-                    lteReceiveManager.clearReceiveBuffer();
-                    LogUtils.log(remoteIP + ":关闭socket");
-                }else {
-                    LogUtils.log("未初始化完成，无需断开");
+                socket.close();
+                if (onSocketChangedListener != null) {
+                    onSocketChangedListener.onChange(remoteIP);
                 }
+                map.remove(remoteIP);
+                lteReceiveManager.clearReceiveBuffer();
+                LogUtils.log(remoteIP + ":关闭socket");
+
+//                if ((remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) && CacheManager.initSuccess4G)
+//                        || (remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP) && CacheManager.initSuccess2G)){
+//                    socket.close();
+//                    if (onSocketChangedListener != null) {
+//                        onSocketChangedListener.onChange(remoteIP);
+//                    }
+//                    map.remove(remoteIP);
+//                    lteReceiveManager.clearReceiveBuffer();
+//                    LogUtils.log(remoteIP + ":关闭socket");
+//                }else {
+//                    LogUtils.log("未初始化完成，无需断开");
+//                }
 
             } catch (IOException e) {
                 e.printStackTrace();

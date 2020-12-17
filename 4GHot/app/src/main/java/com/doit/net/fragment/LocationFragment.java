@@ -146,7 +146,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     }
 
     private void refreshPage() {
-        if (CacheManager.getCurrentLoction() == null) {
+        if (CacheManager.getCurrentLocation() == null) {
             return;
         }
 
@@ -188,7 +188,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         cbLocSwitch.setOnCheckedChangeListener(rfLocSwitchListener);
 
         switchType.setOnCheckedChangeListener(null);
-        switchType.setChecked(CacheManager.getCurrentLoction().getType() == 1);
+        switchType.setChecked(CacheManager.getCurrentLocation().getType() == 1);
         switchType.setOnCheckedChangeListener(switchListener);
 
 
@@ -198,13 +198,13 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             speech("搜寻目标更换");
             currentSRSP = 0;
             lastRptSRSP = 0;
-            textContent = "正在搜寻：" + CacheManager.getCurrentLoction().getImsi();
+            textContent = "正在搜寻：" + CacheManager.getCurrentLocation().getImsi();
             resetLocateChartValue();
         }
 
         startSpeechBroadcastLoop();
 
-        lastLocateIMSI = CacheManager.getCurrentLoction().getImsi();
+        lastLocateIMSI = CacheManager.getCurrentLocation().getImsi();
 
         refreshPage();
     }
@@ -218,9 +218,9 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
         CacheManager.stopLoc();
 
-        if (CacheManager.getCurrentLoction() !=null){
-            CacheManager.getCurrentLoction().setLocateStart(false);
-            textContent = "搜寻暂停：" + CacheManager.getCurrentLoction().getImsi();
+        if (CacheManager.getCurrentLocation() !=null){
+            CacheManager.getCurrentLocation().setLocateStart(false);
+            textContent = "搜寻暂停：" + CacheManager.getCurrentLocation().getImsi();
         }else {
             textContent = "搜寻未开始";
         }
@@ -253,12 +253,12 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 
-            if (CacheManager.currentLoction != null) {
-                CacheManager.currentLoction.setType(isChecked ? 1 : 0);
+            if (CacheManager.currentLocation != null) {
+                CacheManager.currentLocation.setType(isChecked ? 1 : 0);
 
                 if (CacheManager.getLocState()){
-                    CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
-                    startLoc(CacheManager.getCurrentLoction().getImsi());
+                    CacheManager.startLoc(CacheManager.getCurrentLocation().getImsi(),CacheManager.currentLocation.getType());
+                    startLoc(CacheManager.getCurrentLocation().getImsi());
                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
                 }
             }
@@ -279,7 +279,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             }
 
             if (!isChecked) {
-                if (CacheManager.currentLoction == null || TextUtils.isEmpty(CacheManager.currentLoction.getImsi())) {
+                if (CacheManager.currentLocation == null || TextUtils.isEmpty(CacheManager.currentLocation.getImsi())) {
                     return;
                 }
                 EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
@@ -297,18 +297,18 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
 
 
-                if (CacheManager.currentLoction != null && !CacheManager.currentLoction.getImsi().equals("")) {
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.STOP_LOCALTE + CacheManager.currentLoction.getImsi());
+                if (CacheManager.currentLocation != null && !CacheManager.currentLocation.getImsi().equals("")) {
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.STOP_LOCALTE + CacheManager.currentLocation.getImsi());
                 }
             } else {
-                if (CacheManager.currentLoction == null || CacheManager.currentLoction.getImsi().equals("")) {
+                if (CacheManager.currentLocation == null || CacheManager.currentLocation.getImsi().equals("")) {
                     ToastUtils.showMessage(R.string.button_loc_unstart);
                 } else {
                     EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
-                    CacheManager.startLoc(CacheManager.getCurrentLoction().getImsi(),CacheManager.currentLoction.getType());
-                    startLoc(CacheManager.getCurrentLoction().getImsi());
+                    CacheManager.startLoc(CacheManager.getCurrentLocation().getImsi(),CacheManager.currentLocation.getType());
+                    startLoc(CacheManager.getCurrentLocation().getImsi());
 
-                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE + CacheManager.currentLoction.getImsi());
+                    EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.START_LOCALTE + CacheManager.currentLocation.getImsi());
                 }
             }
         }
@@ -421,7 +421,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
                     break;
                 case LOC_REPORT:
-                    if (CacheManager.getCurrentLoction() != null && CacheManager.getCurrentLoction().isLocateStart()) {
+                    if (CacheManager.getCurrentLocation() != null && CacheManager.getCurrentLocation().isLocateStart()) {
                         currentSRSP = correctSRSP(Integer.parseInt((String) msg.obj));
                         if (currentSRSP == 0)
                             return;
@@ -431,7 +431,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
                         listChartValue.add(currentSRSP / 4);
                         listChartValue.remove(0);
-                        textContent = "正在搜寻" + CacheManager.getCurrentLoction().getImsi();
+                        textContent = "正在搜寻" + CacheManager.getCurrentLocation().getImsi();
 
                         refreshPage();
                     }

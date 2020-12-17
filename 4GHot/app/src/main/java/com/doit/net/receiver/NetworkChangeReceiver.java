@@ -2,21 +2,12 @@ package com.doit.net.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.CacheManager;
-import com.doit.net.utils.LogUtils;
-import com.doit.net.utils.MySweetAlertDialog;
-import com.doit.net.ucsi.R;
 import com.doit.net.utils.NetWorkUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by wiker on 2016/4/29.
@@ -58,8 +49,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 //                        }
 
 
-                        if (CacheManager.getCurrentLoction() != null) {
-                            CacheManager.getCurrentLoction().setLocateStart(false);
+                        if (CacheManager.getCurrentLocation() != null) {
+                            CacheManager.getCurrentLocation().setLocateStart(false);
                         }
 
                         EventAdapter.call(EventAdapter.RF_STATUS_LOC);

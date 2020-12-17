@@ -8,7 +8,6 @@ package com.doit.net.model;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.doit.net.bean.BlackListBean;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.LocationBean;
 import com.doit.net.bean.LteCellConfig;
@@ -16,28 +15,21 @@ import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.LteEquipConfig;
 import com.doit.net.bean.ScanFreqRstBean;
 import com.doit.net.bean.Set2GParamsBean;
-import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.protocol.MsgType2G;
 import com.doit.net.protocol.Send2GManager;
-import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.MySweetAlertDialog;
-import com.doit.net.udp.g4.bean.G4MsgChannelCfg;
 import com.doit.net.utils.UtilOperator;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,7 +46,7 @@ public class CacheManager {
     public static String CDMASoftwareVersion;  //CDMA软件版本
 
 
-    public static LocationBean currentLoction = null;
+    public static LocationBean currentLocation = null;
 
 
     public static boolean isReportBattery = false;  //是否上报电量
@@ -91,12 +83,12 @@ public class CacheManager {
 
 
     public static void updateLoc(String imsi, int type) {
-        if (currentLoction == null) {
-            currentLoction = new LocationBean();
+        if (currentLocation == null) {
+            currentLocation = new LocationBean();
         }
         PrefManage.setImsi(imsi);
-        currentLoction.setImsi(imsi);
-        currentLoction.setType(type);
+        currentLocation.setImsi(imsi);
+        currentLocation.setType(type);
     }
 
     //停止定位
@@ -121,7 +113,7 @@ public class CacheManager {
      */
     public static void startLoc(String imsi, int type) {
 
-        CacheManager.getCurrentLoction().setLocateStart(true);
+        CacheManager.getCurrentLocation().setLocateStart(true);
 
         LogUtils.log("开始定位：" + imsi + "," + type);
 
@@ -146,7 +138,7 @@ public class CacheManager {
             String blockIMSI = imsiArr;
 
             //目标imsi吸附，其余的回公网
-            LTESendManager.setNameList("", null,
+            LTESendManager.setNameList(null, null,
                     "", blockIMSI, "reject");
 
 
@@ -275,21 +267,21 @@ public class CacheManager {
         }
 
 
-        if (CacheManager.getCurrentLoction() != null) {
-            CacheManager.getCurrentLoction().setLocateStart(false);
+        if (CacheManager.getCurrentLocation() != null) {
+            CacheManager.getCurrentLocation().setLocateStart(false);
         }
 
     }
 
     public static boolean getLocState() {
-        if (currentLoction == null)
+        if (currentLocation == null)
             return false;
 
-        return currentLoction.isLocateStart();
+        return currentLocation.isLocateStart();
     }
 
-    public static LocationBean getCurrentLoction() {
-        return currentLoction;
+    public static LocationBean getCurrentLocation() {
+        return currentLocation;
     }
 
 
@@ -493,6 +485,4 @@ public class CacheManager {
         }
         return blackList;
     }
-
-
 }

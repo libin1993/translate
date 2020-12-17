@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.doit.net.bean.HeartBeatBean;
-import com.doit.net.fragment.RealTimeUeidRptFragment;
 import com.doit.net.socket.OnSocketChangedListener;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.socket.DatagramSocketUtils;
@@ -59,7 +58,6 @@ import com.doit.net.fragment.AppFragment;
 import com.doit.net.view.LicenceDialog;
 import com.doit.net.fragment.LocationFragment;
 import com.doit.net.receiver.NetworkChangeReceiver;
-import com.doit.net.fragment.StartPageFragment;
 import com.doit.net.fragment.UeidFragment;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.ToastUtils;
@@ -827,7 +825,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 //设置搜寻模式
                 LTESendManager.setActiveMode();
 
-                if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                if (!(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1)) {
                     //指派
                     new Timer().schedule(new TimerTask() {
                         @Override

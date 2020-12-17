@@ -10,7 +10,6 @@ import com.doit.net.application.MyApplication;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.Get2GCommonResponseBean;
 import com.doit.net.bean.HeartBeatBean;
-import com.doit.net.bean.MPStateBean;
 import com.doit.net.bean.Report2GIMSIBean;
 import com.doit.net.bean.Report2GLocBean;
 import com.doit.net.bean.Report2GNumberBean;
@@ -186,6 +185,10 @@ public class LTEReceiveManager {
 
                     case LTE_PT_LOGIN.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
+
+                        if (!CacheManager.initSuccess4G) {
+                            LTESendManager.getEquipAndAllChannelConfig();
+                        }
                         break;
                     case LTE_PT_ADJUST.PT_ADJUST:
 //                        LTE_PT_ADJUST.response(receivePackage);
@@ -263,7 +266,6 @@ public class LTEReceiveManager {
                 switch (receivePackage.getPackageMainType()) {
                     case MsgType2G.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
-
 
                         break;
                     case MsgType2G.PT_ADJUST:
@@ -417,12 +419,12 @@ public class LTEReceiveManager {
                 }
 
                 //2G切换成采集模式
-                if (!(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 0)){
+                if (!(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 0)){
                     Send2GManager.setLocIMSI("", "0");
                 }
 
                 //2G指派
-                if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1)) {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
@@ -561,8 +563,8 @@ public class LTEReceiveManager {
         Report2GLocBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), Report2GLocBean.class);
 
-        if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLoction().getImsi())
-                && CacheManager.getCurrentLoction().getType() == 0) {
+        if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLocation().getImsi())
+                && CacheManager.getCurrentLocation().getType() == 0) {
 
             int rssi = Integer.parseInt(responseBean.getRssi()) + 125;
             if (rssi < 0) {

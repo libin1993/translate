@@ -739,8 +739,8 @@ public class LTE_PT_PARAM {
                     continue;
                 }
 
-                if (CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1
-                        && s.split(":")[0].equals(CacheManager.getCurrentLoction().getImsi())) {
+                if (CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1
+                        && s.split(":")[0].equals(CacheManager.getCurrentLocation().getImsi())) {
                     EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
                 }
 

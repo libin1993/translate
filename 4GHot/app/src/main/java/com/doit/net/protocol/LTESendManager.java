@@ -73,9 +73,7 @@ public class LTESendManager {
             namelist += "@NAMELIST_REST_ACTION:" + nameListRestAction;
         }
 
-        namelist += "@NAMELIST_RELEASE:@NAMELIST_FILE:";
-
-
+        namelist += "@NAMELIST_FILE:";
 
         LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);
@@ -178,32 +176,32 @@ public class LTESendManager {
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_CHANGE_BAND, content);
     }
 
-    public static void setDetectCarrierOpetation(String carrierOpetation) {
+    public static void setDetectCarrierOperation(String carrierOpetation) {
         if (!CacheManager.initSuccess4G) {
             return;
         }
 
 
-        String plnmValue = "46000,46001,46011";
+        String plmnValue = "46000,46001,46011";
         if (carrierOpetation.equals("detect_ctj")) {
-            plnmValue = "46000,46000,46000";
+            plmnValue = "46000,46000,46000";
         } else if (carrierOpetation.equals("detect_ctu")) {
-            plnmValue = "46001,46001,46001";
+            plmnValue = "46001,46001,46001";
         } else if (carrierOpetation.equals("detect_ctc")) {
-            plnmValue = "46011,46011,46011";
+            plmnValue = "46011,46011,46011";
         }
 
 
         for (int i = 0; i < CacheManager.getChannels().size(); i++) {
             int index = i;
-            String finalPlnmValue = plnmValue;
+            String finalPlmnValue = plmnValue;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     LteChannelCfg channel = CacheManager.getChannels().get(index);
-                    setChannelConfig(channel.getIdx(), "", finalPlnmValue, "", "", "", "", "");
+                    setChannelConfig(channel.getIdx(), "", finalPlmnValue, "", "", "", "", "");
 
-                    channel.setPlmn(finalPlnmValue);
+                    channel.setPlmn(finalPlmnValue);
                 }
             }, index*200);
         }

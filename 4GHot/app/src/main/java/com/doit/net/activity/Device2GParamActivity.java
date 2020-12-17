@@ -605,7 +605,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
 
 
                     if (!TextUtils.isEmpty(fcn) && !fcn.equals(CacheManager.paramList.get(position).getFcn())
-                            && !(CacheManager.getLocState() && CacheManager.getCurrentLoction().getType() == 1)) {
+                            && !(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1)) {
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {

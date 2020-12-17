@@ -490,25 +490,25 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
             switch (checkedId) {
                 case R.id.rbDetectAll:
-                    LTESendManager.setDetectCarrierOpetation("detect_all");
+                    LTESendManager.setDetectCarrierOperation("detect_all");
                     lastDetectCarrierOperatePress = rbDetectAll;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_DETTECT_OPERATE + "所有");
                     break;
 
                 case R.id.rbCTJ:
-                    LTESendManager.setDetectCarrierOpetation("detect_ctj");
+                    LTESendManager.setDetectCarrierOperation("detect_ctj");
                     lastDetectCarrierOperatePress = rbCTJ;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_DETTECT_OPERATE + "移动");
                     break;
 
                 case R.id.rbCTU:
-                    LTESendManager.setDetectCarrierOpetation("detect_ctu");
+                    LTESendManager.setDetectCarrierOperation("detect_ctu");
                     lastDetectCarrierOperatePress = rbCTU;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_DETTECT_OPERATE + "联通");
                     break;
 
                 case R.id.rbCTC:
-                    LTESendManager.setDetectCarrierOpetation("detect_ctc");
+                    LTESendManager.setDetectCarrierOperation("detect_ctc");
                     lastDetectCarrierOperatePress = rbCTC;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_DETTECT_OPERATE + "电信");
                     break;
