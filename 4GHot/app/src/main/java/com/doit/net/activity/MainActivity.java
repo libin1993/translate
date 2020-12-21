@@ -574,7 +574,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (!CacheManager.deviceState.getDeviceState().equals(DeviceState.NORMAL)) {
+                if (!CacheManager.initSuccess4G) {
                     sendData();
                 } else {
                     cancel();

@@ -296,7 +296,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 }, 2000);
 
 
-
                 if (CacheManager.currentLocation != null && !CacheManager.currentLocation.getImsi().equals("")) {
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.STOP_LOCALTE + CacheManager.currentLocation.getImsi());
                 }

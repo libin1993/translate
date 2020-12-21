@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/deepgrey2"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        android:padding="3dp"
-        android:paddingBottom="0dp">
+        android:orientation="vertical">
 
         <View
             android:layout_width="match_parent"
@@ -21,7 +21,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/deepgrey2"
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -44,289 +43,202 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="3"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="100dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btUserManage"
+            android:id="@+id/rl_user_manage"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:visibility="gone"
             app:isShowRightText="false"
             app:leftIcon="@drawable/account_manage"
             app:leftText="@string/user_manege"
+            android:visibility="gone"
             app:textColor="@color/white" />
 
-        <LinearLayout
+        <View
+            android:id="@+id/view_user_manage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey"
+            android:visibility="gone"/>
 
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btBlackBox"
+            android:id="@+id/rl_black_box"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:isShowRightText="false"
             app:leftIcon="@drawable/black_box_w"
-            app:leftText="@string/user_black_box" />
+            app:leftText="@string/user_black_box"
+            android:visibility="gone"/>
 
-        <LinearLayout
+        <View
+            android:id="@+id/view_black_box"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey"
+            android:visibility="gone"/>
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btSetWhiteList"
+            android:id="@+id/rl_black_list"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:background="@color/deepgrey2"
             app:isShowRightText="false"
             app:leftIcon="@drawable/ic_user_white"
-            app:leftText="黑名单管理" />
+            app:leftText="黑名单管理"
+            android:visibility="gone"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:background="@color/dimgrey" />
-
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="20dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
+
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btn_history_view"
+            android:id="@+id/rl_history_data"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:leftIcon="@drawable/history_data"
             app:leftText="@string/tab_history_and_export" />
 
-        <LinearLayout
+        <View
+            android:id="@+id/view_history_data"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey"
+            android:visibility="gone"/>
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btClearUeid"
+            android:id="@+id/rl_clear_data"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:visibility="gone"
             app:leftIcon="@drawable/clear_data"
-            app:leftText="@string/clear_history" />
+            app:leftText="@string/clear_history"
+            android:visibility="gone"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="20dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
+
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btWifiSetting"
+            android:id="@+id/rl_wifi_setting"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:leftIcon="@drawable/setting_wifi"
             app:leftText="@string/wifi_setting" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btDeviceParam"
+            android:id="@+id/rl_device_param_4g"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:leftIcon="@drawable/base_station"
             app:leftText="4G参数" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/rl_2g_params"
+            android:id="@+id/rl_device_param_2g"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:leftIcon="@drawable/base_station"
             app:leftText="2G参数" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-        </LinearLayout>
-
+            android:layout_height="0.6dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btDeviceFcn"
+            android:id="@+id/rl_custom_fcn"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:visibility="visible"
             app:leftIcon="@drawable/ic_custom_fcn"
             app:leftText="@string/custom_fcn" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
 
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="20dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btDeviceInfoAndUpgrade"
+            android:id="@+id/rl_device_upgrade"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:isShowLeftIcon="false"
             app:isShowRightText="false"
             app:leftText="设备信息及升级" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/btAuthorizeCodeInfo"
+            android:id="@+id/rl_authorize_code"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:isShowLeftIcon="false"
             app:isShowRightText="false"
             app:leftText="授权管理" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/tvLocalImsi"
+            android:id="@+id/rl_local_imsi"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:isShowLeftIcon="false"
@@ -334,56 +246,30 @@
             app:leftText="本机IMSI"
             app:rightStyle="iconHide" />
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.6dp"
-                android:layout_weight="1"
-                android:background="@color/dimgrey" />
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0.6dp"
-                android:background="@color/deepgrey2" />
-        </LinearLayout>
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey" />
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/tvVersion"
+            android:id="@+id/rl_version"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             app:isShowLeftIcon="false"
             app:isShowRightText="true"
             app:leftText="程序版本"
             app:rightStyle="iconHide"
-            app:rightText="" />
+            app:rightText=""/>
+
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
+            android:layout_height="0.6dp"
             android:background="@color/dimgrey" />
 
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/tvSupportVoice"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:visibility="gone"
-            app:isShowLeftIcon="false"
-            app:isShowRightText="true"
-            app:leftText="语音播报"
-            app:rightStyle="iconHide" />
-
-
-        <com.doit.net.utils.LSettingItem
-            android:id="@+id/tvSystemSetting"
+            android:id="@+id/rl_system_setting"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:visibility="gone"
@@ -392,12 +278,14 @@
             app:leftText="系统设置" />
 
         <View
+            android:id="@+id/view_system_setting"
             android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:background="@color/dimgrey" />
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey"
+            android:visibility="gone"/>
 
         <com.doit.net.utils.LSettingItem
-            android:id="@+id/tvTest"
+            android:id="@+id/rlTest"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:visibility="gone"
@@ -407,6 +295,13 @@
             app:rightStyle="iconHide"
             app:rightText="测试"
             app:rightTextColor="@color/colorPrimary" />
+
+        <View
+            android:id="@+id/view_test"
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:background="@color/dimgrey"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </ScrollView>

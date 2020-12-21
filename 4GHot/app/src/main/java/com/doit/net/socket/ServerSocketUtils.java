@@ -6,6 +6,7 @@ import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.ToastUtils;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -66,6 +67,10 @@ public class ServerSocketUtils {
                         String remoteIP = socket.getInetAddress().getHostAddress();  //远程ip
                         int remotePort = socket.getPort();    //远程端口
 
+                        socket.setSoTimeout(READ_TIME_OUT);      //设置超时
+                        socket.setKeepAlive(true);
+                        socket.setTcpNoDelay(true);
+
                         if (remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) || remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP)){
                             map.put(remoteIP, socket);   //存储socket
 
@@ -112,8 +117,6 @@ public class ServerSocketUtils {
             int receiveCount;
             LTEReceiveManager lteReceiveManager = new LTEReceiveManager();
             try {
-                socket.setSoTimeout(READ_TIME_OUT);      //设置超时
-                socket.setKeepAlive(true);
                 //获取输入流
                 InputStream inputStream = socket.getInputStream();
 
@@ -134,7 +137,6 @@ public class ServerSocketUtils {
                 if (onSocketChangedListener != null) {
                     onSocketChangedListener.onChange(remoteIP);
                 }
-                map.remove(remoteIP);
                 lteReceiveManager.clearReceiveBuffer();
                 LogUtils.log(remoteIP + ":关闭socket");
 
@@ -179,12 +181,15 @@ public class ServerSocketUtils {
                         OutputStream outputStream = socket.getOutputStream();
                         outputStream.write(data);
                         outputStream.flush();
+                        LogUtils.log("TCP发送：ip,"+data.length);
                     } catch (Exception e) {
                         e.printStackTrace();
                         LogUtils.log("socket发送失败：" + e.getMessage());
                     }
                 }
             }).start();
+        }else {
+            LogUtils.log("socket未连接");
         }
 
     }

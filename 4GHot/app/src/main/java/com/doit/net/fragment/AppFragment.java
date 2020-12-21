@@ -70,53 +70,65 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
     @ViewInject(R.id.tvLoginAccount)
     private TextView tvLoginAccount;
 
-    @ViewInject(R.id.btClearUeid)
-    private LSettingItem btClearUeid;
+    @ViewInject(R.id.rl_user_manage)
+    private LSettingItem rlUserManage;
 
-    @ViewInject(R.id.tvLocalImsi)
-    private LSettingItem tvLocalImsi;
+    @ViewInject(R.id.view_user_manage)
+    private View viewUserManage;
 
-    @ViewInject(R.id.tvSupportVoice)
-    private LSettingItem tvSupportVoice;
+    @ViewInject(R.id.rl_black_box)
+    private LSettingItem rlBlackBox;
 
-    @ViewInject(R.id.tvVersion)
-    private LSettingItem tvVersion;
+    @ViewInject(R.id.view_black_box)
+    private View viewBlackBox;
 
-    @ViewInject(R.id.btSetWhiteList)
-    private LSettingItem btSetWhiteList;
+    @ViewInject(R.id.rl_black_list)
+    private LSettingItem rlBlackList;
 
-    @ViewInject(R.id.btUserManage)
-    private LSettingItem btUserManage;
+    @ViewInject(R.id.rl_history_data)
+    private LSettingItem rlHistoryData;
 
-    @ViewInject(R.id.btBlackBox)
-    private LSettingItem btBlackBox;
+    @ViewInject(R.id.view_history_data)
+    private View viewHistoryData;
 
-    @ViewInject(R.id.btn_history_view)
-    private LSettingItem historyItem;
+    @ViewInject(R.id.rl_clear_data)
+    private LSettingItem rlClearData;
 
-    @ViewInject(R.id.btWifiSetting)
-    private LSettingItem btWifiSetting;
+    @ViewInject(R.id.rl_wifi_setting)
+    private LSettingItem rlWifiSetting;
 
-    @ViewInject(R.id.btDeviceParam)
-    private LSettingItem btDeviceParam;
+    @ViewInject(R.id.rl_device_param_4g)
+    private LSettingItem rlDeviceParam4G;
 
-    @ViewInject(R.id.rl_2g_params)
-    private LSettingItem rl2GParams;
+    @ViewInject(R.id.rl_device_param_2g)
+    private LSettingItem rlDeviceParam2G;
 
-    @ViewInject(R.id.btDeviceFcn)
-    private LSettingItem btDeviceFcn;
+    @ViewInject(R.id.rl_custom_fcn)
+    private LSettingItem rlCustomFcn;
 
-    @ViewInject(R.id.btDeviceInfoAndUpgrade)
-    private LSettingItem btDeviceInfoAndUpgrade;
+    @ViewInject(R.id.rl_device_upgrade)
+    private LSettingItem rlDeviceUpgrade;
 
-    @ViewInject(R.id.tvSystemSetting)
-    private LSettingItem tvSystemSetting;
+    @ViewInject(R.id.rl_authorize_code)
+    private LSettingItem rlAuthorizeCode;
 
-    @ViewInject(R.id.btAuthorizeCodeInfo)
-    private LSettingItem btAuthorizeCodeInfo;
+    @ViewInject(R.id.rl_local_imsi)
+    private LSettingItem rlLocalImsi;
 
-    @ViewInject(R.id.tvTest)
-    private LSettingItem just4Test;
+    @ViewInject(R.id.rl_version)
+    private LSettingItem rlVersion;
+
+    @ViewInject(R.id.rl_system_setting)
+    private LSettingItem rlSystemSetting;
+
+    @ViewInject(R.id.view_system_setting)
+    private View viewSystemSetting;
+
+    @ViewInject(R.id.rlTest)
+    private LSettingItem rlTest;
+
+    @ViewInject(R.id.view_test)
+    private View viewTest;
 
     private ListView lvPackageList;
     private ArrayAdapter upgradePackageAdapter;
@@ -147,70 +159,85 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
 
         tvLoginAccount.setText(AccountManage.getCurrentLoginAccount());
 
-        btSetWhiteList.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+
+        if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL2) {
+            if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL3){
+                rlTest.setVisibility(View.VISIBLE);
+                viewTest.setVisibility(View.VISIBLE);
+
+                rlClearData.setVisibility(View.VISIBLE);
+                viewHistoryData.setVisibility(View.VISIBLE);
+
+                rlSystemSetting.setVisibility(View.VISIBLE);
+                viewSystemSetting.setVisibility(View.VISIBLE);
+            }
+            rlUserManage.setVisibility(View.VISIBLE);
+            viewUserManage.setVisibility(View.VISIBLE);
+
+
+            rlBlackBox.setVisibility(View.VISIBLE);
+            viewBlackBox.setVisibility(View.VISIBLE);
+
+
+            rlBlackList.setVisibility(View.VISIBLE);
+
+        }
+
+        rlUserManage.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+            @Override
+            public void click(LSettingItem item) {
+                if (!CacheManager.checkDevice(getContext()))
+                    return;
+                startActivity(new Intent(getActivity(), UserManageActivity.class));
+            }
+        });
+
+
+        rlBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+            @Override
+            public void click(LSettingItem item) {
+                if (!CacheManager.checkDevice(getContext()))
+                    return;
+                startActivity(new Intent(getActivity(), BlackBoxActivity.class));
+            }
+        });
+
+        rlBlackList.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 startActivity(new Intent(getActivity(), BlacklistManagerActivity.class));
             }
         });
 
-        historyItem.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlHistoryData.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 startActivity(new Intent(getActivity(), HistoryListActivity.class));
             }
         });
 
-        btClearUeid.setmOnLSettingItemClick(clearHistoryListener);
-
-        btUserManage.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-            @Override
-            public void click(LSettingItem item) {
-                if (!CacheManager.checkDevice(getActivity())) {
-                    return;
-                }
+        rlClearData.setmOnLSettingItemClick(clearHistoryListener);
 
 
-                startActivity(new Intent(getActivity(), UserManageActivity.class));
-            }
-        });
 
-        btBlackBox.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-            @Override
-            public void click(LSettingItem item) {
-                if (!CacheManager.checkDevice(getActivity()))
-                    return;
-                startActivity(new Intent(getActivity(), BlackBoxActivity.class));
-            }
-        });
-
-        btWifiSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlWifiSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
             }
         });
 
-        tvSystemSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlDeviceParam4G.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 if (!CacheManager.checkDevice(getActivity())) {
                     return;
                 }
-                startActivity(new Intent(getActivity(), SystemSettingActivity.class));
-            }
-        });
-
-        btDeviceParam.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
-            @Override
-            public void click(LSettingItem item) {
-                if (!CacheManager.checkDevice(getActivity()))
-                    return;
                 startActivity(new Intent(getActivity(), DeviceParamActivity.class));
             }
         });
 
-        rl2GParams.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlDeviceParam2G.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 if (!CacheManager.checkDevice(getActivity()))
@@ -219,7 +246,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
-        btDeviceFcn.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlCustomFcn.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 if (!CacheManager.checkDevice(getActivity()))
@@ -229,14 +256,14 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
-        btDeviceInfoAndUpgrade.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlDeviceUpgrade.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 showDeviceInfoDialog();
             }
         });
 
-        btAuthorizeCodeInfo.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlAuthorizeCode.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 if (!CacheManager.checkDevice(getActivity()))
@@ -252,7 +279,7 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
-        just4Test.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+        rlTest.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
             @Override
             public void click(LSettingItem item) {
                 startActivity(new Intent(getActivity(), TestActivity.class));
@@ -261,8 +288,8 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
 
 
         String imsi = getImsi();
-        tvLocalImsi.setRightText(imsi);
-        tvLocalImsi.setOnClickListener(new View.OnClickListener() {
+        rlLocalImsi.setRightText(imsi);
+        rlLocalImsi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //获取剪贴板管理器：
@@ -274,26 +301,18 @@ public class AppFragment extends BaseFragment implements EventAdapter.EventCall 
             }
         });
 
-        if (PrefManage.supportPlay) {
-            tvSupportVoice.setRightText("支持");
-        } else {
-            tvSupportVoice.setRightText("不支持");
-        }
 
-        tvVersion.setRightText(VersionManage.getVersionName(getContext()));
+        rlVersion.setRightText(VersionManage.getVersionName(getContext()));
+
+        rlSystemSetting.setmOnLSettingItemClick(new LSettingItem.OnLSettingItemClick() {
+            @Override
+            public void click(LSettingItem item) {
+                startActivity(new Intent(getActivity(), SystemSettingActivity.class));
+            }
+        });
+
         initProgressDialog();
 
-        if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL2) {
-            btUserManage.setVisibility(View.VISIBLE);
-            btBlackBox.setVisibility(View.VISIBLE);
-
-        }
-
-        if (AccountManage.getCurrentPerLevel() >= AccountManage.PERMISSION_LEVEL3) {
-            just4Test.setVisibility(View.VISIBLE);
-            tvSystemSetting.setVisibility(View.VISIBLE);
-            btClearUeid.setVisibility(View.VISIBLE);
-        }
     }
 
     private void initProgressDialog() {

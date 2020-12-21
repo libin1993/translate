@@ -81,11 +81,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         btRefresh = findViewById(R.id.btRefresh);
         btRefresh.setOnClickListener(refreshClikListen);
 
-        if (PrefManage.getBoolean(LOC_PREF_KEY, true)) {
-            tvOnOffLocation.setChecked(true);
-        } else {
-            tvOnOffLocation.setChecked(false);
-        }
+        tvOnOffLocation.setChecked(PrefManage.getBoolean(LOC_PREF_KEY, true));
 
         tvStaticIp = findViewById(R.id.tv_static_ip);
         tvStaticIp.setChecked(PrefManage.getBoolean(SET_STATIC_IP, true));
@@ -189,6 +185,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
                 try {
                     bufferedWriter.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
