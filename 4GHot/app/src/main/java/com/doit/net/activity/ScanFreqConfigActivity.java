@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -40,6 +41,7 @@ public class ScanFreqConfigActivity extends BaseActivity implements EventAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_freq_config);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         btStartScan = findViewById(R.id.btStartScan);
         btStartScan.setOnClickListener(startScanFreqClick);
@@ -100,7 +102,6 @@ public class ScanFreqConfigActivity extends BaseActivity implements EventAdapter
     View.OnClickListener startScanFreqClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //ProtocolManager.scanFreq();
             List<ScanFreqRstBean> list = new ArrayList<>();
             list.add(new ScanFreqRstBean("频点：380950", false));
             list.add(new ScanFreqRstBean("频点：100", false));

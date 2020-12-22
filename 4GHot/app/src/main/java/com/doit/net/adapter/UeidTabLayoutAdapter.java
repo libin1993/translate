@@ -3,6 +3,7 @@ package com.doit.net.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * Created by Zxc on 2018/11/21.
  */
 
-public class UeidTabLayoutAdapter extends FragmentPagerAdapter{
+public class UeidTabLayoutAdapter extends FragmentPagerAdapter {
     //添加fragment的集合
     private List<Fragment> listFragments;
     //添加标题的集合

@@ -742,7 +742,7 @@ public class LTESendManager {
     public static void saveDefaultFcn() {
         String fcn = "";
 //        String band1Fcns = "100,350,550";
-        String band1Fcns = "275,225,350";
+        String band1Fcns = "350,475,550";
         String band3Fcns = "1300,1650,1506";//1300
         String band38Fcns = "37900,38098,38200";
         String band39Fcns = "38400,38544,38300";

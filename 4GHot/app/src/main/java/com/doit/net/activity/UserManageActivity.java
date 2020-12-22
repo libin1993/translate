@@ -52,7 +52,6 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_manage);
-        getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -135,7 +134,6 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-//                startActivity(new Intent(this, MainActivity.class));
                 return true;
 
             default:

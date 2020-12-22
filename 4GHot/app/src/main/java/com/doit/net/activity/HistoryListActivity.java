@@ -70,7 +70,6 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.doit_layout_history_list);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -155,7 +154,6 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-//                startActivity(new Intent(this, MainActivity.class));
                 return true;
 
             default:

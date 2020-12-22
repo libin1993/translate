@@ -181,10 +181,10 @@ public class ServerSocketUtils {
                         OutputStream outputStream = socket.getOutputStream();
                         outputStream.write(data);
                         outputStream.flush();
-                        LogUtils.log("TCP发送：ip,"+data.length);
+                        LogUtils.log("TCP发送："+ip+","+data.length);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        LogUtils.log("socket发送失败：" + e.getMessage());
+                        LogUtils.log("socket发送失败："+ip+"," + e.getMessage());
                     }
                 }
             }).start();

@@ -186,9 +186,9 @@ public class LTEReceiveManager {
                     case LTE_PT_LOGIN.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
 
-                        if (!CacheManager.initSuccess4G) {
-                            LTESendManager.getEquipAndAllChannelConfig();
-                        }
+//                        if (!CacheManager.initSuccess4G) {
+//                            LTESendManager.getEquipAndAllChannelConfig();
+//                        }
                         break;
                     case LTE_PT_ADJUST.PT_ADJUST:
 //                        LTE_PT_ADJUST.response(receivePackage);
@@ -429,7 +429,8 @@ public class LTEReceiveManager {
                 EventAdapter.call(EventAdapter.REFRESH_DEVICE_2G);
             }
 
-            if (CacheManager.paramList.size() == 3 && !initSuccess) {
+            LogUtils.log("载波数量："+CacheManager.paramList.size()+","+initSuccess);
+            if (CacheManager.paramList.size() >= 3 && !initSuccess) {
                 initSuccess = true;
                 CacheManager.initSuccess2G = true;
                 LogUtils.log("2G初始化成功，4G初始化结果："+CacheManager.initSuccess4G);
@@ -602,8 +603,10 @@ public class LTEReceiveManager {
      * @param receivePackage 2G状态
      */
     private void parseHeartBeat(LTEReceivePackage receivePackage) {
+
         HeartBeatBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), HeartBeatBean.class);
+        LogUtils.log("2G心跳："+responseBean.toString());
         EventAdapter.call(EventAdapter.RPT_HEARTBEAT_2G, responseBean);
     }
 

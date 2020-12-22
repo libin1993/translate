@@ -113,7 +113,6 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blacklist_manage);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initView();
@@ -553,7 +552,6 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-//                startActivity(new Intent(this, MainActivity.class));
                 return true;
 
             default:

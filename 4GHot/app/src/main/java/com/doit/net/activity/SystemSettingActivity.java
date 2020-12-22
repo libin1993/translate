@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
@@ -57,6 +58,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_setting);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         tvOnOffLocation = findViewById(R.id.tvOnOffLocation);
         tvOnOffLocation.setOnLSettingCheckedChange(settingItemLocSwitch);

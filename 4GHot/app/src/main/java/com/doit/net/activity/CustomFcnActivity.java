@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +18,7 @@ import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBChannel;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.utils.LogUtils;
+import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.view.AddFcnDialog;
 import com.doit.net.base.BaseActivity;
@@ -52,6 +55,7 @@ public class CustomFcnActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_fcn);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
         dbManager = UCSIDBManager.getDbManager();
         initView();
@@ -142,7 +146,7 @@ public class CustomFcnActivity extends BaseActivity {
                         break;
                     case R.id.ll_delete_fcn:
                         SectionBean sectionDelete = dataList.get(position);
-                        deleteDcn(position, sectionDelete.t.getBand(),sectionDelete.t.getFcn(), sectionDelete.t.isCheck());
+                        deleteDcn(position, sectionDelete.t.getBand(), sectionDelete.t.getFcn(), sectionDelete.t.isCheck());
                         break;
                 }
             }
@@ -195,7 +199,7 @@ public class CustomFcnActivity extends BaseActivity {
         for (int i = 0; i < dataList.size(); i++) {
             SectionBean sectionBean = dataList.get(i);
             if (!sectionBean.isHeader && band.equals(sectionBean.t.getBand()) && fcn.equals(sectionBean.t.getFcn())) {
-                ToastUtils.showMessage( "已存在相同频点");
+                ToastUtils.showMessage("已存在相同频点");
                 return;
             }
         }
@@ -211,7 +215,7 @@ public class CustomFcnActivity extends BaseActivity {
             if (dbChannel != null) {
                 dbChannel.setFcn(fcn);
                 dbManager.update(dbChannel);
-                ToastUtils.showMessage( "修改成功，下次启动APP生效");
+                ToastUtils.showMessage("修改成功，下次启动APP生效");
             }
 
         } catch (DbException e) {
@@ -222,44 +226,60 @@ public class CustomFcnActivity extends BaseActivity {
     /**
      * 删除fcn
      */
-    private void deleteDcn(int position, String band, String fcn,int isCheck) {
+    private void deleteDcn(int position, String band, String fcn, int isCheck) {
         //删除已选中的，设置默认fcn为选中状态
-        try {
-            WhereBuilder whereBuilder = WhereBuilder.b();
-            whereBuilder.and("band", "=", band)
-                    .and("fcn","=",fcn);
-            dbManager.delete(DBChannel.class,whereBuilder);
-        } catch (DbException e) {
-            e.printStackTrace();
-            LogUtils.log("删除频点失败："+e.getMessage());
-        }
 
-        if (isCheck == 1) {
-            for (int i = 0; i < dataList.size(); i++) {
-                SectionBean sectionBean = dataList.get(i);
-                if (!sectionBean.isHeader && band.equals(sectionBean.t.getBand())) {
-                    if (sectionBean.t.isDefault() == 1) {
-                        dataList.get(i).t.setCheck(1);
+        new MySweetAlertDialog(CustomFcnActivity.this, MySweetAlertDialog.WARNING_TYPE)
+                .setTitleText("删除频点")
+                .setContentText("确定要删除该频点吗？")
+                .setCancelText(getString(R.string.cancel))
+                .setConfirmText(getString(R.string.sure))
+                .showCancelButton(true)
+                .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
+
+                    @Override
+                    public void onClick(MySweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+
                         try {
-                            DBChannel dbChannel = dbManager.selector(DBChannel.class)
-                                    .where("id", "=", dataList.get(i).t.getId())
-                                    .findFirst();
-                            if (dbChannel != null) {
-                                dbChannel.setCheck(1);
-                                dbManager.update(dbChannel);
-                            }
-
+                            WhereBuilder whereBuilder = WhereBuilder.b();
+                            whereBuilder.and("band", "=", band)
+                                    .and("fcn", "=", fcn);
+                            dbManager.delete(DBChannel.class, whereBuilder);
                         } catch (DbException e) {
                             e.printStackTrace();
+                            LogUtils.log("删除频点失败：" + e.getMessage());
                         }
-                        break;
-                    }
-                }
-            }
-        }
-        dataList.remove(position);
-        adapter.notifyDataSetChanged();
 
+                        if (isCheck == 1) {
+                            for (int i = 0; i < dataList.size(); i++) {
+                                SectionBean sectionBean = dataList.get(i);
+                                if (!sectionBean.isHeader && band.equals(sectionBean.t.getBand())) {
+                                    if (sectionBean.t.isDefault() == 1) {
+                                        dataList.get(i).t.setCheck(1);
+                                        try {
+                                            DBChannel dbChannel = dbManager.selector(DBChannel.class)
+                                                    .where("id", "=", dataList.get(i).t.getId())
+                                                    .findFirst();
+                                            if (dbChannel != null) {
+                                                dbChannel.setCheck(1);
+                                                dbManager.update(dbChannel);
+                                            }
+
+                                        } catch (DbException e) {
+                                            e.printStackTrace();
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        dataList.remove(position);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                })
+                .show();
 
     }
 
@@ -273,7 +293,7 @@ public class CustomFcnActivity extends BaseActivity {
         for (int i = position; i < dataList.size(); i++) {
             SectionBean sectionBean = dataList.get(i);
             if (!sectionBean.isHeader && band.equals(sectionBean.t.getBand()) && fcn.equals(sectionBean.t.getFcn())) {
-                ToastUtils.showMessage( "已存在相同频点");
+                ToastUtils.showMessage("已存在相同频点");
                 return;
             }
 
@@ -324,6 +344,18 @@ public class CustomFcnActivity extends BaseActivity {
         }
 
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

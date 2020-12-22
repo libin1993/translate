@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -365,19 +366,6 @@ public class BlackBoxActivity extends BaseActivity {
         }
     };
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-//                startActivity(new Intent(this, MainActivity.class));
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     public boolean isStartEndTimeOrderRight(String startTime, String endTime) {
 
@@ -405,5 +393,17 @@ public class BlackBoxActivity extends BaseActivity {
         msg.what = EXPORT_ERROR;
         msg.obj = obj;
         mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

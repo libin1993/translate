@@ -42,4 +42,14 @@ public class HeartBeatBean {
     public void setTemp(int temp) {
         this.temp = temp;
     }
+
+    @Override
+    public String toString() {
+        return "HeartBeatBean{" +
+                "cdma_sync=" + cdma_sync +
+                ", mp_state=" + mp_state +
+                ", id='" + id + '\'' +
+                ", temp=" + temp +
+                '}';
+    }
 }

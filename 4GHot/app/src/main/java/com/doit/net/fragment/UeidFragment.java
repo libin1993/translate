@@ -18,6 +18,7 @@ import com.doit.net.model.CacheManager;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.ucsi.R;
+import com.doit.net.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,5 +142,11 @@ public class UeidFragment extends BaseFragment {
         TextView textView = view.findViewById(R.id.tvCommanText);
         textView.setText(listTitles.get(currentPosition));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        LogUtils.log("侦码页面被销毁");
     }
 }

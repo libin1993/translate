@@ -3,6 +3,7 @@ package com.doit.net.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -1086,4 +1087,15 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LogUtils.log("主页被销毁");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }
