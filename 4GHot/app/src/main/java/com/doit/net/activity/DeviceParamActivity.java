@@ -61,9 +61,6 @@ import java.util.TimerTask;
  * 设备参数
  */
 public class DeviceParamActivity extends BaseActivity implements EventAdapter.EventCall {
-    private final Activity activity = this;
-
-
     private Button btSetCellParam;
     private Button btSetChannelCfg;
     private Button btUpdateTac;
@@ -212,7 +209,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
         });
 
-        mProgressDialog = new MySweetAlertDialog(activity, MySweetAlertDialog.PROGRESS_TYPE);
+        mProgressDialog = new MySweetAlertDialog(this, MySweetAlertDialog.PROGRESS_TYPE);
         mProgressDialog.setTitleText("Loading...");
         mProgressDialog.setCancelable(false);
 
@@ -223,17 +220,17 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     View.OnClickListener setCellParamClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
-            new SystemSetupDialog(activity).show();
+            new SystemSetupDialog(DeviceParamActivity.this).show();
         }
     };
 
     View.OnClickListener setChannelCfgClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
 
@@ -353,7 +350,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                             fcn, plmn, pa, ga, rlm, "", alt_fcn);
 
                     refreshViews();
-
                 }
             }
         });
@@ -370,7 +366,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     View.OnClickListener updateTacClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
 
@@ -383,13 +379,13 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     View.OnClickListener rebootDeviceClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
 
-            new MySweetAlertDialog(activity, MySweetAlertDialog.WARNING_TYPE)
-                    .setTitleText("设备重启")
-                    .setContentText("确定重启设备")
+            new MySweetAlertDialog(DeviceParamActivity.this, MySweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("重启设备")
+                    .setContentText("确定要重启设备吗?")
                     .setCancelText(getString(R.string.cancel))
                     .setConfirmText(getString(R.string.sure))
                     .showCancelButton(true)
@@ -408,7 +404,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     View.OnClickListener refreshParamClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
 
@@ -430,7 +426,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 return;
             }
 
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 lastPowerPress.setChecked(true);
                 return;
             }
@@ -475,7 +471,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 return;
             }
 
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 lastDetectCarrierOperatePress.setChecked(true);
                 return;
             }
@@ -488,6 +484,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 ToastUtils.showMessageLong("侦码制式设置已下发，请等待其生效");
             }
 
+            showProcess(8000);
 
             switch (checkedId) {
                 case R.id.rbDetectAll:
@@ -515,7 +512,13 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     break;
             }
 
-            showProcess(8000);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    refreshDetectOperation();
+                }
+            },1500);
 
         }
     };
@@ -528,7 +531,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 return;
             }
 
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 cbRFSwitch.setChecked(!isChecked);
                 return;
             }
@@ -541,7 +544,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 showProcess(6000);
             } else {
                 if (CacheManager.getLocState()) {
-                    new MySweetAlertDialog(activity, MySweetAlertDialog.WARNING_TYPE)
+                    new MySweetAlertDialog(DeviceParamActivity.this, MySweetAlertDialog.WARNING_TYPE)
                             .setTitleText("提示")
                             .setContentText("当前正在搜寻，确定关闭吗？")
                             .setCancelText(getString(R.string.cancel))
@@ -592,7 +595,14 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 }
             }, index*200);
         }
-        refreshViews();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshPowerLevel();
+            }
+        },1500);
+
     }
 
     public void refreshViews() {
@@ -600,7 +610,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         refreshPowerLevel();
         refreshRFSwitch();
         adapter.notifyDataSetChanged();
-
     }
 
     private void refreshRFSwitch() {
@@ -620,17 +629,17 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
     private void refreshDetectOperation() {
         if (CacheManager.getChannels().size() > 0) {
-            String firstPlnm = CacheManager.getChannels().get(0).getPlmn();  //以第一个作为参考
-            if (TextUtils.isEmpty(firstPlnm)){
+            String firstPlmn = CacheManager.getChannels().get(0).getPlmn();  //以第一个作为参考
+            if (TextUtils.isEmpty(firstPlmn)){
                 return;
             }
-            if (firstPlnm.contains("46000") && firstPlnm.contains("46001") && firstPlnm.contains("46011")) {
+            if (firstPlmn.contains("46000") && firstPlmn.contains("46001") && firstPlmn.contains("46011")) {
                 rbDetectAll.setChecked(true);
-            } else if (firstPlnm.equals("46000,46000,46000")) {
+            } else if (firstPlmn.equals("46000,46000,46000")) {
                 rbCTJ.setChecked(true);
-            } else if (firstPlnm.equals("46001,46001,46001")) {
+            } else if (firstPlmn.equals("46001,46001,46001")) {
                 rbCTU.setChecked(true);
-            } else if (firstPlnm.equals("46011,46011,46011")) {
+            } else if (firstPlmn.equals("46011,46011,46011")) {
                 rbCTC.setChecked(true);
             }
         }
@@ -668,10 +677,10 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     }
 
     private void changeChannelBandDialog(final String idx, final String band) {
-        UserChannelListAdapter adapter = new UserChannelListAdapter(activity);
+        UserChannelListAdapter adapter = new UserChannelListAdapter(this);
         adapter.setIdx(idx);
         //显示设备管理界面
-        DialogPlus deviceListDialog = DialogPlus.newDialog(activity)
+        DialogPlus deviceListDialog = DialogPlus.newDialog(this)
                 .setContentHolder(new ListHolder())
                 .setHeader(R.layout.user_channel_header)
                 .setCancelable(true)

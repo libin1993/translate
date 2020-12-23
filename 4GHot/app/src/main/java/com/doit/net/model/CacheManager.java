@@ -141,13 +141,6 @@ public class CacheManager {
             LTESendManager.setNameList(null, null,
                     "", blockIMSI, "reject");
 
-
-//            LTESendManager.setNameList("", "",
-//                    "", imsi, "reject", "");
-
-//            LTESendManager.setNameList("", "",
-//                    "", "", "block", "");
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -182,10 +175,6 @@ public class CacheManager {
             String redirectIMSI = imsiArr;
             //目标imsi重定向，其余的回公网
             CacheManager.redirect2G(redirectIMSI, null, "reject");
-
-
-//            CacheManager.redirect2G("", "redirect", "");
-
 
             new Timer().schedule(new TimerTask() {
                 @Override

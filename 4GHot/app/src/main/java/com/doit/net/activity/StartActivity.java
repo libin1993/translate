@@ -21,13 +21,16 @@ import com.doit.net.ucsi.R;
 public class StartActivity extends BaseActivity {
 
     private final int PERMISSION_REQUEST_CODE = 1;
-    private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.ACCESS_COARSE_LOCATION,};
-    private String[][] permissionArray = {{Manifest.permission.WRITE_EXTERNAL_STORAGE, "存储"},{Manifest.permission.READ_PHONE_STATE, "读取手机状态"},{Manifest.permission.ACCESS_COARSE_LOCATION, "定位"}};
+    private static final String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION,};
+    private static final String[][] permissionArray = {{Manifest.permission.WRITE_EXTERNAL_STORAGE, "存储"},
+            {Manifest.permission.READ_PHONE_STATE, "读取手机状态"}, {Manifest.permission.ACCESS_COARSE_LOCATION, "定位"}};
 
-	@Override protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		checkPermissions();
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        checkPermissions();
+    }
 
     @Override
     protected void onRestart() {
@@ -35,7 +38,7 @@ public class StartActivity extends BaseActivity {
         requestPermissions();
     }
 
-	private void startApp(){
+    private void startApp() {
         startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
@@ -90,7 +93,7 @@ public class StartActivity extends BaseActivity {
 
                                 @Override
                                 public void onReQuest() {
-                                   requestPermissions();
+                                    requestPermissions();
                                 }
                             });
                     return;

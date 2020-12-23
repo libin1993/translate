@@ -49,7 +49,6 @@ import java.util.List;
 
 public class HistoryListActivity extends BaseActivity implements EventAdapter.EventCall {
 
-    private final Activity activity = this;
     private ListView mListView;
     private HistoryListViewAdapter mAdapter;
     private EditText editText_keyword;
@@ -83,7 +82,7 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
         etStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, etStartTime.getText().toString());
+                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(HistoryListActivity.this, etStartTime.getText().toString());
                 myTimePicKDialog.dateTimePicKDialog(etStartTime);
             }
         });
@@ -91,7 +90,7 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
         etEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(activity, etEndTime.getText().toString());
+                MyTimePickDialog myTimePicKDialog = new MyTimePickDialog(HistoryListActivity.this, etEndTime.getText().toString());
                 myTimePicKDialog.dateTimePicKDialog(etEndTime);
             }
         });
@@ -123,7 +122,7 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
                     mAdapter.refreshData();
                 }
             }else if(msg.what == EXPORT_ERROR){
-                new MySweetAlertDialog(activity, MySweetAlertDialog.ERROR_TYPE)
+                new MySweetAlertDialog(HistoryListActivity.this, MySweetAlertDialog.ERROR_TYPE)
                         .setTitleText("导出失败")
                         .setContentText("失败原因："+msg.obj)
                         .show();
@@ -254,7 +253,7 @@ public class HistoryListActivity extends BaseActivity implements EventAdapter.Ev
             }
 
             EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, fullPath);
-            new MySweetAlertDialog(activity, MySweetAlertDialog.TEXT_SUCCESS)
+            new MySweetAlertDialog(HistoryListActivity.this, MySweetAlertDialog.TEXT_SUCCESS)
                     .setTitleText("导出成功")
                     .setContentText("文件导出在：手机存储/"+FileUtils.ROOT_DIRECTORY+"/"+ fileName)
                     .show();

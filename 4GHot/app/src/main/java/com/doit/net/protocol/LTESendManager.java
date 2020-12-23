@@ -29,15 +29,19 @@ import java.util.TimerTask;
  */
 
 public class LTESendManager {
-
+    private static final String band1Fcns = "350,475,550";
+    private static final String band3Fcns = "1300,1650,1506";//1300
+    private static final String band38Fcns = "37900,38098,38200";
+    private static final String band39Fcns = "38400,38544,38300";
+    private static final String band40Fcns = "38950,39148,39300";
+    private static final String band41Fcns = "40540,40936,41134";
 
     /**
      * @param redirectConfig
      * @param nameListReject
      * @param nameListRedirect
      * @param nameListBlock
-     * @param nameListRestAction
-     *    设置名单
+     * @param nameListRestAction 设置名单
      */
     public static void setNameList(String redirectConfig, String nameListReject,
                                    String nameListRedirect, String nameListBlock,
@@ -181,7 +185,6 @@ public class LTESendManager {
             return;
         }
 
-
         String plmnValue = "46000,46001,46011";
         if (carrierOpetation.equals("detect_ctj")) {
             plmnValue = "46000,46000,46000";
@@ -203,12 +206,9 @@ public class LTESendManager {
 
                     channel.setPlmn(finalPlmnValue);
                 }
-            }, index*200);
+            }, index * 200);
         }
 
-
-
-        EventAdapter.call(EventAdapter.REFRESH_DEVICE);
     }
 
     public static void setChannelConfig(String idx, String fcn, String plmn, String pa,
@@ -352,13 +352,12 @@ public class LTESendManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (CacheManager.getChannels().size() > index){
+                    if (CacheManager.getChannels().size() > index) {
                         openRf(CacheManager.getChannels().get(index).getIdx());
                     }
                 }
-            }, index*150);
+            }, index * 150);
         }
-
     }
 
     public static void openRf(String idx) {
@@ -379,11 +378,11 @@ public class LTESendManager {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (CacheManager.getChannels().size() > index){
+                    if (CacheManager.getChannels().size() > index) {
                         closeRf(CacheManager.getChannels().get(index).getIdx());
                     }
                 }
-            }, index*150);
+            }, index * 150);
         }
     }
 
@@ -434,11 +433,11 @@ public class LTESendManager {
                 if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
 
                     String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
-                    setChannelConfig(channelB3.getIdx(), fcn+",1506,1650",
+                    setChannelConfig(channelB3.getIdx(), fcn + ",1506,1650",
                             "46000,46001,46011", "", "", "", "", "");
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn(fcn+",1506,1650");
+                            channel.setFcn(fcn + ",1506,1650");
                             channel.setPlmn("46000,46001,46011");
                             break;
                         }
@@ -494,224 +493,102 @@ public class LTESendManager {
      * 设置默认配置
      */
     public static void setDefaultArfcnsAndPwr() {
-        String tmpArfcnConfig = "";
-        String defaultGa = "";
-        String defaultPower = "-7,-7,-7";
-        String band1Fcns = "100,350,550";
-        String band3Fcns = "1300,1650,1506";//1300
-        String band38Fcns = "37900,38098,38200";
-        String band39Fcns = "38400,38544,38300";
-        String band40Fcns = "38950,39148,39300";
-        String band41Fcns = "40540,40936,41134";
-
-        String pMax = "";
-
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             //2019.9.12讨论不再使用过滤筛选方式，直接使用固定常用频点
+            String defaultFcn = "";
+            String defaultGa = "";
+            String defaultPower = "-7,-7,-7";
+            String pMax = channel.getPMax();
+
             switch (channel.getBand()) {
                 case "1":
-//                    tmpAllFcns = channel.getFcn() + "," + band1Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if ((!tmpArfcnConfig.contains(tmpSplitFcn[i])) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
-
-                    pMax = channel.getPMax();
                     if ("".equals(pMax)) {
                         defaultPower = "-7,-7,-7";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
-
-                    tmpArfcnConfig = band1Fcns;
-
-                    String fcn1 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn1)) {
-                        tmpArfcnConfig = fcn1;
-                    }
-
-
-                    //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    if (Integer.parseInt(channel.getGa()) <= 8) {
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
-                    }
+                    defaultFcn = band1Fcns;
 
                     break;
-
                 case "3":
-//                    tmpAllFcns = channel.getFcn() + "," + band3Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if (!tmpArfcnConfig.contains(tmpSplitFcn[i]) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
-                    pMax = channel.getPMax();
+
                     if ("".equals(pMax)) {
                         defaultPower = "-7,-7,-7";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
 
-                    //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    tmpArfcnConfig = band3Fcns;
-
-                    String fcn3 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn3)) {
-                        tmpArfcnConfig = fcn3;
-                    }
-
-
-                    if (Integer.parseInt(channel.getGa()) <= 8)
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
+                    defaultFcn = band3Fcns;
                     break;
 
                 case "38":
-//                    tmpAllFcns = channel.getFcn() + "," + band38Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if (!tmpArfcnConfig.contains(tmpSplitFcn[i]) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
-                    pMax = channel.getPMax();
                     if ("".equals(pMax)) {
                         defaultPower = "-1,-1,-1";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
 
-                    //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    tmpArfcnConfig = band38Fcns;
+                    defaultFcn = band38Fcns;
 
-                    String fcn38 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn38)) {
-                        tmpArfcnConfig = fcn38;
-                    }
-
-
-                    if (Integer.parseInt(channel.getGa()) <= 8)
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
                     break;
 
                 case "39":
-//                    tmpAllFcns = channel.getFcn() + "," + band39Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if (!tmpArfcnConfig.contains(tmpSplitFcn[i]) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
-                    pMax = channel.getPMax();
                     if ("".equals(pMax)) {
                         defaultPower = "-13,-13,-13";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
 
-                    //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    tmpArfcnConfig = band39Fcns;
-
-                    String fcn39 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn39)) {
-                        tmpArfcnConfig = fcn39;
-                    }
-
-
-                    if (Integer.parseInt(channel.getGa()) <= 8)
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
+                    defaultFcn = band39Fcns;
                     break;
 
                 case "40":
-//                    tmpAllFcns = channel.getFcn() + "," + band40Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if (!tmpArfcnConfig.contains(tmpSplitFcn[i]) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
-                    pMax = channel.getPMax();
+
                     if ("".equals(pMax)) {
                         defaultPower = "-1,-1,-1";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
-                    ///tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    tmpArfcnConfig = band40Fcns;
-
-                    String fcn40 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn40)) {
-                        tmpArfcnConfig = fcn40;
-                    }
-
-
-                    if (Integer.parseInt(channel.getGa()) <= 8)
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
+                    defaultFcn = band40Fcns;
                     break;
 
                 case "41":
-//                    tmpAllFcns = channel.getFcn() + "," + band38Fcns;
-//                    tmpSplitFcn = tmpAllFcns.split(",");
-//                    for (int i = 0; i < tmpSplitFcn.length; i++){
-//                        if (!tmpArfcnConfig.contains(tmpSplitFcn[i]) && (getCharCount(tmpArfcnConfig, ",") < 3)){
-//                            tmpArfcnConfig += tmpSplitFcn[i];
-//                            tmpArfcnConfig += ",";
-//                        }
-//                    }
 
-                    pMax = channel.getPMax();
                     if ("".equals(pMax)) {
                         defaultPower = "-1,-1,-1";
                     } else {
                         defaultPower = pMax + "," + pMax + "," + pMax;
                     }
-
-                    //tmpArfcnConfig = tmpArfcnConfig.substring(0, tmpArfcnConfig.length()-1);
-                    tmpArfcnConfig = band41Fcns;
-
-                    String fcn41 = getCheckedFcn(channel.getBand());
-                    if (!TextUtils.isEmpty(fcn41)) {
-                        tmpArfcnConfig = fcn41;
-                    }
-
-                    if (Integer.parseInt(channel.getGa()) <= 8)
-                        defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
-                    break;
-
-                default:
+                    defaultFcn = band41Fcns;
                     break;
             }
 
-            if ("3".equals(channel.getBand()) && CacheManager.getLocState()) {
+            String fcn = getCheckedFcn(channel.getBand());
+            if (!TextUtils.isEmpty(fcn)) {
+                defaultFcn = fcn;
+            }
+            if (Integer.parseInt(channel.getGa()) <= 8) {
+                defaultGa = String.valueOf(Integer.parseInt(channel.getGa()) * 5);
+            }
+
+
+            if ("3".equals(channel.getBand()) || "1".equals(channel.getBand()) &&
+                    CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1) {
                 LogUtils.log("当前正在定位且是band3，不设置band3频点");
                 continue;
             }
-            if (TextUtils.isEmpty(tmpArfcnConfig)) {
-                setChannelConfig(channel.getIdx(), "", "", defaultPower, defaultGa, "", "", "");
-                channel.setPa(defaultPower);
 
-            } else {
-                setChannelConfig(channel.getIdx(), tmpArfcnConfig, "", defaultPower, defaultGa, "", "", "");
-                channel.setFcn(tmpArfcnConfig);
-                channel.setPa(defaultPower);
-
+            setChannelConfig(channel.getIdx(), defaultFcn, "", defaultPower, defaultGa, "", "", "");
+            channel.setPa(defaultPower);
+            if (!TextUtils.isEmpty(defaultFcn)) {
+                channel.setFcn(defaultFcn);
             }
             if (!TextUtils.isEmpty(defaultGa)) {
                 channel.setGa(defaultGa);
             }
 
-            LogUtils.log("默认fcn:" + tmpArfcnConfig);
+            LogUtils.log("默认fcn:" + defaultFcn);
 
-            tmpArfcnConfig = "";
-            defaultPower = "";
-            defaultGa = "";
         }
     }
 
@@ -740,20 +617,12 @@ public class LTESendManager {
      * 保存默认频点
      */
     public static void saveDefaultFcn() {
-        String fcn = "";
-//        String band1Fcns = "100,350,550";
-        String band1Fcns = "350,475,550";
-        String band3Fcns = "1300,1650,1506";//1300
-        String band38Fcns = "37900,38098,38200";
-        String band39Fcns = "38400,38544,38300";
-        String band40Fcns = "38950,39148,39300";
-        String band41Fcns = "40540,40936,41134";
-
 
         for (LteChannelCfg channel : CacheManager.channels) {
             if (TextUtils.isEmpty(channel.getBand())) {
                 continue;
             }
+            String fcn = "";
             switch (channel.getBand()) {
                 case "1":
                     fcn = band1Fcns;

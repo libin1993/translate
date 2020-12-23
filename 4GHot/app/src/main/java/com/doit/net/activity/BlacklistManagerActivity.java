@@ -83,7 +83,6 @@ import java.util.regex.Pattern;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class BlacklistManagerActivity extends BaseActivity implements EventAdapter.EventCall {
-    private final Activity activity = this;
     private ListView lvWhitelistInfo;
     private BlacklistAdapter mAdapter;
     private Button btAddWhitelist;
@@ -136,7 +135,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         btClearWhitelist = findViewById(R.id.btClearWhitelist);
         btClearWhitelist.setOnClickListener(clearWhitelistClick);
 
-        mAdapter = new BlacklistAdapter(activity);
+        mAdapter = new BlacklistAdapter(this);
         lvWhitelistInfo.setAdapter(mAdapter);
         mAdapter.setMode(Attributes.Mode.Single);
         lvWhitelistInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -156,7 +155,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     View.OnClickListener addWhitelistClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(activity);
+            AddBlacklistDialog addBlacklistDialog = new AddBlacklistDialog(BlacklistManagerActivity.this);
             addBlacklistDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
@@ -584,7 +583,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
-                new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE)
+                new SweetAlertDialog(BlacklistManagerActivity.this, SweetAlertDialog.ERROR_TYPE)
                         .setTitleText("导出失败")
                         .setContentText("失败原因：" + msg.obj)
                         .show();
@@ -592,7 +591,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
-                new MySweetAlertDialog(activity, MySweetAlertDialog.TEXT_SUCCESS)
+                new MySweetAlertDialog(BlacklistManagerActivity.this, MySweetAlertDialog.TEXT_SUCCESS)
                         .setTitleText("导入完成")
                         .setContentText(String.valueOf(msg.obj))
                         .show();
@@ -602,7 +601,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                 if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
-                new MySweetAlertDialog(activity, MySweetAlertDialog.TEXT_SUCCESS)
+                new MySweetAlertDialog(BlacklistManagerActivity.this, MySweetAlertDialog.TEXT_SUCCESS)
                         .setTitleText("导出成功")
                         .setContentText(String.valueOf(msg.obj))
                         .show();

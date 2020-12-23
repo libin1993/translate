@@ -1,13 +1,11 @@
 package com.doit.net.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
@@ -21,7 +19,6 @@ import com.doit.net.model.CacheManager;
 import com.doit.net.utils.FTPManager;
 import com.doit.net.model.PrefManage;
 import com.doit.net.utils.LSettingItem;
-import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
@@ -30,13 +27,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static cn.pedant.SweetAlert.SweetAlertDialog.WARNING_TYPE;
 
 public class SystemSettingActivity extends BaseActivity implements EventAdapter.EventCall {
-    private Activity activity = this;
     public static String LOC_PREF_KEY = "LOC_PREF_KEY";
     public static String SET_STATIC_IP = "STATIC_IP";
     private LSettingItem tvOnOffLocation;
@@ -75,13 +73,13 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         etMinWindSpeed = findViewById(R.id.etMinWindSpeed);
         etTempThreshold = findViewById(R.id.etTempThreshold);
         btSetFan = findViewById(R.id.btSetFan);
-        btSetFan.setOnClickListener(setFanClikListen);
+        btSetFan.setOnClickListener(setFanClickListener);
 
         btResetFreqScanFcn = findViewById(R.id.btResetFreqScanFcn);
-        btResetFreqScanFcn.setOnClickListener(resetFreqScanFcnClikListener);
+        btResetFreqScanFcn.setOnClickListener(resetFreqScanFcnClickListener);
 
         btRefresh = findViewById(R.id.btRefresh);
-        btRefresh.setOnClickListener(refreshClikListen);
+        btRefresh.setOnClickListener(refreshClickListener);
 
         tvOnOffLocation.setChecked(PrefManage.getBoolean(LOC_PREF_KEY, true));
 
@@ -91,7 +89,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         tvStaticIp.setmOnLSettingItemClick(setStaticIpSwitch);
 
 
-        if (CacheManager.checkDevice(activity)) {
+        if (CacheManager.checkDevice(SystemSettingActivity.this)) {
             initView();
         } else {
             ToastUtils.showMessageLong("设备未连接，当前展示的设置都不准确，请等待设备连接后重新进入该界面");
@@ -131,7 +129,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
     private LSettingItem.OnLSettingItemClick settingItemAutoRFSwitch = new LSettingItem.OnLSettingItemClick() {
         @Override
         public void click(LSettingItem item) {
-            if (!CacheManager.checkDevice(activity)) {
+            if (!CacheManager.checkDevice(SystemSettingActivity.this)) {
                 tvIfAutoOpenRF.setChecked(!tvIfAutoOpenRF.isChecked());
                 return;
             }
@@ -210,10 +208,10 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         }.start();
     }
 
-    View.OnClickListener setFanClikListen = new View.OnClickListener() {
+    View.OnClickListener setFanClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity))
+            if (!CacheManager.checkDevice(SystemSettingActivity.this))
                 return;
 
             LTESendManager.setFancontrol(etMaxWindSpeed.getText().toString(), etMinWindSpeed.getText().toString()
@@ -222,17 +220,17 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
     };
 
 
-    View.OnClickListener resetFreqScanFcnClikListener = new View.OnClickListener() {
+    View.OnClickListener resetFreqScanFcnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity))
+            if (!CacheManager.checkDevice(SystemSettingActivity.this))
                 return;
 
-            new SweetAlertDialog(activity, WARNING_TYPE)
+            new SweetAlertDialog(SystemSettingActivity.this, WARNING_TYPE)
                     .setTitleText("提示")
                     .setContentText("开机搜网列表将被重置，确定吗?")
-                    .setCancelText(activity.getString(R.string.cancel))
-                    .setConfirmText(activity.getString(R.string.sure))
+                    .setCancelText(SystemSettingActivity.this.getString(R.string.cancel))
+                    .setConfirmText(SystemSettingActivity.this.getString(R.string.sure))
                     .showCancelButton(true)
                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
@@ -242,58 +240,36 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
                         }
                     }).show();
 
-
         }
     };
 
     private void resetFreqScanFcn() {
-        String band1Fcns = "100,375,400";
-        String band3Fcns = "1300,1506,1650,1825";
-        String band38Fcns = "37900,38098,38200";
-        String band39Fcns = "38400,38544,38300";
-        String band40Fcns = "38950,39148,39300";
-        String band41Fcns = "40540,40936,41134";
-
-
-        for (LteChannelCfg channel : CacheManager.getChannels()) {
-            switch (channel.getBand()) {
-                case "1":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band1Fcns);
-                    channel.setAltFcn(band1Fcns);
-                    break;
-                case "3":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band3Fcns);
-                    channel.setAltFcn(band3Fcns);
-                    break;
-                case "38":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band38Fcns);
-                    channel.setAltFcn(band38Fcns);
-                    break;
-
-                case "39":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band39Fcns);
-                    channel.setAltFcn(band39Fcns);
-                    break;
-
-                case "40":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band40Fcns);
-                    channel.setAltFcn(band40Fcns);
-                    break;
-                case "41":
-                    LTESendManager.setChannelConfig(channel.getIdx(), "", "", "", "", "", "", band41Fcns);
-                    channel.setAltFcn(band41Fcns);
-                    break;
-
-                default:
-                    break;
-            }
+        if (!CacheManager.checkDevice(this)){
+            return;
         }
+        for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+            int index = i;
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LteChannelCfg channel = CacheManager.getChannels().get(index);
+                    String fcn = LTESendManager.getCheckedFcn(channel.getBand());
+                    if (!TextUtils.isEmpty(fcn)) {
+                        LTESendManager.setChannelConfig(channel.getIdx(), fcn, "", "", "", "", "", "");
+                        channel.setFcn(fcn);
+                    }
+
+                }
+            }, index * 200);
+        }
+
     }
 
-    View.OnClickListener refreshClikListen = new View.OnClickListener() {
+    View.OnClickListener refreshClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!CacheManager.checkDevice(activity))
+            if (!CacheManager.checkDevice(SystemSettingActivity.this))
                 return;
 
             long currentTime = System.currentTimeMillis();

@@ -33,12 +33,10 @@ import java.util.List;
  * 用户管理
  */
 public class UserManageActivity extends BaseActivity implements EventAdapter.EventCall {
-    private final Activity activity = this;
     private ListView lvUserInfo;
     private UserListAdapter mAdapter;
     private Button btAddUser;
     private Button btModifyAdmin;
-
 
     private int lastOpenSwipePos = -1;
 
@@ -61,7 +59,7 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
         btModifyAdmin = findViewById(R.id.btModifyAdmin);
         btModifyAdmin.setOnClickListener(modifyAdminClick);
 
-        mAdapter = new UserListAdapter(activity);
+        mAdapter = new UserListAdapter(this);
         lvUserInfo.setAdapter(mAdapter);
         mAdapter.setMode(Attributes.Mode.Single);
         lvUserInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,7 +79,7 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
     View.OnClickListener addUserClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AddUserDialog addUserDialog = new AddUserDialog(activity);
+            AddUserDialog addUserDialog = new AddUserDialog(UserManageActivity.this);
             addUserDialog.show();
         }
     };
@@ -89,7 +87,7 @@ public class UserManageActivity extends BaseActivity implements EventAdapter.Eve
     View.OnClickListener modifyAdminClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ModifyAdminAccountDialog modifyAdminAccountDialog = new ModifyAdminAccountDialog(activity,
+            ModifyAdminAccountDialog modifyAdminAccountDialog = new ModifyAdminAccountDialog(UserManageActivity.this,
                     AccountManage.getAdminAccount(), AccountManage.getAdminPassword());
             modifyAdminAccountDialog.show();
 
