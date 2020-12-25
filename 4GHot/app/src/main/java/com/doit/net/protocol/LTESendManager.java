@@ -486,13 +486,13 @@ public class LTESendManager {
             e.printStackTrace();
         }
 
-
     }
 
     /**
      * 设置默认配置
      */
     public static void setDefaultArfcnsAndPwr() {
+
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             //2019.9.12讨论不再使用过滤筛选方式，直接使用固定常用频点
             String defaultFcn = "";
@@ -543,7 +543,6 @@ public class LTESendManager {
                     break;
 
                 case "40":
-
                     if ("".equals(pMax)) {
                         defaultPower = "-1,-1,-1";
                     } else {

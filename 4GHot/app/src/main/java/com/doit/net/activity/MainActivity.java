@@ -414,8 +414,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                         public void onClick(MySweetAlertDialog sDialog) {
                             /* 可以选择在onDestroy里做回收工作，但是在这里更稳 */
                             appExit();
-                            //finish();   //finish()会导致onDestroy()被调用，exit不会
-                            System.exit(0);
                         }
                     })
                     .show();
@@ -433,7 +431,6 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-
 
         isCheckDeviceStateThreadRun = false;
         FTPServerUtils.getInstance().stopFTP();
@@ -453,7 +450,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     mHandler.sendMessage(message);
                     try {
                         Thread.sleep(5000);
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

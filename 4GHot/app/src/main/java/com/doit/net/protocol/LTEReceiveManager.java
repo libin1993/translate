@@ -47,8 +47,7 @@ public class LTEReceiveManager {
     //包头的长度
     private short packageHeadLength = 12;
 
-
-    private boolean initSuccess;
+    public boolean initSuccess = false;
 
 
     //解析数据

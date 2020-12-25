@@ -289,7 +289,7 @@ public class FTPManager {
         if (ftpClient.isConnected()) {
             try {
                 ftpClient.disconnect();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

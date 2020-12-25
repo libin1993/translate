@@ -134,11 +134,12 @@ public class ServerSocketUtils {
 
             try {
                 socket.close();
-                if (onSocketChangedListener != null) {
-                    onSocketChangedListener.onChange(remoteIP);
-                }
-                lteReceiveManager.clearReceiveBuffer();
-                LogUtils.log(remoteIP + ":关闭socket");
+//                if (onSocketChangedListener != null) {
+//                    onSocketChangedListener.onChange(remoteIP);
+//                }
+//                lteReceiveManager.clearReceiveBuffer();
+//                lteReceiveManager.initSuccess = false;
+//                LogUtils.log(remoteIP + ":关闭socket");
 
 //                if ((remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) && CacheManager.initSuccess4G)
 //                        || (remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP) && CacheManager.initSuccess2G)){
@@ -153,7 +154,7 @@ public class ServerSocketUtils {
 //                    LogUtils.log("未初始化完成，无需断开");
 //                }
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LogUtils.log(remoteIP + "：socket关闭失败:" + e.toString());
             }

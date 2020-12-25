@@ -74,7 +74,7 @@ public class LogUtils {
         try {
             saveLogOS.close();
             EventAdapter.call(EventAdapter.UPDATE_FILE_SYS, currentLogPath);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
