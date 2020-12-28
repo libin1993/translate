@@ -571,9 +571,9 @@ public class LTESendManager {
             }
 
 
-            if ("3".equals(channel.getBand()) || "1".equals(channel.getBand()) &&
+            if (("3".equals(channel.getBand()) || "1".equals(channel.getBand())) &&
                     CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1) {
-                LogUtils.log("当前正在定位且是band3，不设置band3频点");
+                LogUtils.log("当前正在定位，不设置b1、b3频点");
                 continue;
             }
 

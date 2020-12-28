@@ -1,9 +1,7 @@
 package com.doit.net.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
@@ -17,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -83,12 +80,12 @@ import java.util.regex.Pattern;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class BlacklistManagerActivity extends BaseActivity implements EventAdapter.EventCall {
-    private ListView lvWhitelistInfo;
+    private ListView lvBlacklistInfo;
     private BlacklistAdapter mAdapter;
-    private Button btAddWhitelist;
-    private Button btExportWhitelist;
-    private Button btImportWhitelist;
-    private Button btClearWhitelist;
+    private Button btAddBlacklist;
+    private Button btExportBlacklist;
+    private Button btImportBlacklist;
+    private Button btClearBlacklist;
 
     DbManager dbManager = UCSIDBManager.getDbManager();
 
@@ -122,26 +119,26 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
     }
 
     private void initView() {
-        lvWhitelistInfo = findViewById(R.id.lvWhitelistInfo);
-        btAddWhitelist = findViewById(R.id.btAddWhitelist);
-        btAddWhitelist.setOnClickListener(addWhitelistClick);
+        lvBlacklistInfo = findViewById(R.id.lvWhitelistInfo);
+        btAddBlacklist = findViewById(R.id.btAddWhitelist);
+        btAddBlacklist.setOnClickListener(addWhitelistClick);
 
-        btImportWhitelist = findViewById(R.id.btImportWhitelist);
-        btImportWhitelist.setOnClickListener(importWhitelistClick);
+        btImportBlacklist = findViewById(R.id.btImportWhitelist);
+        btImportBlacklist.setOnClickListener(importWhitelistClick);
 
-        btExportWhitelist = findViewById(R.id.btExportWhitelist);
-        btExportWhitelist.setOnClickListener(exortWhitelistClick);
+        btExportBlacklist = findViewById(R.id.btExportWhitelist);
+        btExportBlacklist.setOnClickListener(exortWhitelistClick);
 
-        btClearWhitelist = findViewById(R.id.btClearWhitelist);
-        btClearWhitelist.setOnClickListener(clearWhitelistClick);
+        btClearBlacklist = findViewById(R.id.btClearWhitelist);
+        btClearBlacklist.setOnClickListener(clearWhitelistClick);
 
         mAdapter = new BlacklistAdapter(this);
-        lvWhitelistInfo.setAdapter(mAdapter);
+        lvBlacklistInfo.setAdapter(mAdapter);
         mAdapter.setMode(Attributes.Mode.Single);
-        lvWhitelistInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvBlacklistInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                lastOpenSwipePos = position - lvWhitelistInfo.getFirstVisiblePosition();
+                lastOpenSwipePos = position - lvBlacklistInfo.getFirstVisiblePosition();
                 openSwipe(lastOpenSwipePos);
             }
         });
@@ -533,15 +530,15 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         if (position < 0)
             return;
 
-        ((SwipeLayout) (lvWhitelistInfo.getChildAt(position))).open(true);
-        ((SwipeLayout) (lvWhitelistInfo.getChildAt(position))).setClickToClose(true);
+        ((SwipeLayout) (lvBlacklistInfo.getChildAt(position))).open(true);
+        ((SwipeLayout) (lvBlacklistInfo.getChildAt(position))).setClickToClose(true);
     }
 
     private void closeSwipe(int position) {
         if (listWhitelistInfo == null || listWhitelistInfo.size() == 0)
             return;
 
-        SwipeLayout swipe = (SwipeLayout) (lvWhitelistInfo.getChildAt(position));
+        SwipeLayout swipe = (SwipeLayout) (lvBlacklistInfo.getChildAt(position));
         if (swipe != null)
             swipe.close(true);
     }

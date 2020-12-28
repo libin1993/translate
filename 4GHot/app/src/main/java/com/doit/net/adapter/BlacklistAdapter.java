@@ -67,17 +67,17 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
         TextView tvWhitelistInfo = convertView.findViewById(R.id.tvWhitelistInfo);
         SwipeLayout swipeLayout = convertView.findViewById(R.id.layout_user_info);
 
-        final BlackListInfo whitelistInfo = listBlacklistInfo.get(position);
+        final BlackListInfo blacklistInfo = listBlacklistInfo.get(position);
         tvIndex.setText(" " +(position + 1) + ".");
-            tvWhitelistInfo.setText("IMSI："+ whitelistInfo.getImsi()  + "\n手机号："+ whitelistInfo.getMsisdn()  +
-                        "\n备注：" + whitelistInfo.getRemark());
+            tvWhitelistInfo.setText("IMSI："+ blacklistInfo.getImsi()  + "\n手机号："+ blacklistInfo.getMsisdn()  +
+                        "\n备注：" + blacklistInfo.getRemark());
         tvWhitelistInfo.setTag(position);
 
         convertView.findViewById(R.id.ivDelete).setOnClickListener(new BlacklistAdapter.DeleteWhitelistListener(position));
         convertView.findViewById(R.id.ivModify).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ModifyBlackListDialog modifyUserInfoDialog = new ModifyBlackListDialog(mContext, whitelistInfo.getImsi(), whitelistInfo.getMsisdn(), whitelistInfo.getRemark());
+                ModifyBlackListDialog modifyUserInfoDialog = new ModifyBlackListDialog(mContext, blacklistInfo.getImsi(), blacklistInfo.getMsisdn(), blacklistInfo.getRemark());
                 modifyUserInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -93,9 +93,9 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
 
 
         ImageView ivLocation = convertView.findViewById(R.id.iv_location);
-        if(CacheManager.getLocMode() && !TextUtils.isEmpty(whitelistInfo.getImsi())){
+        if(CacheManager.getLocMode() && !TextUtils.isEmpty(blacklistInfo.getImsi())){
             ivLocation.setVisibility(View.VISIBLE);
-            ivLocation.setOnClickListener(new AddToLocationListener(mContext,whitelistInfo.getImsi(),1));
+            ivLocation.setOnClickListener(new AddToLocationListener(mContext,blacklistInfo.getImsi(),blacklistInfo.getImsi().startsWith("46003") ? 0:1));
         }else{
             ivLocation.setVisibility(View.GONE);
         }

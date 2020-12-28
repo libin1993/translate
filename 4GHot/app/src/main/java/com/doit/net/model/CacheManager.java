@@ -120,22 +120,35 @@ public class CacheManager {
 
         //添加管控imsi
         List<String> blackIMSIList = CacheManager.getBlackIMSIList();
-        String imsiArr = "";
+
+        String blockIMSI = "";  //管控黑名单
+        String redirectIMSI ="";  //指派黑名单
+
         for (int i = 0; i < blackIMSIList.size(); i++) {
             if (!blackIMSIList.get(i).equals(imsi)) {
-                imsiArr += blackIMSIList.get(i) + ",";
+                blockIMSI += blackIMSIList.get(i) + ",";
             }
+
+            if (!blackIMSIList.get(i).equals(imsi) && !"CTC".equals(UtilOperator.getOperatorName(imsi))) {
+                redirectIMSI += blackIMSIList.get(i) + ",";
+            }
+
         }
 
-        if (!TextUtils.isEmpty(imsiArr)) {
-            imsiArr = imsi + "," + imsiArr.substring(0, imsiArr.length() - 1);
+        if (!TextUtils.isEmpty(blockIMSI)) {
+            blockIMSI = imsi + "," + blockIMSI.substring(0, blockIMSI.length() - 1);
         } else {
-            imsiArr = imsi;
+            blockIMSI = imsi;
         }
+
+        if (!TextUtils.isEmpty(redirectIMSI)) {
+            redirectIMSI = imsi + "," + redirectIMSI.substring(0, redirectIMSI.length() - 1);
+        } else {
+            redirectIMSI = imsi;
+        }
+
 
         if (type == 1) {  //4G定位
-
-            String blockIMSI = imsiArr;
 
             //目标imsi吸附，其余的回公网
             LTESendManager.setNameList(null, null,
@@ -148,10 +161,11 @@ public class CacheManager {
                 }
             }, 1000);
 
+            String finalBlockIMSI = blockIMSI;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    LTESendManager.changeNameList("add", "block", blockIMSI);
+                    LTESendManager.changeNameList("add", "block", finalBlockIMSI);
                 }
             }, 1500);
 
@@ -172,15 +186,15 @@ public class CacheManager {
 
 
         } else {
-            String redirectIMSI = imsiArr;
             //目标imsi重定向，其余的回公网
             CacheManager.redirect2G(redirectIMSI, null, "reject");
+            String finalRedirectIMSI = redirectIMSI;
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     //添加指派imsi
-                    LTESendManager.changeNameList("add", "redirect", redirectIMSI);
+                    LTESendManager.changeNameList("add", "redirect", finalRedirectIMSI);
                 }
             }, 1000);
 

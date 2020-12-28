@@ -25,7 +25,7 @@
     <string name="tip_08">当前手机不支持中文播报！</string>
     <string name="tip_15">设置请求已发送！</string>
     <string name="tip_16">参数输入有误！请检查</string>
-    <string name="exist_whitelist">已存在相同的白名单</string>
+    <string name="exist_whitelist">已存在相同的黑名单</string>
     <string name="same_user">已存在此账户，请确认再输入</string>
     <string name="same_imsi">已存在此IMSI，请确认再输入</string>
     <string name="set_cell_reboot">成功下发小区配置，请等待设备重启</string>
@@ -59,7 +59,7 @@
     <string name="change_tac">更新TAC</string>
     <string name="add_success">添加成功</string>
     <string name="modify_user_fail">修改用户失败！</string>
-    <string name="modify_whitelist_fail">修改白名单失败！</string>
+    <string name="modify_whitelist_fail">修改黑名单失败！</string>
     <string name="modify_user_success">修改用户成功！</string>
     <string name="modify_user_fail_ftp">修改用户失败,请确保与设备网络畅通</string>
     <string name="modify_admin_success">修改管理员账户成功，下次登录即生效</string>
@@ -69,9 +69,9 @@
     <string name="title_modify_admin_account">管理员信息修改</string>
     <string name="del_user_fail">删除用户失败！</string>
     <string name="del_user_fail_ftp_error">删除用户失败，请检查网络！</string>
-    <string name="del_white_list_fail">删除白名单失败！</string>
+    <string name="del_white_list_fail">删除黑名单失败！</string>
     <string name="add_user_fail">添加用户失败</string>
-    <string name="add_whitelist_fail">添加白名单失败</string>
+    <string name="add_whitelist_fail">添加黑名单失败</string>
     <string name="add_user_fail_ftp">添加用户失败,请检查网络</string>
     <string name="low_power">电池电量过低</string>
     <string name="low_power_warning">当前电池电量过低，已无法保证正常工作，请及时更换电池！</string>
@@ -91,7 +91,7 @@
 
 
     <string name="add_user">添加普通用户</string>
-    <string name="modify_whitelist">修改白名单</string>
+    <string name="modify_whitelist">修改黑名单</string>
     <string name="modify_admin">修改当前账户</string>
 
     <string name="account2">账号：</string>
