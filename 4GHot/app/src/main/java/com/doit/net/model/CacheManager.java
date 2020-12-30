@@ -100,7 +100,7 @@ public class CacheManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                CacheManager.redirect2G("", null, "redirect");
+                CacheManager.redirect2G("", "redirect");
 
             }
         }, 1000);
@@ -187,7 +187,7 @@ public class CacheManager {
 
         } else {
             //目标imsi重定向，其余的回公网
-            CacheManager.redirect2G(redirectIMSI, null, "reject");
+            CacheManager.redirect2G(redirectIMSI, "reject");
             String finalRedirectIMSI = redirectIMSI;
 
             new Timer().schedule(new TimerTask() {
@@ -236,16 +236,28 @@ public class CacheManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB3 != null) {
-                LTESendManager.setChannelConfig(channelB3.getIdx(), channelB3.getFcn(),
-                        "46000,46001,46011", "", "", "", "", "");
-
-                for (LteChannelCfg channel : CacheManager.channels) {
-                    if (channel.getIdx().equals(channelB3.getIdx())) {
-                        channel.setFcn(channelB3.getFcn());
-                        channel.setPlmn("46000,46001,46011");
+                String idx="";
+                for (LteChannelCfg channel : CacheManager.getChannels()) {
+                    if (channel.getBand().equals("3")){
+                        idx = channel.getIdx();
                         break;
                     }
                 }
+
+                if (!TextUtils.isEmpty(idx)){
+
+                    LTESendManager.setChannelConfig(idx, channelB3.getFcn(),
+                            "46000,46001,46011", "", "", "", "", "");
+
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(idx)) {
+                            channel.setFcn(channelB3.getFcn());
+                            channel.setPlmn("46000,46001,46011");
+                            break;
+                        }
+                    }
+                }
+
             }
 
             //B1频段恢复默认频点
@@ -254,15 +266,26 @@ public class CacheManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB1 != null) {
-                LTESendManager.setChannelConfig(channelB1.getIdx(), channelB1.getFcn(),
-                        "", "", "", "", "", "");
-
-                for (LteChannelCfg channel : CacheManager.channels) {
-                    if (channel.getIdx().equals(channelB1.getIdx())) {
-                        channel.setFcn(channelB1.getFcn());
+                String idx="";
+                for (LteChannelCfg channel : CacheManager.getChannels()) {
+                    if (channel.getBand().equals("1")){
+                        idx = channel.getIdx();
                         break;
                     }
                 }
+
+                if (!TextUtils.isEmpty(idx)){
+                    LTESendManager.setChannelConfig(idx, channelB1.getFcn(),
+                            "", "", "", "", "", "");
+
+                    for (LteChannelCfg channel : CacheManager.channels) {
+                        if (channel.getIdx().equals(idx)) {
+                            channel.setFcn(channelB1.getFcn());
+                            break;
+                        }
+                    }
+                }
+
             }
 
         } catch (DbException e) {
@@ -370,7 +393,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect, String nameListReject, String nameListRestAction) {
+    public static void redirect2G(String nameListRedirect,String nameListRestAction) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -390,7 +413,7 @@ public class CacheManager {
 
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
-            LTESendManager.setNameList(redirectConfig, nameListReject,
+            LTESendManager.setNameList(redirectConfig, null,
                     nameListRedirect, "", nameListRestAction);
         }
 

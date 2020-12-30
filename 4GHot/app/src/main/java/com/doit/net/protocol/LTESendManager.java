@@ -430,25 +430,35 @@ public class LTESendManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB3 != null) {
-                if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
-
-                    String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
-                    setChannelConfig(channelB3.getIdx(), fcn + ",1506,1650",
-                            "46000,46001,46011", "", "", "", "", "");
-                    for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn(fcn + ",1506,1650");
-                            channel.setPlmn("46000,46001,46011");
-                            break;
-                        }
+                String idx="";
+                for (LteChannelCfg channel : CacheManager.getChannels()) {
+                    if (channel.getBand().equals("3")){
+                        idx = channel.getIdx();
+                        break;
                     }
-                } else {
-                    setChannelConfig(channelB3.getIdx(), channelB3.getFcn(), "46000,46001,46011", "", "", "", "", "");
-                    for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(channelB3.getIdx())) {
-                            channel.setFcn(channelB3.getFcn());
-                            channel.setPlmn("46000,46001,46011");
-                            break;
+                }
+
+                if (!TextUtils.isEmpty(idx)){
+                    if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+
+                        String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
+                        setChannelConfig(idx, fcn + ",1506,1650",
+                                "46000,46001,46011", "", "", "", "", "");
+                        for (LteChannelCfg channel : CacheManager.channels) {
+                            if (channel.getIdx().equals(idx)) {
+                                channel.setFcn(fcn + ",1506,1650");
+                                channel.setPlmn("46000,46001,46011");
+                                break;
+                            }
+                        }
+                    } else {
+                        setChannelConfig(idx, channelB3.getFcn(), "46000,46001,46011", "", "", "", "", "");
+                        for (LteChannelCfg channel : CacheManager.channels) {
+                            if (channel.getIdx().equals(idx)) {
+                                channel.setFcn(channelB3.getFcn());
+                                channel.setPlmn("46000,46001,46011");
+                                break;
+                            }
                         }
                     }
                 }
@@ -461,24 +471,38 @@ public class LTESendManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB1 != null) {
-                if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
-                    setChannelConfig(channelB1.getIdx(), "100,350,550", "", "", "", "", "", "");
-                    for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(channelB1.getIdx())) {
-                            channel.setFcn("100,350,550");
-                            break;
-                        }
+                String idx="";
+                for (LteChannelCfg channel : CacheManager.getChannels()) {
+                    if (channel.getBand().equals("1")){
+                        idx = channel.getIdx();
+                        break;
                     }
-                } else {
-                    setChannelConfig(channelB1.getIdx(), channelB1.getFcn(),
-                            "", "", "", "", "", "");
-                    for (LteChannelCfg channel : CacheManager.channels) {
-                        if (channel.getIdx().equals(channelB1.getIdx())) {
-                            channel.setFcn(channelB1.getFcn());
-                            break;
+                }
+
+                if (!TextUtils.isEmpty(idx)){
+                    if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+                        setChannelConfig(idx, "100,350,550", "", "", "", "", "", "");
+                        for (LteChannelCfg channel : CacheManager.channels) {
+                            if (channel.getIdx().equals(idx)) {
+                                channel.setFcn("100,350,550");
+                                break;
+                            }
+                        }
+                    } else {
+                        setChannelConfig(idx, channelB1.getFcn(),
+                                "", "", "", "", "", "");
+                        for (LteChannelCfg channel : CacheManager.channels) {
+                            if (channel.getIdx().equals(idx)) {
+                                channel.setFcn(channelB1.getFcn());
+                                break;
+                            }
                         }
                     }
                 }
+
+
+
+
             }
 
 
@@ -617,60 +641,66 @@ public class LTESendManager {
      */
     public static void saveDefaultFcn() {
 
-        for (LteChannelCfg channel : CacheManager.channels) {
-            if (TextUtils.isEmpty(channel.getBand())) {
-                continue;
+        try {
+            DbManager dbManager = UCSIDBManager.getDbManager();
+
+            DBChannel dbChannel1 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "1")
+                    .and("fcn", "=", band1Fcns)
+                    .findFirst();
+            if (dbChannel1 == null) {
+                dbManager.save(new DBChannel( "1", band1Fcns, 1, 1));
             }
-            String fcn = "";
-            switch (channel.getBand()) {
-                case "1":
-                    fcn = band1Fcns;
-                    break;
-                case "3":
-                    fcn = band3Fcns;
-                    break;
-                case "38":
-                    fcn = band38Fcns;
-                    break;
-                case "39":
-                    fcn = band39Fcns;
-                    break;
-                case "40":
-                    fcn = band40Fcns;
-                    break;
-                case "41":
-                    fcn = band41Fcns;
-                    break;
 
+
+            DBChannel dbChannel3 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "3")
+                    .and("fcn", "=", band3Fcns)
+                    .findFirst();
+            if (dbChannel3 == null) {
+                dbManager.save(new DBChannel("3", band3Fcns, 1, 1));
             }
-            if (!TextUtils.isEmpty(fcn)) {
-                try {
-                    DbManager dbManager = UCSIDBManager.getDbManager();
-                    DBChannel dbChannel = dbManager.selector(DBChannel.class)
-                            .where("band", "=", channel.getBand())
-                            .and("fcn", "=", fcn)
-                            .findFirst();
-                    if (dbChannel == null) {
-                        dbManager.save(new DBChannel(channel.getIdx(), channel.getBand(), fcn, 1, 1));
 
-                        //band38和band40可切换，需将band38和band40都保存下来
-                        if (channel.getBand().equals("38")) {
-                            dbManager.save(new DBChannel(channel.getIdx(), "40", band40Fcns, 1, 1));
-                        } else if (channel.getBand().equals("40")) {
-                            dbManager.save(new DBChannel(channel.getIdx(), "38", band38Fcns, 1, 1));
-                        }
-
-                    }
-
-                } catch (DbException e) {
-                    e.printStackTrace();
-                }
+            DBChannel dbChannel38 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "38")
+                    .and("fcn", "=", band38Fcns)
+                    .findFirst();
+            if (dbChannel38 == null) {
+                dbManager.save(new DBChannel("38", band38Fcns, 1, 1));
             }
+
+
+            DBChannel dbChannel39 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "39")
+                    .and("fcn", "=", band39Fcns)
+                    .findFirst();
+            if (dbChannel39 == null) {
+                dbManager.save(new DBChannel("39", band39Fcns, 1, 1));
+            }
+
+            DBChannel dbChannel40 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "40")
+                    .and("fcn", "=", band40Fcns)
+                    .findFirst();
+            if (dbChannel40 == null) {
+                dbManager.save(new DBChannel("40", band40Fcns, 1, 1));
+            }
+
+            DBChannel dbChannel41 = dbManager.selector(DBChannel.class)
+                    .where("band", "=", "41")
+                    .and("fcn", "=", band41Fcns)
+                    .findFirst();
+            if (dbChannel41 == null) {
+                dbManager.save(new DBChannel( "41", band41Fcns, 1, 1));
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public static void setFancontrol(String maxFanSpeed, String minFanSpeed, String tempThreshold) {
+    public static void setFanControl(String maxFanSpeed, String minFanSpeed, String tempThreshold) {
         if (!CacheManager.initSuccess4G) {
             return;
         }

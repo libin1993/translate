@@ -828,7 +828,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            CacheManager.redirect2G("",null,"redirect");  //重定向到2G
+                            CacheManager.redirect2G("","redirect");  //重定向到2G
                         }
                     }, 1000);
 
@@ -874,6 +874,15 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                         LTESendManager.setNowTime();
                     }
                 },5000);
+
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.changeNameList("add", "reject", "460021683706233,460110363153426");
+                    }
+                },10000);
+
 
                 if (CacheManager.checkLicense) {
                     CacheManager.checkLicense = false;

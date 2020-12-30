@@ -214,7 +214,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
             if (!CacheManager.checkDevice(SystemSettingActivity.this))
                 return;
 
-            LTESendManager.setFancontrol(etMaxWindSpeed.getText().toString(), etMinWindSpeed.getText().toString()
+            LTESendManager.setFanControl(etMaxWindSpeed.getText().toString(), etMinWindSpeed.getText().toString()
                     , etTempThreshold.getText().toString());
         }
     };

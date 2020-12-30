@@ -527,6 +527,7 @@ public class LTE_PT_PARAM {
             case LTE_PT_PARAM.PARAM_CHANGE_BAND_ACK:
                 if (respContent.charAt(0) == '0') {
                     LogUtils.log("切换band成功");
+                    LTESendManager.getEquipAndAllChannelConfig();
                 } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("切换band失败");
                 }

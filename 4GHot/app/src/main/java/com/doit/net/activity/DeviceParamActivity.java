@@ -53,6 +53,9 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ListHolder;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -175,7 +178,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 LteChannelCfg lteChannelCfg = CacheManager.channels.get(position);
                 if (lteChannelCfg != null && !TextUtils.isEmpty(lteChannelCfg.getChangeBand())) {
-                    changeChannelBandDialog(lteChannelCfg.getIdx(), lteChannelCfg.getChangeBand());
+                    changeChannelBandDialog(lteChannelCfg.getIdx(),  lteChannelCfg.getBand(),lteChannelCfg.getChangeBand());
                 }
             }
         });
@@ -323,25 +326,25 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
 
 
                     LteChannelCfg channelCfg = CacheManager.channels.get(position);
-                    if (!TextUtils.isEmpty(fcn)){
+                    if (!TextUtils.isEmpty(fcn)) {
                         channelCfg.setFcn(fcn);
                     }
 
-                    if (!TextUtils.isEmpty(plmn)){
+                    if (!TextUtils.isEmpty(plmn)) {
                         channelCfg.setPlmn(plmn);
                     }
 
-                    if (!TextUtils.isEmpty(ga)){
+                    if (!TextUtils.isEmpty(ga)) {
                         channelCfg.setGa(ga);
                     }
 
-                    if (!TextUtils.isEmpty(pa)){
+                    if (!TextUtils.isEmpty(pa)) {
                         channelCfg.setPa(pa);
                     }
-                    if (!TextUtils.isEmpty(rlm)){
+                    if (!TextUtils.isEmpty(rlm)) {
                         channelCfg.setRlm(rlm);
                     }
-                    if (!TextUtils.isEmpty(alt_fcn)){
+                    if (!TextUtils.isEmpty(alt_fcn)) {
                         channelCfg.setAltFcn(alt_fcn);
                     }
 
@@ -518,7 +521,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 public void run() {
                     refreshDetectOperation();
                 }
-            },1500);
+            }, 1500);
 
         }
     };
@@ -593,7 +596,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                             "", "", "", "");
                     channel.setPa(pa + "," + pa + "," + pa);
                 }
-            }, index*200);
+            }, index * 200);
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -601,7 +604,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             public void run() {
                 refreshPowerLevel();
             }
-        },1500);
+        }, 1500);
 
     }
 
@@ -630,7 +633,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private void refreshDetectOperation() {
         if (CacheManager.getChannels().size() > 0) {
             String firstPlmn = CacheManager.getChannels().get(0).getPlmn();  //以第一个作为参考
-            if (TextUtils.isEmpty(firstPlmn)){
+            if (TextUtils.isEmpty(firstPlmn)) {
                 return;
             }
             if (firstPlmn.contains("46000") && firstPlmn.contains("46001") && firstPlmn.contains("46011")) {
@@ -676,9 +679,19 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         super.onResume();
     }
 
-    private void changeChannelBandDialog(final String idx, final String band) {
-        UserChannelListAdapter adapter = new UserChannelListAdapter(this);
-        adapter.setIdx(idx);
+    private void changeChannelBandDialog(final String idx, String band,final String changeBand) {
+        String[] split = changeBand.split(",");
+        List<String> dataList = new ArrayList<>();
+        for (String s : split) {
+            if (!s.equals(band)){
+                dataList.add(s);
+            }
+        }
+        if (dataList.size() == 0){
+            return;
+        }
+
+        UserChannelListAdapter adapter = new UserChannelListAdapter(DeviceParamActivity.this, idx, dataList);
         //显示设备管理界面
         DialogPlus deviceListDialog = DialogPlus.newDialog(this)
                 .setContentHolder(new ListHolder())
@@ -689,8 +702,9 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        CacheManager.changeBand(idx, band);
+                        CacheManager.changeBand(idx, dataList.get(position));
                         dialog.dismiss();
+                        showProcess(8000);
                         ToastUtils.showMessageLong("切换Band命令已下发，请等待生效");
                         EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_BAND + band);
                     }

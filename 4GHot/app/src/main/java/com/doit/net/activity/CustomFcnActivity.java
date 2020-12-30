@@ -98,8 +98,7 @@ public class CustomFcnActivity extends BaseActivity {
 
             @Override
             protected void convertHead(BaseViewHolder helper, SectionBean item) {
-                String[] split = item.header.split(",");
-                helper.setText(R.id.tv_band, "通道: " + split[0] + "    " + "频段: " + split[1]);
+                helper.setText(R.id.tv_band,  "频段: " + item.header);
                 helper.addOnClickListener(R.id.iv_add_fcn);
             }
 
@@ -114,13 +113,13 @@ public class CustomFcnActivity extends BaseActivity {
                 switch (view.getId()) {
                     case R.id.iv_add_fcn:
                         SectionBean sectionBean = dataList.get(position);
-                        String[] split = sectionBean.header.split(",");
+
                         AddFcnDialog addFcnDialog = new AddFcnDialog(CustomFcnActivity.this,
-                                "添加频点", split[1], "", new AddFcnDialog.OnConfirmListener() {
+                                "添加频点", sectionBean.header, "", new AddFcnDialog.OnConfirmListener() {
                             @Override
                             public void onConfirm(String value) {
 
-                                addFcn(position, split[0], split[1], value);
+                                addFcn(position, sectionBean.header,value);
                             }
                         });
                         addFcnDialog.show();
@@ -284,11 +283,10 @@ public class CustomFcnActivity extends BaseActivity {
     }
 
     /**
-     * @param idx
      * @param band
      * @param fcn  新增fcn
      */
-    private void addFcn(int position, String idx, String band, String fcn) {
+    private void addFcn(int position, String band, String fcn) {
         int index = position; //插入的位置
         for (int i = position; i < dataList.size(); i++) {
             SectionBean sectionBean = dataList.get(i);
@@ -298,8 +296,7 @@ public class CustomFcnActivity extends BaseActivity {
             }
 
             if (sectionBean.isHeader) {
-                String[] split = sectionBean.header.split(",");
-                if (band.equals(split[1])) {
+                if (band.equals(sectionBean.header)) {
                     index++;
                 }
             } else {
@@ -310,7 +307,7 @@ public class CustomFcnActivity extends BaseActivity {
 
         }
 
-        DBChannel dbChannel = new DBChannel(idx, band, fcn, 0, 0);
+        DBChannel dbChannel = new DBChannel(band, fcn, 0, 0);
         SectionBean section = new SectionBean(dbChannel);
         if (index == dataList.size()) {
             dataList.add(section);
@@ -330,7 +327,7 @@ public class CustomFcnActivity extends BaseActivity {
 
     private void initData() {
         for (LteChannelCfg channel : CacheManager.channels) {
-            dataList.add(new SectionBean(true, channel.getIdx() + "," + channel.getBand()));
+            dataList.add(new SectionBean(true, channel.getBand()));
             try {
                 List<DBChannel> channelList = dbManager.selector(DBChannel.class)
                         .where("band", "=", channel.getBand())
