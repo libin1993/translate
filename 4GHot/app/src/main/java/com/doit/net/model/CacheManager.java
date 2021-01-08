@@ -247,12 +247,12 @@ public class CacheManager {
                 if (!TextUtils.isEmpty(idx)){
 
                     LTESendManager.setChannelConfig(idx, channelB3.getFcn(),
-                            "46000,46001,46011", "", "", "", "", "");
+                            "46000,46001", "", "", "", "", "");
 
                     for (LteChannelCfg channel : CacheManager.channels) {
                         if (channel.getIdx().equals(idx)) {
                             channel.setFcn(channelB3.getFcn());
-                            channel.setPlmn("46000,46001,46011");
+                            channel.setPlmn("46000,46001");
                             break;
                         }
                     }

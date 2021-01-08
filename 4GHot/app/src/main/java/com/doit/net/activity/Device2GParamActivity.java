@@ -35,6 +35,11 @@ import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
+import com.doit.net.model.DBImsi;
+import com.doit.net.model.DBUeidInfo;
+import com.doit.net.model.PrefManage;
+import com.doit.net.model.UCSIDBManager;
+import com.doit.net.model.UserInfo;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.ucsi.R;
@@ -44,6 +49,11 @@ import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.utils.ScreenUtils;
 import com.doit.net.utils.ToastUtils;
 
+import org.xutils.DbManager;
+import org.xutils.common.util.KeyValue;
+import org.xutils.db.sqlite.WhereBuilder;
+import org.xutils.ex.DbException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -52,6 +62,7 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bertsir.zbar.Qr.Image;
 
 /**
  * Author：Libin on 2020/9/28 14:25
@@ -77,6 +88,8 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
     Button btnRefreshParam;
     @BindView(R.id.btn_reboot_device)
     Button btnRebootDevice;
+    @BindView(R.id.btn_send_sms)
+    Button btnSendSms;
 
     private BaseQuickAdapter<Set2GParamsBean.Params, BaseViewHolder> adapter;
 
@@ -92,6 +105,13 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
     private String fcnMode2;
     private String fcnMode3;
     private String fcnMode4;
+
+    public static  final String SMS_COUNT = "SMS_COUNT";   //发送短信次数
+    public static  final String SMS_INTERVAL = "SMS_INTERVAL"; //发送短信间隔
+    public static  final String SMS_CONTENT = "SMS_CONTENT";  //发送短信内容
+
+    private List<DBImsi> imsiList = new ArrayList<>();
+    private BaseQuickAdapter<DBImsi,BaseViewHolder> imsiAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -356,7 +376,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
         }
     }
 
-    @OnClick({R.id.btn_set_param, R.id.btn_refresh_param, R.id.btn_reboot_device})
+    @OnClick({R.id.btn_set_param, R.id.btn_refresh_param, R.id.btn_reboot_device,R.id.btn_send_sms})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_set_param:
@@ -367,6 +387,9 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                 break;
             case R.id.btn_reboot_device:
                 rebootDevice();
+                break;
+            case R.id.btn_send_sms:
+                sendSMS();
                 break;
         }
     }
@@ -391,6 +414,229 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
         } else {
             ToastUtils.showMessage("请勿频繁刷新参数！");
         }
+    }
+
+
+    /**
+     * 发送短信
+     */
+    private void sendSMS(){
+        if (!CacheManager.checkDevice(this)) {
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.popup_send_sms, null);
+        PopupWindow popupWindow = new PopupWindow(dialogView, ScreenUtils.getInstance()
+                .getScreenWidth(Device2GParamActivity.this) - FormatUtils.getInstance().dip2px(40),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        ImageView ivAddImsi = dialogView.findViewById(R.id.iv_add_imsi);
+        RecyclerView rvImsi = dialogView.findViewById(R.id.rv_imsi);
+        EditText etInterval = dialogView.findViewById(R.id.et_sms_interval);
+        EditText etCount = dialogView.findViewById(R.id.et_sms_count);
+        EditText etContent = dialogView.findViewById(R.id.et_sms_content);
+
+        Button btnSendImsi = dialogView.findViewById(R.id.btn_send_imsi);
+        Button btnSendAll = dialogView.findViewById(R.id.btn_send_all);
+        Button btnStop = dialogView.findViewById(R.id.btn_stop_send);
+        Button btnClose = dialogView.findViewById(R.id.btn_close);
+
+        //设置Popup具体参数
+        popupWindow.setFocusable(true);//点击空白，popup不自动消失
+        popupWindow.setTouchable(true);//popup区域可触摸
+        popupWindow.setOutsideTouchable(false);//非popup区域可触摸
+        popupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+
+        rvImsi.setLayoutManager(new LinearLayoutManager(this));
+        imsiAdapter = new BaseQuickAdapter<DBImsi, BaseViewHolder>(R.layout.layout_rv_imsi_item,imsiList) {
+            @Override
+            protected void convert(BaseViewHolder helper, DBImsi item) {
+                helper.setText(R.id.tv_imsi,item.getImsi());
+                helper.addOnClickListener(R.id.ll_delete_imsi);
+                helper.addOnClickListener(R.id.ll_edit_imsi);
+            }
+        };
+
+        rvImsi.setAdapter(imsiAdapter);
+        refreshImsi();
+
+        imsiAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                switch (view.getId()){
+                    case R.id.ll_edit_imsi:
+                        editImsi(imsiList.get(position));
+                        break;
+                    case R.id.ll_delete_imsi:
+                        try {
+                            UCSIDBManager.getDbManager().delete(DBImsi.class, WhereBuilder.b("imsi","=",imsiList.get(position).getImsi()));
+                            imsiList.remove(position);
+                            imsiAdapter.notifyDataSetChanged();
+                        } catch (DbException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+            }
+        });
+
+        int interval = PrefManage.getInt(Device2GParamActivity.SMS_INTERVAL,1);
+        int count = PrefManage.getInt(Device2GParamActivity.SMS_COUNT,1);
+        String content =  PrefManage.getString(Device2GParamActivity.SMS_CONTENT,"");
+
+        etContent.setText(content);
+        etCount.setText(String.valueOf(count));
+        etInterval.setText(String.valueOf(interval));
+
+
+        ivAddImsi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editImsi(null);
+
+            }
+        });
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+
+        btnSendAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendData("all",etCount,etInterval,etContent,popupWindow);
+            }
+        });
+
+        btnSendImsi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendData("one",etCount,etInterval,etContent,popupWindow);
+            }
+        });
+
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Send2GManager.sendSms("clear",1,1,"");
+                popupWindow.dismiss();
+            }
+        });
+    }
+
+    //编辑imsi
+    private void editImsi(DBImsi dbImsi){
+        View dialogView = LayoutInflater.from(Device2GParamActivity.this).inflate(R.layout.popup_add_imsi, null);
+        PopupWindow popupWindow = new PopupWindow(dialogView, FormatUtils.getInstance().dip2px(250), ViewGroup.LayoutParams.WRAP_CONTENT);
+        //设置Popup具体参数
+        popupWindow.setFocusable(true);//点击空白，popup不自动消失
+        popupWindow.setTouchable(true);//popup区域可触摸
+        popupWindow.setOutsideTouchable(false);//非popup区域可触摸
+        popupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+
+        EditText etImsi = dialogView.findViewById(R.id.et_add_imsi);
+        Button btnCancel = dialogView.findViewById(R.id.btn_close_imsi);
+        Button btnSave = dialogView.findViewById(R.id.btn_add_imsi);
+
+        if (dbImsi !=null){
+            etImsi.setText(dbImsi.getImsi());
+        }
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String imsi = etImsi.getText().toString().trim();
+                if (TextUtils.isEmpty(imsi) || imsi.length() !=15){
+                    ToastUtils.showMessage("请输入15位IMSI");
+                    return;
+                }
+
+                try {
+                    DbManager dbManager = UCSIDBManager.getDbManager();
+                    DBImsi result = dbManager.selector(DBImsi.class).where("imsi", "=", imsi).findFirst();
+
+                    if (dbImsi !=null){
+                        if (result == null){
+                            KeyValue keyValue = new KeyValue("imsi", imsi);
+                            dbManager.update(DBImsi.class, WhereBuilder.b("id", "=", dbImsi.getId()), keyValue);
+                        }
+                    }else {
+                        if (result != null){
+                            ToastUtils.showMessage("IMSI已存在");
+                            return;
+                        }else {
+                            dbManager.save(new DBImsi(imsi));
+                        }
+                    }
+
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+
+
+                refreshImsi();
+                popupWindow.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+    }
+
+
+    //发送短信
+    private void sendData(String action,EditText etCount,EditText etInterval,EditText etContent,PopupWindow popupWindow){
+        String count = etCount.getText().toString().trim();
+        String interval   = etInterval.getText().toString().trim();
+        String content = etContent.getText().toString().trim();
+
+        if (TextUtils.isEmpty(interval) || Integer.parseInt(interval) < 1){
+            ToastUtils.showMessage("短信发送间隔不得低于1分钟");
+            return;
+        }
+
+        if (TextUtils.isEmpty(count) || Integer.parseInt(count) < 1){
+            ToastUtils.showMessage("短信发送次数不得低于1次");
+            return;
+        }
+
+        if (TextUtils.isEmpty(content)){
+            ToastUtils.showMessage("请输入短信内容");
+            return;
+        }
+
+        PrefManage.setInt(Device2GParamActivity.SMS_INTERVAL,Integer.parseInt(interval));
+        PrefManage.setInt(Device2GParamActivity.SMS_COUNT,Integer.parseInt(count));
+        PrefManage.setString(Device2GParamActivity.SMS_CONTENT,content);
+
+        Send2GManager.sendSms(action,Integer.parseInt(count),Integer.parseInt(interval),content);
+        popupWindow.dismiss();
+    }
+
+
+    //刷新页面
+    private void refreshImsi(){
+        imsiList.clear();
+        DbManager dbManager = UCSIDBManager.getDbManager();
+        try {
+            List<DBImsi> all = dbManager.selector(DBImsi.class).findAll();
+            if (all !=null && all.size() > 0){
+                imsiList.addAll(all);
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        imsiAdapter.notifyDataSetChanged();
     }
 
     /**

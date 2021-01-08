@@ -129,51 +129,67 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginBottom="5dp"
         android:background="@color/dimgrey" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btn_set_param"
+                android:layout_width="100dp"
+                android:layout_height="34dp"
+                android:background="@drawable/common_button_bkg"
+                android:text="参数配置"
+                android:textColor="@color/darkorange"
+                android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/btn_set_param"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:background="@drawable/common_button_bkg"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="参数配置"
-            android:textColor="@color/darkorange"
-            android:textSize="14sp" />
+            <Button
+                android:id="@+id/btn_refresh_param"
+                android:layout_width="100dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="50dp"
+                android:background="@drawable/common_button_bkg"
+                android:text="@string/lable_refresh_param"
+                android:textColor="@color/darkorange"
+                android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/btn_refresh_param"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/common_button_bkg"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/lable_refresh_param"
-            android:textColor="@color/darkorange"
-            android:textSize="14sp" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_reboot_device"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:layout_marginLeft="20dp"
-            android:background="@drawable/common_button_bkg"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/lable_reboot"
-            android:textColor="@color/darkorange"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
 
+            <Button
+                android:id="@+id/btn_reboot_device"
+                android:layout_width="100dp"
+                android:layout_height="34dp"
+                android:background="@drawable/common_button_bkg"
+                android:text="@string/lable_reboot"
+                android:textColor="@color/darkorange"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_send_sms"
+                android:layout_width="100dp"
+                android:layout_height="34dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/common_button_bkg"
+                android:text="发送短信"
+                android:textColor="@color/darkorange"
+                android:textSize="14sp" />
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

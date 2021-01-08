@@ -77,7 +77,7 @@ public class LTESendManager {
             namelist += "@NAMELIST_REST_ACTION:" + nameListRestAction;
         }
 
-        namelist += "@NAMELIST_FILE:";
+        namelist += "@NAMELIST_RELEASE:@NAMELIST_FILE:";
 
         LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);
@@ -452,11 +452,11 @@ public class LTESendManager {
                             }
                         }
                     } else {
-                        setChannelConfig(idx, channelB3.getFcn(), "46000,46001,46011", "", "", "", "", "");
+                        setChannelConfig(idx, channelB3.getFcn(), "46000,46001", "", "", "", "", "");
                         for (LteChannelCfg channel : CacheManager.channels) {
                             if (channel.getIdx().equals(idx)) {
                                 channel.setFcn(channelB3.getFcn());
-                                channel.setPlmn("46000,46001,46011");
+                                channel.setPlmn("46000,46001");
                                 break;
                             }
                         }

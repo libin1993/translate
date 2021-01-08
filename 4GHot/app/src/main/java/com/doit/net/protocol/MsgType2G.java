@@ -23,6 +23,8 @@ public class MsgType2G {
     public static final byte SET_MCRF_CONFIG_ACK = (byte) 0x82;   //设置运营商参数、工作模式应答
     public static final byte SET_RF_SWITCH = (byte) 0x05;   //开关射频
     public static final byte SET_RF_SWITCH_ACK = (byte) 0x85;   //开关射频应答
+    public static final byte SET_SMS_CONFIG = (byte) 0x09;   //发送短信
+    public static final byte SET_SMS_CONFIG_ACK = (byte) 0x89;   //发送短信应答
     public static final byte SET_LOC_IMSI = (byte) 0x43;   //设置定位imsi
     public static final byte SET_LOC_IMSI_ACK = (byte) 0xC3;   //设置定位imsi应答
     public static final byte SET_BLACK_NAMELIST = (byte) 0x47;   //设置黑名单手机号
@@ -52,4 +54,5 @@ public class MsgType2G {
     public static final String SET_LOC_IMSI_ID = "SET_LOC_IMSI";   //设置定位imsi  id
     public static final String GET_MP_STATE_ID = "GET_MP_STATE";   //查询猫池状态id
     public static final String SET_BLACK_NAMELIST_ID = "SET_BLACK_NAMELIST";   //设置黑名单id
+    public static final String SET_SMS_CONFIG_ID = "SET_SMS_CONFIG";   //发送短信id
 }

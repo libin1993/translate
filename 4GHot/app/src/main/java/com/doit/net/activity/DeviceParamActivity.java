@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 /**
  * 设备参数
  */
@@ -236,7 +235,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
                 return;
             }
-
 
             setChannel();
         }

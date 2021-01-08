@@ -2,12 +2,14 @@ package com.doit.net.protocol;
 
 import com.doit.net.bean.BlackListBean;
 import com.doit.net.bean.Get2GCommonBean;
+import com.doit.net.bean.SendSmsBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.Set2GRFBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
+import com.doit.net.model.DBImsi;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.GsonUtils;
@@ -84,7 +86,7 @@ public class Send2GManager {
         bean.setId(MsgType2G.GET_NTC_CONFIG_ID);
         bean.setBoardid(boardId);
 
-        LogUtils.log("查询MCRF");
+        LogUtils.log("查询NTC");
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_NTC_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
 
     }
@@ -122,7 +124,7 @@ public class Send2GManager {
         bean.setId(MsgType2G.GET_MCRF_CONFIG_ID);
         bean.setBoardid(boardId);
         bean.setCarrierid(carrierId);
-        LogUtils.log("查询NTC");
+        LogUtils.log("查询MCRF");
         sendData(MsgType2G.PT_PARAM, MsgType2G.GET_MCRF_CONFIG, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -279,5 +281,43 @@ public class Send2GManager {
         blackListBean.setNamelist(blackList);
         LogUtils.log("修改名单(黑):" + GsonUtils.objectToString(blackListBean));
         sendData(MsgType2G.PT_PARAM, MsgType2G.SET_BLACK_NAMELIST, GsonUtils.objectToString(blackListBean).getBytes(StandardCharsets.UTF_8));
+    }
+
+
+    /**
+     * @param action all:群发，one:单发，clear:停止发送
+     * @param count  发送次数
+     * @param interval  发送间隔
+     * @param content  发送内容
+     */
+    public static void sendSms(String action,int count,int interval,String content){
+        SendSmsBean smsBean = new SendSmsBean();
+        List<String> imsiList = new ArrayList<>();
+        if ("one".equals(action)){
+            DbManager dbManager = UCSIDBManager.getDbManager();
+            try {
+                List<DBImsi> dbImsiList = dbManager.selector(DBImsi.class).findAll();
+                if (dbImsiList != null){
+                    for (int i = 0; i < dbImsiList.size(); i++) {
+                        imsiList.add(dbImsiList.get(i).getImsi());
+                    }
+                }else {
+                    action = "all";
+                }
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+
+        smsBean.setId(MsgType2G.SET_SMS_CONFIG_ID);
+        smsBean.setAction(action);
+        smsBean.setImsi(imsiList);
+        smsBean.setSmsnum("106957135");
+        smsBean.setInterval(String.valueOf(interval));
+        smsBean.setPeriod(String.valueOf(count*interval));
+        smsBean.setContent(content);
+
+        LogUtils.log("发送短信:" + GsonUtils.objectToString(smsBean));
+        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_SMS_CONFIG, GsonUtils.objectToString(smsBean).getBytes(StandardCharsets.UTF_8));
     }
 }

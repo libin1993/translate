@@ -13,6 +13,7 @@ import com.doit.net.bean.HeartBeatBean;
 import com.doit.net.bean.Report2GIMSIBean;
 import com.doit.net.bean.Report2GLocBean;
 import com.doit.net.bean.Report2GNumberBean;
+import com.doit.net.bean.SendSmsAckBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
@@ -24,6 +25,7 @@ import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.GsonUtils;
 import com.doit.net.utils.LogUtils;
+import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.UtilDataFormatChange;
 
 /**
@@ -53,6 +55,7 @@ public class LTEReceiveManager {
     //解析数据
     public synchronized void parseData(String ip, byte[] bytesReceived, int receiveCount) {
         //将接收到数据存放在列表中
+
         for (int i = 0; i < receiveCount; i++) {
             listReceiveBuffer.add(bytesReceived[i]);
         }
@@ -336,6 +339,9 @@ public class LTEReceiveManager {
                             case MsgType2G.SET_LOC_IMSI_ACK:
                                 LogUtils.log("2G定位下发成功");
                                 break;
+                            case MsgType2G.SET_SMS_CONFIG_ACK:
+                                parseSendSmsAck(receivePackage);
+                                break;
                             case MsgType2G.RPT_IMSI_LOC_INFO:
                                 parseImsiLoc(receivePackage);
                                 break;
@@ -608,6 +614,20 @@ public class LTEReceiveManager {
         LogUtils.log("2G心跳："+responseBean.toString());
         EventAdapter.call(EventAdapter.RPT_HEARTBEAT_2G, responseBean);
     }
+
+    /**
+     * @param receivePackage 2G状态
+     */
+    private void parseSendSmsAck(LTEReceivePackage receivePackage) {
+
+        SendSmsAckBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), SendSmsAckBean.class);
+        if ("0".equals(responseBean.getResult())){
+            ToastUtils.showMessage("短信发送成功");
+        }
+
+    }
+
 
 
     //获取short
