@@ -435,7 +435,7 @@ public class LTEReceiveManager {
             }
 
             LogUtils.log("载波数量："+CacheManager.paramList.size()+","+initSuccess);
-            if (CacheManager.paramList.size() >= 3 && !initSuccess) {
+            if (CacheManager.paramList.size() >= 2 && !initSuccess) {
                 initSuccess = true;
                 CacheManager.initSuccess2G = true;
                 LogUtils.log("2G初始化成功，4G初始化结果："+CacheManager.initSuccess4G);

@@ -309,7 +309,19 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
     private void refreshPowerLevel() {
 
         if (CacheManager.isDeviceOk() && CacheManager.paramList.size() > 0) {
-            int powerLevel = (Integer.parseInt(CacheManager.paramList.get(0).getDlattn()));
+            int powerLevel = 0;
+            for (Set2GParamsBean.Params params : CacheManager.paramList) {
+                if (!TextUtils.isEmpty(params.getDlattn())){
+                    try {
+                        powerLevel = Integer.parseInt(params.getDlattn());
+                        break;
+                    }catch (Exception ignored){
+                        ignored.printStackTrace();
+                    }
+
+                }
+            }
+
 
             if (powerLevel <= 5) {
                 rbPowerHigh.setChecked(true);
@@ -777,8 +789,8 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
 
                 }
 
-                helper.setText(R.id.rt_pa_2g, item.getDlattn() == null ? "" : "" + item.getDlattn());
-                helper.setText(R.id.et_ga_2g, item.getUlattn() == null ? "" : "" + item.getUlattn());
+                helper.setText(R.id.rt_pa_2g, TextUtils.isEmpty(item.getDlattn())? "" : item.getDlattn());
+                helper.setText(R.id.et_ga_2g, TextUtils.isEmpty(item.getUlattn())? "" : item.getUlattn());
 
 
                 helper.addOnClickListener(R.id.btn_save_param);

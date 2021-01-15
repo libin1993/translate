@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class ServerSocketUtils {
                         socket.setKeepAlive(true);
                         socket.setTcpNoDelay(true);
 
-                        if (remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) || remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP)){
+                        if (remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) || remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP)) {
                             map.put(remoteIP, socket);   //存储socket
 
                             if (onSocketChangedListener != null) {
@@ -80,7 +81,7 @@ public class ServerSocketUtils {
 
                             LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
 
-                            new ReceiveThread(socket,remoteIP,onSocketChangedListener).start();
+                            new ReceiveThread(socket, remoteIP).start();
                         }
 
                     } catch (IOException e) {
@@ -99,12 +100,10 @@ public class ServerSocketUtils {
     public class ReceiveThread extends Thread {
         private Socket socket;
         private String remoteIP;
-        private OnSocketChangedListener onSocketChangedListener;
 
-        public ReceiveThread(Socket socket,String remoteIP,OnSocketChangedListener onSocketChangedListener) {
+        public ReceiveThread(Socket socket, String remoteIP) {
             this.socket = socket;
             this.remoteIP = remoteIP;
-            this.onSocketChangedListener = onSocketChangedListener;
         }
 
         @Override
@@ -116,52 +115,76 @@ public class ServerSocketUtils {
             //接收到流的数量
             int receiveCount;
             LTEReceiveManager lteReceiveManager = new LTEReceiveManager();
-            try {
-                //获取输入流
-                InputStream inputStream = socket.getInputStream();
+            long lastTime = 0; //上次读取时间
 
-                //循环接收数据
-                while ((receiveCount = inputStream.read(bytesReceived)) != -1) {
-                    lteReceiveManager.parseData(remoteIP, bytesReceived, receiveCount);
+            while (true) {
+                //获取输入流
+                try {
+                    InputStream inputStream = socket.getInputStream();
+                    //循环接收数据
+                    while ((receiveCount = inputStream.read(bytesReceived)) != -1) {
+                        lteReceiveManager.parseData(remoteIP, bytesReceived, receiveCount);
+                        lastTime = System.currentTimeMillis();
+                    }
+                    LogUtils.log(remoteIP + "：socket异常，读取长度：" + receiveCount);
+                    closeSocket(socket, remoteIP);
+                    break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    LogUtils.log(remoteIP + "：socket异常:" + e.toString());
+                    if (e instanceof SocketTimeoutException) {
+                        //捕获读取超时异常，若超时时间内收到数据，不做处理
+
+                        long timeout = System.currentTimeMillis() - lastTime;
+                        LogUtils.log(remoteIP + "：socket异常:读取超时" + timeout);
+                        if (timeout > READ_TIME_OUT) {
+                            closeSocket(socket, remoteIP);
+                            break;
+                        }
+                    } else {
+                        closeSocket(socket, remoteIP);
+                        break;
+                    }
                 }
 
-                LogUtils.log(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
             }
 
-            try {
-                socket.close();
-//                if (onSocketChangedListener != null) {
-//                    onSocketChangedListener.onChange(remoteIP);
+//            try {
+//                //获取输入流
+//                InputStream inputStream = socket.getInputStream();
+//
+//                //循环接收数据
+//                while ((receiveCount = inputStream.read(bytesReceived)) != -1) {
+//                    lteReceiveManager.parseData(remoteIP, bytesReceived, receiveCount);
 //                }
-//                lteReceiveManager.clearReceiveBuffer();
-//                lteReceiveManager.initSuccess = false;
-//                LogUtils.log(remoteIP + ":关闭socket");
-
-//                if ((remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) && CacheManager.initSuccess4G)
-//                        || (remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP) && CacheManager.initSuccess2G)){
-//                    socket.close();
-//                    if (onSocketChangedListener != null) {
-//                        onSocketChangedListener.onChange(remoteIP);
-//                    }
-//                    map.remove(remoteIP);
-//                    lteReceiveManager.clearReceiveBuffer();
-//                    LogUtils.log(remoteIP + ":关闭socket");
-//                }else {
-//                    LogUtils.log("未初始化完成，无需断开");
-//                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogUtils.log(remoteIP + "：socket关闭失败:" + e.toString());
-            }
+//
+//                LogUtils.log(remoteIP + "：socket被关闭，读取长度：" + receiveCount);
+//
+//            } catch (IOException ex) {
+//                ex instanceof SocketTimeoutException
+//
+//                LogUtils.log(remoteIP + "：socket异常:" + ex.toString());
+//            }
+//
+//
+//            try {
+//                socket.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                LogUtils.log(remoteIP + "：socket关闭失败:" + e.toString());
+//            }
 
         }
     }
 
+    private void closeSocket(Socket socket, String remoteIP) {
+        try {
+            socket.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            LogUtils.log(remoteIP + "：socket关闭失败:" + ex.toString());
+        }
+    }
 
 
     /**
@@ -182,14 +205,14 @@ public class ServerSocketUtils {
                         OutputStream outputStream = socket.getOutputStream();
                         outputStream.write(data);
                         outputStream.flush();
-                        LogUtils.log("TCP发送："+ip+","+data.length);
+                        LogUtils.log("TCP发送：" + ip + "," + data.length);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        LogUtils.log("socket发送失败："+ip+"," + e.getMessage());
+                        LogUtils.log("socket发送失败：" + ip + "," + e.getMessage());
                     }
                 }
             }).start();
-        }else {
+        } else {
             LogUtils.log("socket未连接");
         }
 

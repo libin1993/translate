@@ -362,6 +362,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
         mViewPager.setAdapter(adapter);
 
         tabLayout.setTabData(mTabEntities);
+        tabLayout.setIndicatorAnimEnable(false);
 
         tabLayout.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
