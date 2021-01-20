@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
+import com.doit.net.utils.UtilOperator;
 import com.doit.net.view.LocateChart;
 import com.doit.net.view.LocateCircle;
 import com.doit.net.base.BaseFragment;
@@ -190,6 +191,12 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         switchType.setOnCheckedChangeListener(null);
         switchType.setChecked(CacheManager.getCurrentLocation().getType() == 1);
         switchType.setOnCheckedChangeListener(switchListener);
+
+        if ("CTC".equals(UtilOperator.getOperatorName(imsi))){
+            switchType.setVisibility(View.GONE);
+        }else {
+            switchType.setVisibility(View.VISIBLE);
+        }
 
 
         textContent = "正在搜寻" + imsi;

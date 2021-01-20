@@ -170,13 +170,26 @@ public class Send2GManager {
         Set2GRFBean bean = new Set2GRFBean();
         bean.setId(MsgType2G.SET_RF_SWITCH_ID);
         List<Set2GRFBean.Params> paramList = new ArrayList<>();
-        for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            Set2GRFBean.Params param = new Set2GRFBean.Params();
-            param.setBoardid(params.getBoardid());
-            param.setCarrierid(params.getCarrierid());
-            param.setState(state);
-            paramList.add(param);
-        }
+
+        Set2GRFBean.Params param1 = new Set2GRFBean.Params();
+        param1.setBoardid("0");
+        param1.setCarrierid("0");
+        param1.setState(state);
+        paramList.add(param1);
+
+
+        Set2GRFBean.Params param2 = new Set2GRFBean.Params();
+        param2.setBoardid("0");
+        param2.setCarrierid("1");
+        param2.setState(state);
+        paramList.add(param2);
+
+
+        Set2GRFBean.Params param3 = new Set2GRFBean.Params();
+        param3.setBoardid("1");
+        param3.setCarrierid("0");
+        param3.setState(state);
+        paramList.add(param3);
 
         bean.setParams(paramList);
         sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
@@ -189,15 +202,18 @@ public class Send2GManager {
         Set2GRFBean bean = new Set2GRFBean();
         bean.setId(MsgType2G.SET_RF_SWITCH_ID);
         List<Set2GRFBean.Params> paramList = new ArrayList<>();
-        for (Set2GParamsBean.Params params : CacheManager.paramList) {
-            if (params.getBoardid().equals("0")){
-                Set2GRFBean.Params param = new Set2GRFBean.Params();
-                param.setBoardid(params.getBoardid());
-                param.setCarrierid(params.getCarrierid());
-                param.setState(state);
-                paramList.add(param);
-            }
-        }
+        Set2GRFBean.Params param1 = new Set2GRFBean.Params();
+        param1.setBoardid("0");
+        param1.setCarrierid("0");
+        param1.setState(state);
+        paramList.add(param1);
+
+
+        Set2GRFBean.Params param2 = new Set2GRFBean.Params();
+        param2.setBoardid("0");
+        param2.setCarrierid("1");
+        param2.setState(state);
+        paramList.add(param2);
 
         bean.setParams(paramList);
         sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));

@@ -37,7 +37,7 @@ public class LTESendManager {
     private static final String band38Fcns = "37900,38098,38200";
     private static final String band39Fcns = "38400,38544,38300";
     private static final String band40Fcns = "38950,39148,39300";
-    private static final String band41Fcns = "40540,40936,41134";
+    private static final String band41Fcns = "40540,40738,40840";
 
     /**
      * @param redirectConfig

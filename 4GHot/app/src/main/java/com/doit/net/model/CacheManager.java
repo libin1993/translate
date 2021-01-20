@@ -100,7 +100,7 @@ public class CacheManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                CacheManager.redirect2G("", "redirect");
+                CacheManager.redirect2G("", "","redirect");
 
             }
         }, 1000);
@@ -121,30 +121,20 @@ public class CacheManager {
         //添加管控imsi
         List<String> blackIMSIList = CacheManager.getBlackIMSIList();
 
-        String blockIMSI = "";  //管控黑名单
-        String redirectIMSI ="";  //指派黑名单
+        String blackIMSI = "";  //黑名单
+        String blockIMSI = imsi;  //管控的黑名单
 
         for (int i = 0; i < blackIMSIList.size(); i++) {
-            if (!blackIMSIList.get(i).equals(imsi)) {
-                blockIMSI += blackIMSIList.get(i) + ",";
-            }
-
-            if (!blackIMSIList.get(i).equals(imsi) && !"CTC".equals(UtilOperator.getOperatorName(imsi))) {
-                redirectIMSI += blackIMSIList.get(i) + ",";
+            if (!blackIMSIList.get(i).equals(imsi) && !blackIMSIList.get(i).startsWith("46003")) {
+                blackIMSI += blackIMSIList.get(i) + ",";
             }
 
         }
 
-        if (!TextUtils.isEmpty(blockIMSI)) {
-            blockIMSI = imsi + "," + blockIMSI.substring(0, blockIMSI.length() - 1);
-        } else {
-            blockIMSI = imsi;
-        }
+        if (!TextUtils.isEmpty(blackIMSI)) {
+            blackIMSI = blackIMSI.substring(0, blackIMSI.length() - 1);
 
-        if (!TextUtils.isEmpty(redirectIMSI)) {
-            redirectIMSI = imsi + "," + redirectIMSI.substring(0, redirectIMSI.length() - 1);
-        } else {
-            redirectIMSI = imsi;
+            blockIMSI += ","+blackIMSI;
         }
 
 
@@ -187,23 +177,39 @@ public class CacheManager {
 
         } else {
             //目标imsi重定向，其余的回公网
-            CacheManager.redirect2G(redirectIMSI, "reject");
-            String finalRedirectIMSI = redirectIMSI;
+            String redirectIMSI = !"CTC".equals(UtilOperator.getOperatorName(imsi)) ? imsi : "";
 
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //添加指派imsi
-                    LTESendManager.changeNameList("add", "redirect", finalRedirectIMSI);
-                }
-            }, 1000);
+
+            CacheManager.redirect2G(redirectIMSI, blackIMSI,"reject");
+
+            if (!TextUtils.isEmpty(redirectIMSI)){
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //添加指派imsi
+                        LTESendManager.changeNameList("add", "redirect", redirectIMSI);
+                    }
+                }, 1000);
+            }
+
+            if (!TextUtils.isEmpty(blackIMSI)){
+                String finalBlackIMSI = blackIMSI;
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //添加指派imsi
+                        LTESendManager.changeNameList("add", "block", finalBlackIMSI);
+                    }
+                }, 1500);
+            }
+
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     LTESendManager.openAllRf();
                 }
-            }, 1500);
+            }, 2000);
 
 
             Send2GManager.setLocIMSI(imsi, "1");
@@ -393,7 +399,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect,String nameListRestAction) {
+    public static void redirect2G(String nameListRedirect,String nameListBlock,String nameListRestAction) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -414,7 +420,7 @@ public class CacheManager {
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
             LTESendManager.setNameList(redirectConfig, null,
-                    nameListRedirect, "", nameListRestAction);
+                    nameListRedirect, nameListBlock, nameListRestAction);
         }
 
 
