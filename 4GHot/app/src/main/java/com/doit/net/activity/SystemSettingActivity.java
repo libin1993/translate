@@ -95,7 +95,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
             ToastUtils.showMessageLong("设备未连接，当前展示的设置都不准确，请等待设备连接后重新进入该界面");
         }
 
-        EventAdapter.register(EventAdapter.REFRESH_DEVICE, this);
+        EventAdapter.register(EventAdapter.REFRESH_SYSTEM, this);
 
     }
 
@@ -109,8 +109,6 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         if (CacheManager.getChannels()!=null &CacheManager.getChannels().size() > 0){
             tvIfAutoOpenRF.setChecked(CacheManager.getChannels().get(0).getAutoOpen().equals("1"));
         }
-
-
     }
 
     private LSettingItem.OnLSettingItemClick settingItemLocSwitch = new LSettingItem.OnLSettingItemClick() {
@@ -303,7 +301,7 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
 
     @Override
     public void call(String key, Object val) {
-        if (EventAdapter.REFRESH_DEVICE.equals(key)) {
+        if (EventAdapter.REFRESH_SYSTEM.equals(key)) {
             mHandler.sendEmptyMessage(0);
         }
     }

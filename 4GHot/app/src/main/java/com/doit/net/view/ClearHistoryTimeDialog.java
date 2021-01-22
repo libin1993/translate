@@ -82,7 +82,7 @@ public class ClearHistoryTimeDialog extends Dialog {
         long endTime = System.currentTimeMillis();
         long startTime = endTime - 1000 * 3600 * 24 * 7;
 
-        tvEndTime.setText(DateUtils.convert2String(startTime,DateUtils.LOCAL_DATE));
+        tvStartTime.setText(DateUtils.convert2String(startTime,DateUtils.LOCAL_DATE));
         tvEndTime.setText(DateUtils.convert2String(endTime,DateUtils.LOCAL_DATE));
 
         btSure = mView.findViewById(R.id.btSure);

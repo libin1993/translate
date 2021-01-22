@@ -20,10 +20,14 @@ public class BlackListInfo {
     @Column(name = "remark")
     private String remark;
 
-    public BlackListInfo(String imsi, String msisdn, String remark) {
+    @Column(name = "block")
+    private int block;
+
+    public BlackListInfo(String imsi, String msisdn, String remark, int block) {
         this.imsi = imsi;
         this.msisdn = msisdn;
         this.remark = remark;
+        this.block = block;
     }
 
 
@@ -33,6 +37,15 @@ public class BlackListInfo {
     public String getImsi() {
         return imsi;
     }
+
+    public int getBlock() {
+        return block;
+    }
+
+    public void setBlock(int block) {
+        this.block = block;
+    }
+
     public String getMsisdn() {
         return msisdn;
     }

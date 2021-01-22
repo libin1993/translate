@@ -126,12 +126,6 @@ public class UeidFragment extends BaseFragment {
                 LTESendManager.openAllRf();
                 Send2GManager.setRFState("1");
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CacheManager.redirect2G("","","redirect");
-                    }
-                }, 1000);
             }
         });
     }

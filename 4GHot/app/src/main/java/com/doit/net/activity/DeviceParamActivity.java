@@ -77,7 +77,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     private RadioButton rbPowerMedium;
     private RadioButton rbPowerLow;
 
-    private RadioButton lastPowerPress;
 
     private RadioGroup rgDetectCarrierOperate;
     private RadioButton rbDetectAll;
@@ -140,7 +139,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         rbPowerHigh = findViewById(R.id.rbPowerHigh);
         rbPowerMedium = findViewById(R.id.rbPowerMedium);
         rbPowerLow = findViewById(R.id.rbPowerLow);
-        lastPowerPress = rbPowerHigh;
         rgPowerLevel.setOnCheckedChangeListener(powerLevelListener);
 
         rgDetectCarrierOperate = findViewById(R.id.rgDetectCarrierOperate);
@@ -199,7 +197,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                         ToastUtils.showMessageLong("当前正在搜寻中，请确认通道射频变动是否对其产生影响！");
                     }
 
-                    showProcess(6000);
+                    showProcess(10000);
                     if (lteChannelCfg.getRFState()) {
                         LTESendManager.closeRf(lteChannelCfg.getIdx());
                     } else {
@@ -428,9 +426,9 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
 
             if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
-                lastPowerPress.setChecked(true);
                 return;
             }
+
 
 
             if (CacheManager.getLocState()) {
@@ -443,21 +441,17 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             showProcess(9000);
             switch (checkedId) {
                 case R.id.rbPowerHigh:
-
                     setPowerLevel(0);
-                    lastPowerPress = rbPowerHigh;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "高");
                     break;
 
                 case R.id.rbPowerMedium:
                     setPowerLevel(-10);
-                    lastPowerPress = rbPowerMedium;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "中");
                     break;
 
                 case R.id.rbPowerLow:
                     setPowerLevel(-20);
-                    lastPowerPress = rbPowerLow;
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.SET_4G_POWER + "低");
                     break;
             }
@@ -542,7 +536,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 LTESendManager.openAllRf();
                 ToastUtils.showMessageLong(R.string.rf_open);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_4G_RF);
-                showProcess(6000);
+                showProcess(10000);
             } else {
                 if (CacheManager.getLocState()) {
                     new MySweetAlertDialog(DeviceParamActivity.this, MySweetAlertDialog.WARNING_TYPE)
@@ -558,7 +552,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                                     sweetAlertDialog.dismiss();
 
                                     ToastUtils.showMessage(R.string.rf_close);
-                                    showProcess(8000);
+                                    showProcess(10000);
 
                                     LTESendManager.closeAllRf();
 
@@ -569,7 +563,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 } else {
                     LTESendManager.closeAllRf();
                     ToastUtils.showMessageLong(R.string.rf_close);
-                    showProcess(8000);
+                    showProcess(10000);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                 }
 
@@ -647,21 +641,22 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
     }
 
     private void refreshPowerLevel() {
-        //定位下有不同频点的功率变动，故不刷新&& !CacheManager.getLocState()
         if (CacheManager.isDeviceOk()) {
-            int powerLevel = (Integer.parseInt(CacheManager.getChannels().get(0).getPa().split(",")[0]) -
-                    Integer.parseInt(CacheManager.getChannels().get(0).getPMax())) / -5;
+            int powerLevel = Integer.parseInt(CacheManager.getChannels().get(0).getPMax()) -
+                    Integer.parseInt(CacheManager.getChannels().get(0).getPa().split(",")[0]);
+            int index;
+            if (powerLevel < 10){
+                index = 0;
+            }else if (powerLevel < 20){
+                index = 1;
+            }else{
+                index = 2;
+            }
+            rgPowerLevel.setOnCheckedChangeListener(null);
+            ((RadioButton) rgPowerLevel.getChildAt(index)).setChecked(true);
+            rgPowerLevel.setOnCheckedChangeListener(powerLevelListener);
 
-
-            //-1  -16 -31
-            //1    3   6
-            if (powerLevel <= 1)
-                rbPowerHigh.setChecked(true);
-            else if (powerLevel < 5)
-                rbPowerMedium.setChecked(true);
-            else rbPowerLow.setChecked(true);
         }
-
     }
 
     private void showProcess(int keepTime) {
@@ -702,7 +697,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         CacheManager.changeBand(idx, dataList.get(position));
                         dialog.dismiss();
-                        showProcess(8000);
+                        showProcess(10000);
                         ToastUtils.showMessageLong("切换Band命令已下发，请等待生效");
                         EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_BAND + band);
                     }

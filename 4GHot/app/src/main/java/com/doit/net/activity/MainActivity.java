@@ -824,33 +824,12 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 //设置搜寻模式
                 LTESendManager.setActiveMode();
 
-                if (!(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1)) {
-                    //指派
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            CacheManager.redirect2G("","","redirect");  //重定向到2G
-                        }
-                    }, 1000);
-
-                    //删除黑名单
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            //添加管控imsi
-                            List<String> blackIMSIList = CacheManager.getBlackIMSIList();
-                            String imsiArr = "";
-                            for (int i = 0; i < blackIMSIList.size(); i++) {
-                                imsiArr += blackIMSIList.get(i) + ",";
-                            }
-
-                            if (!TextUtils.isEmpty(imsiArr)) {
-                                LTESendManager.changeNameList("del", "reject", imsiArr.substring(0, imsiArr.length() - 1));
-                            }
-                        }
-                    }, 2000);
-
-                }
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CacheManager.resetNameList();
+                    }
+                },1000);
 
 
                 LTESendManager.saveDefaultFcn();

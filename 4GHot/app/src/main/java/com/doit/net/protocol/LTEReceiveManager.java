@@ -273,7 +273,7 @@ public class LTEReceiveManager {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    if (!CacheManager.initSuccess2G){
+                                    if (!CacheManager.initSuccess2G) {
                                         Send2GManager.getParamsConfig();
                                     }
                                 }
@@ -282,7 +282,7 @@ public class LTEReceiveManager {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    if (!CacheManager.initSuccess2G){
+                                    if (!CacheManager.initSuccess2G) {
                                         Send2GManager.getCommonConfig();
                                     }
                                 }
@@ -292,12 +292,12 @@ public class LTEReceiveManager {
                     case MsgType2G.PT_ADJUST:
                         LTE_PT_ADJUST.response(receivePackage);
 
-                        LogUtils.log("2G初始化"+CacheManager.initSuccess2G);
+                        LogUtils.log("2G初始化" + CacheManager.initSuccess2G);
                         if (!CacheManager.initSuccess2G) {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    if (!CacheManager.initSuccess2G){
+                                    if (!CacheManager.initSuccess2G) {
                                         Send2GManager.getParamsConfig();
                                     }
                                 }
@@ -306,7 +306,7 @@ public class LTEReceiveManager {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    if (!CacheManager.initSuccess2G){
+                                    if (!CacheManager.initSuccess2G) {
                                         Send2GManager.getCommonConfig();
                                     }
                                 }
@@ -433,28 +433,23 @@ public class LTEReceiveManager {
                 EventAdapter.call(EventAdapter.REFRESH_DEVICE_2G);
             }
 
-            LogUtils.log("载波数量："+CacheManager.paramList.size()+","+initSuccess);
+            LogUtils.log("载波数量：" + CacheManager.paramList.size() + "," + initSuccess);
             if (CacheManager.paramList.size() >= 2 && !initSuccess) {
                 initSuccess = true;
                 CacheManager.initSuccess2G = true;
-                LogUtils.log("2G初始化成功，4G初始化结果："+CacheManager.initSuccess4G);
+                LogUtils.log("2G初始化成功，4G初始化结果：" + CacheManager.initSuccess4G);
                 if (CacheManager.initSuccess4G) {
                     CacheManager.deviceState.setDeviceState(DeviceState.NORMAL);
                 }
 
                 //2G切换成采集模式
-                if (!(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 0)){
+                if (!(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 0)) {
                     Send2GManager.setLocIMSI("", "0");
                 }
 
                 //2G指派
-                if (CacheManager.initSuccess4G && !(CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1)) {
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            CacheManager.redirect2G("", "","redirect");
-                        }
-                    }, 1000);
+                if (CacheManager.initSuccess4G) {
+                    CacheManager.resetNameList();
                 }
 
                 //设置黑名单
@@ -500,6 +495,7 @@ public class LTEReceiveManager {
 
             LogUtils.log("2G采号上报：IMSI:" + imsiList.get(0) + "    强度:" + imsiList.get(2));
         }
+        CacheManager.addBlockNameList(ueidList);
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
     }
 
@@ -530,7 +526,6 @@ public class LTEReceiveManager {
                     blackListInfo.setImsi(imsiList.get(0));
                     dbManager.update(blackListInfo);
                     notice("手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
-
                 }
                 LogUtils.log("翻译上报：手机号:" + imsiList.get(1) + "    IMSI:" + imsiList.get(0));
 
@@ -548,7 +543,7 @@ public class LTEReceiveManager {
                 e.printStackTrace();
             }
         }
-
+        CacheManager.addBlockNameList(ueidList);
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
     }
 
@@ -610,7 +605,7 @@ public class LTEReceiveManager {
 
         HeartBeatBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), HeartBeatBean.class);
-        LogUtils.log("2G心跳："+responseBean.toString());
+        LogUtils.log("2G心跳：" + responseBean.toString());
         EventAdapter.call(EventAdapter.RPT_HEARTBEAT_2G, responseBean);
     }
 
@@ -621,12 +616,11 @@ public class LTEReceiveManager {
 
         SendSmsAckBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
                 StandardCharsets.UTF_8), SendSmsAckBean.class);
-        if ("0".equals(responseBean.getResult())){
+        if ("0".equals(responseBean.getResult())) {
             ToastUtils.showMessage("短信发送成功");
         }
 
     }
-
 
 
     //获取short

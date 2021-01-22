@@ -23,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Zxc on 2018/10/18.
@@ -134,6 +136,7 @@ public class LTE_PT_PARAM {
 //        EventAdapter.call(EventAdapter.UPDATE_BATTERY, Integer.valueOf(CacheManager.getLteEquipConfig().getVoltage12V()));
 
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
+        EventAdapter.call(EventAdapter.REFRESH_SYSTEM);
         EventAdapter.call(EventAdapter.INIT_SUCCESS);
     }
 
@@ -265,9 +268,7 @@ public class LTE_PT_PARAM {
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
 
-        //		LTE_PT_ADJUST.sendData(LTE_PT_ADJUST.ADJUST_APP,"");
 
-//        LTE_PT_ADJUST.sendData(LTE_PT_ADJUST.ADJUST_RESP,"");
     }
 
     //处理黑名单中标上报
@@ -527,7 +528,12 @@ public class LTE_PT_PARAM {
             case LTE_PT_PARAM.PARAM_CHANGE_BAND_ACK:
                 if (respContent.charAt(0) == '0') {
                     LogUtils.log("切换band成功");
-                    LTESendManager.getEquipAndAllChannelConfig();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            LTESendManager.getEquipAndAllChannelConfig();
+                        }
+                    },9000);
                 } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("切换band失败");
                 }
@@ -756,6 +762,8 @@ public class LTE_PT_PARAM {
             }
         }
         LogUtils.log("4G采号数量：" + ueidList.size());
+        CacheManager.addBlockNameList(ueidList);
+
         EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
 
     }

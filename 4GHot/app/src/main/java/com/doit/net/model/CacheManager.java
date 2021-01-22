@@ -15,6 +15,7 @@ import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.LteEquipConfig;
 import com.doit.net.bean.ScanFreqRstBean;
 import com.doit.net.bean.Set2GParamsBean;
+import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
@@ -97,15 +98,91 @@ public class CacheManager {
 
         CacheManager.resetParams();
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                CacheManager.redirect2G("", "","redirect");
+        CacheManager.resetNameList();
 
-            }
-        }, 1000);
     }
 
+
+    //初始化，重置名单，黑名单管控，其余指派
+    public static void resetNameList() {
+        if (!CacheManager.getLocState()) {
+            String blackIMSI = "";  //黑名单
+            //添加管控imsi
+            try {
+
+                List<BlackListInfo> blackList = UCSIDBManager.getDbManager().selector(BlackListInfo.class).findAll();
+                if (blackList !=null && blackList.size() > 0){
+                    for (int i = 0; i < blackList.size(); i++) {
+                        if (!TextUtils.isEmpty(blackList.get(i).getImsi()) && !blackList.get(i).getImsi().startsWith("46003")) {
+                            blackIMSI += blackList.get(i).getImsi() + ",";
+                            blackList.get(i).setBlock(1);
+                            UCSIDBManager.getDbManager().update(blackList.get(i));
+
+                        }
+                    }
+                }
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+
+
+            if (!TextUtils.isEmpty(blackIMSI)) {
+                blackIMSI = blackIMSI.substring(0, blackIMSI.length() - 1);
+            }
+
+            CacheManager.redirect2G("", blackIMSI, "redirect");
+
+
+            if (!TextUtils.isEmpty(blackIMSI)) {
+                String finalBlackIMSI = blackIMSI;
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LTESendManager.changeNameList("add", "block", finalBlackIMSI);
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+
+    //黑名单管控
+    public static void addBlockNameList(List<UeidBean> ueidList) {
+        StringBuilder blackIMSI = new StringBuilder();  //黑名单
+        String imsi = "";  //定位IMSI
+        if (CacheManager.getLocState()) {
+            imsi = CacheManager.getCurrentLocation().getImsi();
+        }
+        try {
+            List<BlackListInfo> blackList = UCSIDBManager.getDbManager().selector(BlackListInfo.class).findAll();
+            if (blackList == null) {
+                return;
+            }
+
+            for (int i = 0; i < blackList.size(); i++) {
+                BlackListInfo blackListInfo = blackList.get(i);
+                for (int j = 0; j < ueidList.size(); j++) {
+                    UeidBean ueidBean = ueidList.get(j);
+                    if (!TextUtils.isEmpty(blackListInfo.getImsi()) && blackListInfo.getImsi().equals(ueidBean.getImsi())
+                            && !ueidBean.getImsi().equals(imsi) && !ueidBean.getImsi().startsWith("46003") && blackListInfo.getBlock() != 1) {
+                        blackIMSI.append(ueidBean.getImsi()).append(",");
+                        break;
+                    }
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        if (!TextUtils.isEmpty(blackIMSI.toString())) {
+            blackIMSI = new StringBuilder(blackIMSI.substring(0, blackIMSI.length() - 1));
+        }
+
+        if (!TextUtils.isEmpty(blackIMSI.toString())) {
+            LTESendManager.changeNameList("add", "block", blackIMSI.toString());
+        }
+    }
 
     /**
      * @param imsi
@@ -119,22 +196,30 @@ public class CacheManager {
 
 
         //添加管控imsi
-        List<String> blackIMSIList = CacheManager.getBlackIMSIList();
 
         String blackIMSI = "";  //黑名单
         String blockIMSI = imsi;  //管控的黑名单
 
-        for (int i = 0; i < blackIMSIList.size(); i++) {
-            if (!blackIMSIList.get(i).equals(imsi) && !blackIMSIList.get(i).startsWith("46003")) {
-                blackIMSI += blackIMSIList.get(i) + ",";
+        try {
+            List<BlackListInfo> blackList = UCSIDBManager.getDbManager().selector(BlackListInfo.class).findAll();
+            if (blackList !=null && blackList.size() > 0){
+                for (int i = 0; i < blackList.size(); i++) {
+                    if (!TextUtils.isEmpty(blackList.get(i).getImsi()) && !blackList.get(i).getImsi().equals(imsi)
+                            && !blackList.get(i).getImsi().startsWith("46003")) {
+                        blackIMSI += blackList.get(i).getImsi() + ",";
+                    }
+                }
             }
-
+        } catch (DbException e) {
+            e.printStackTrace();
         }
+
+
 
         if (!TextUtils.isEmpty(blackIMSI)) {
             blackIMSI = blackIMSI.substring(0, blackIMSI.length() - 1);
 
-            blockIMSI += ","+blackIMSI;
+            blockIMSI += "," + blackIMSI;
         }
 
 
@@ -167,6 +252,8 @@ public class CacheManager {
                 }
             }, 2000);
 
+            Send2GManager.setLocIMSI("", "0");
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -180,9 +267,9 @@ public class CacheManager {
             String redirectIMSI = !"CTC".equals(UtilOperator.getOperatorName(imsi)) ? imsi : "";
 
 
-            CacheManager.redirect2G(redirectIMSI, blackIMSI,"reject");
+            CacheManager.redirect2G(redirectIMSI, blackIMSI, "reject");
 
-            if (!TextUtils.isEmpty(redirectIMSI)){
+            if (!TextUtils.isEmpty(redirectIMSI)) {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -192,7 +279,7 @@ public class CacheManager {
                 }, 1000);
             }
 
-            if (!TextUtils.isEmpty(blackIMSI)){
+            if (!TextUtils.isEmpty(blackIMSI)) {
                 String finalBlackIMSI = blackIMSI;
                 new Timer().schedule(new TimerTask() {
                     @Override
@@ -212,19 +299,19 @@ public class CacheManager {
             }, 2000);
 
 
-            Send2GManager.setLocIMSI(imsi, "1");
+            if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+                Send2GManager.setRFState("1");
+            } else {
+                Send2GManager.setGSMRFState("1");
+            }
+
 
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
-                        Send2GManager.setRFState("1");
-                    } else {
-                        Send2GManager.setGSMRFState("1");
-                    }
-
+                    Send2GManager.setLocIMSI(imsi, "1");
                 }
-            }, 1000);
+            }, 2000);
 
 
         }
@@ -242,15 +329,15 @@ public class CacheManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB3 != null) {
-                String idx="";
+                String idx = "";
                 for (LteChannelCfg channel : CacheManager.getChannels()) {
-                    if (channel.getBand().equals("3")){
+                    if (channel.getBand().equals("3")) {
                         idx = channel.getIdx();
                         break;
                     }
                 }
 
-                if (!TextUtils.isEmpty(idx)){
+                if (!TextUtils.isEmpty(idx)) {
 
                     LTESendManager.setChannelConfig(idx, channelB3.getFcn(),
                             "46000,46001", "", "", "", "", "");
@@ -272,15 +359,15 @@ public class CacheManager {
                     .and("is_check", "=", "1")
                     .findFirst();
             if (channelB1 != null) {
-                String idx="";
+                String idx = "";
                 for (LteChannelCfg channel : CacheManager.getChannels()) {
-                    if (channel.getBand().equals("1")){
+                    if (channel.getBand().equals("1")) {
                         idx = channel.getIdx();
                         break;
                     }
                 }
 
-                if (!TextUtils.isEmpty(idx)){
+                if (!TextUtils.isEmpty(idx)) {
                     LTESendManager.setChannelConfig(idx, channelB1.getFcn(),
                             "", "", "", "", "", "");
 
@@ -296,11 +383,6 @@ public class CacheManager {
 
         } catch (DbException e) {
             e.printStackTrace();
-        }
-
-
-        if (CacheManager.getCurrentLocation() != null) {
-            CacheManager.getCurrentLocation().setLocateStart(false);
         }
 
     }
@@ -399,7 +481,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect,String nameListBlock,String nameListRestAction) {
+    public static void redirect2G(String nameListRedirect, String nameListBlock, String nameListRestAction) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -471,30 +553,16 @@ public class CacheManager {
         LTESendManager.changeBand(idx, changeBand);
 
         //下发切换之后，等待生效，设置默认频点
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                String fcn = LTESendManager.getCheckedFcn(changeBand);
-                if (TextUtils.isEmpty(fcn)) {
-                    return;
+        String fcn = LTESendManager.getCheckedFcn(changeBand);
+        if (!TextUtils.isEmpty(fcn)) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    LTESendManager.setChannelConfig(idx, fcn, "", "", "", "", "", "");
                 }
-                LTESendManager.setChannelConfig(idx, fcn, "", "", "", "", "", "");
-                for (LteChannelCfg channel : CacheManager.channels) {
-                    if (idx.equals(channel.getIdx())) {
-                        channel.setFcn(fcn);
-                        channel.setChangeBand(channel.getBand());
-                        channel.setBand(changeBand);
+            }, 7000);
+        }
 
-                        EventAdapter.call(EventAdapter.REFRESH_DEVICE);
-
-                        break;
-                    }
-                }
-            }
-        }, 2000);
-
-
-        EventAdapter.call(EventAdapter.SHOW_PROGRESS, 13000);
     }
 
     /**

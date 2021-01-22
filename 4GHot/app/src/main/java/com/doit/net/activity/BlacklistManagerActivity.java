@@ -347,7 +347,7 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                         if (!TextUtils.isEmpty(remark) && remark.length() > 8) {
                             remark = remark.substring(0, 8);
                         }
-                        listValidWhite.add(new BlackListInfo(imsiInLine, msisdnInLine, remark));
+                        listValidWhite.add(new BlackListInfo(imsiInLine, msisdnInLine, remark,0));
                         validImportNum++;
                         if (validImportNum > 100)  //白名单最大100
                             break;

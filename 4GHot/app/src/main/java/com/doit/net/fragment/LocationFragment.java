@@ -63,7 +63,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     //handler消息
     private final int UPDATE_VIEW = 0;
     private final int LOC_REPORT = 1;
-    private final int REFRESH_DEVICE = 4;
+    private final int REFRESH_GA = 4;
     private final int RF_STATUS_LOC = 5;
     private final int ADD_LOCATION = 6;
 
@@ -97,7 +97,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
 
     private void initEvent() {
 
-        EventAdapter.register(EventAdapter.REFRESH_DEVICE, this);
+        EventAdapter.register(EventAdapter.REFRESH_GA, this);
         EventAdapter.register(EventAdapter.LOCATION_RPT, this);
         EventAdapter.register(EventAdapter.ADD_LOCATION, this);
         EventAdapter.register(EventAdapter.RF_STATUS_LOC, this);
@@ -223,14 +223,15 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     private void stopLoc() {
         LogUtils.log("停止定位");
 
-        CacheManager.stopLoc();
-
         if (CacheManager.getCurrentLocation() !=null){
             CacheManager.getCurrentLocation().setLocateStart(false);
             textContent = "搜寻暂停：" + CacheManager.getCurrentLocation().getImsi();
         }else {
             textContent = "搜寻未开始";
         }
+
+        CacheManager.stopLoc();
+
 
         stopSpeechBroadcastLoop();
         currentSRSP = 0;
@@ -266,7 +267,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.getLocState()){
                     CacheManager.startLoc(CacheManager.getCurrentLocation().getImsi(),CacheManager.currentLocation.getType());
                     startLoc(CacheManager.getCurrentLocation().getImsi());
-                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
+                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
                 }
             }
         }
@@ -406,8 +407,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                     e.printStackTrace();
                 }
                 break;
-            case EventAdapter.REFRESH_DEVICE:
-                mHandler.sendEmptyMessage(REFRESH_DEVICE);
+            case EventAdapter.REFRESH_GA:
+                mHandler.sendEmptyMessage(REFRESH_GA);
                 break;
             case EventAdapter.RF_STATUS_LOC:
                 mHandler.sendEmptyMessage(RF_STATUS_LOC);
@@ -445,7 +446,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 case ADD_LOCATION:
                     startLoc((String) msg.obj);
                     break;
-                case REFRESH_DEVICE:
+                case REFRESH_GA:
                     //ga <= 10为低增益,11-50为高增益
                     if (CacheManager.channels != null && CacheManager.channels.size() > 0) {
                         cbGainSwitch.setOnCheckedChangeListener(null);
