@@ -39,7 +39,10 @@
                     android:id="@+id/editText_plmn"
                     style="@style/dialog_edit"
                     android:layout_weight="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:digits="@string/fcn_rule"
+                    android:hint="多个制式需,隔开"
+                    android:maxLength="20"/>
             </TableRow>
 
             <TableRow android:padding="0dp">
@@ -57,7 +60,9 @@
                     style="@style/dialog_edit"
                     android:layout_weight="1"
                     android:singleLine="true"
-                    android:digits="@string/fcn_rule"/>
+                    android:digits="@string/fcn_rule"
+                    android:hint="多个频点需,隔开"
+                    android:maxLength="20"/>
             </TableRow>
 
             <TableRow>
@@ -73,7 +78,10 @@
                     android:id="@+id/editText_pa"
                     style="@style/dialog_edit"
                     android:layout_weight="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:digits="@string/pa_rule"
+                    android:hint="多个功率需,隔开"
+                    android:maxLength="15"/>
             </TableRow>
 
             <TableRow>

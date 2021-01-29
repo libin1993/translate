@@ -560,7 +560,7 @@ public class CacheManager {
                 public void run() {
                     LTESendManager.setChannelConfig(idx, fcn, "", "", "", "", "", "");
                 }
-            }, 7000);
+            }, 2000);
         }
 
     }

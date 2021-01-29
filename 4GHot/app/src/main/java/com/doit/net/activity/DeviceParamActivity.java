@@ -173,9 +173,12 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                if (!CacheManager.checkDevice(DeviceParamActivity.this)) {
+                    return;
+                }
                 LteChannelCfg lteChannelCfg = CacheManager.channels.get(position);
                 if (lteChannelCfg != null && !TextUtils.isEmpty(lteChannelCfg.getChangeBand())) {
-                    changeChannelBandDialog(lteChannelCfg.getIdx(),  lteChannelCfg.getBand(),lteChannelCfg.getChangeBand());
+                    changeChannelBandDialog(lteChannelCfg.getIdx(), lteChannelCfg.getBand(), lteChannelCfg.getChangeBand());
                 }
             }
         });
@@ -197,7 +200,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                         ToastUtils.showMessageLong("当前正在搜寻中，请确认通道射频变动是否对其产生影响！");
                     }
 
-                    showProcess(10000);
+                    showProcess(6000);
                     if (lteChannelCfg.getRFState()) {
                         LTESendManager.closeRf(lteChannelCfg.getIdx());
                     } else {
@@ -316,6 +319,18 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                         }
                     }
 
+                    if (!TextUtils.isEmpty(plmn)){
+                        if (!FormatUtils.getInstance().plmnRange(plmn)) {
+                            ToastUtils.showMessage("plmn格式输入有误,请检查");
+                            return;
+                        }
+                    }
+
+                    if (!TextUtils.isEmpty(pa) && (pa.startsWith(",") || pa.endsWith(","))){
+                        ToastUtils.showMessage("下行功率格式输入有误,请检查");
+                        return;
+                    }
+
 
                     ToastUtils.showMessage(R.string.tip_15);
                     showProcess(6000);
@@ -430,7 +445,6 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
 
 
-
             if (CacheManager.getLocState()) {
                 ToastUtils.showMessage("当前正在搜寻中，请留意功率变动是否对其产生影响！");
             } else {
@@ -438,7 +452,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             }
 
 
-            showProcess(9000);
+            showProcess(6000);
             switch (checkedId) {
                 case R.id.rbPowerHigh:
                     setPowerLevel(0);
@@ -479,7 +493,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 ToastUtils.showMessageLong("侦码制式设置已下发，请等待其生效");
             }
 
-            showProcess(8000);
+            showProcess(6000);
 
             switch (checkedId) {
                 case R.id.rbDetectAll:
@@ -513,7 +527,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 public void run() {
                     refreshDetectOperation();
                 }
-            }, 1500);
+            }, 2000);
 
         }
     };
@@ -536,7 +550,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 LTESendManager.openAllRf();
                 ToastUtils.showMessageLong(R.string.rf_open);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_4G_RF);
-                showProcess(10000);
+                showProcess(6000);
             } else {
                 if (CacheManager.getLocState()) {
                     new MySweetAlertDialog(DeviceParamActivity.this, MySweetAlertDialog.WARNING_TYPE)
@@ -552,7 +566,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                                     sweetAlertDialog.dismiss();
 
                                     ToastUtils.showMessage(R.string.rf_close);
-                                    showProcess(10000);
+                                    showProcess(6000);
 
                                     LTESendManager.closeAllRf();
 
@@ -563,7 +577,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                 } else {
                     LTESendManager.closeAllRf();
                     ToastUtils.showMessageLong(R.string.rf_close);
-                    showProcess(10000);
+                    showProcess(6000);
                     EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLOSE_ALL_4G_RF);
                 }
 
@@ -596,7 +610,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             public void run() {
                 refreshPowerLevel();
             }
-        }, 1500);
+        }, 2000);
 
     }
 
@@ -645,11 +659,11 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
             int powerLevel = Integer.parseInt(CacheManager.getChannels().get(0).getPMax()) -
                     Integer.parseInt(CacheManager.getChannels().get(0).getPa().split(",")[0]);
             int index;
-            if (powerLevel < 10){
+            if (powerLevel < 10) {
                 index = 0;
-            }else if (powerLevel < 20){
+            } else if (powerLevel < 20) {
                 index = 1;
-            }else{
+            } else {
                 index = 2;
             }
             rgPowerLevel.setOnCheckedChangeListener(null);
@@ -672,45 +686,64 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
         super.onResume();
     }
 
-    private void changeChannelBandDialog(final String idx, String band,final String changeBand) {
+    private void changeChannelBandDialog(final String idx, String band, final String changeBand) {
         String[] split = changeBand.split(",");
         List<String> dataList = new ArrayList<>();
         for (String s : split) {
-            if (!s.equals(band)){
+            if (!s.equals(band)) {
                 dataList.add(s);
             }
         }
-        if (dataList.size() == 0){
+        if (dataList.size() == 0) {
             return;
         }
 
-        UserChannelListAdapter adapter = new UserChannelListAdapter(DeviceParamActivity.this, idx, dataList);
-        //显示设备管理界面
-        DialogPlus deviceListDialog = DialogPlus.newDialog(this)
-                .setContentHolder(new ListHolder())
-                .setHeader(R.layout.user_channel_header)
-                .setCancelable(true)
-                .setGravity(Gravity.CENTER)
-                .setAdapter(adapter)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        CacheManager.changeBand(idx, dataList.get(position));
-                        dialog.dismiss();
-                        showProcess(10000);
-                        ToastUtils.showMessageLong("切换Band命令已下发，请等待生效");
-                        EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_BAND + band);
-                    }
-                })
-                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                .setOverlayBackgroundResource(R.color.dark_background)
-                .setExpanded(false)
-                .create();
+        View contentView = LayoutInflater.from(DeviceParamActivity.this).inflate(R.layout.popup_change_band, null);
+        PopupWindow mPopupWindow = new PopupWindow(contentView, FormatUtils.getInstance().dip2px(300),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ListView list = ((ListView) deviceListDialog.getHolderView());
-        list.setDivider(new ColorDrawable(Color.GRAY));
-        list.setDividerHeight(1);
-        deviceListDialog.show();
+        RecyclerView rvBand = contentView.findViewById(R.id.rv_change_band);
+        Button btnCancel = contentView.findViewById(R.id.btn_cancel_change);
+
+
+        //设置Popup具体参数
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+        mPopupWindow.setFocusable(true);//点击空白，popup不自动消失
+        mPopupWindow.setTouchable(true);//popup区域可触摸
+        mPopupWindow.setOutsideTouchable(true);//非popup区域可触摸
+        mPopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+
+
+        rvBand.setLayoutManager(new LinearLayoutManager(this));
+        BaseQuickAdapter<String, BaseViewHolder> adapter = new BaseQuickAdapter<String, BaseViewHolder>(R.layout.layout_change_band_item, dataList) {
+            @Override
+            protected void convert(BaseViewHolder helper, String item) {
+                helper.setText(R.id.tv_change_band, "通道：" + idx + "      " + "Band：" + item);
+            }
+        };
+
+        rvBand.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                mPopupWindow.dismiss();
+                CacheManager.changeBand(idx, dataList.get(position));
+                showProcess(8000);
+                ToastUtils.showMessageLong("切换Band命令已下发，请等待生效");
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CHANGE_BAND + band);
+            }
+
+        });
+
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPopupWindow.dismiss();
+            }
+        });
+
     }
 
 

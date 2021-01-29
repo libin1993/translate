@@ -495,8 +495,11 @@ public class LTEReceiveManager {
 
             LogUtils.log("2G采号上报：IMSI:" + imsiList.get(0) + "    强度:" + imsiList.get(2));
         }
-        CacheManager.addBlockNameList(ueidList);
-        EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
+
+        if (ueidList.size() > 0) {
+            CacheManager.addBlockNameList(ueidList);
+            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
+        }
     }
 
 
@@ -543,8 +546,11 @@ public class LTEReceiveManager {
                 e.printStackTrace();
             }
         }
-        CacheManager.addBlockNameList(ueidList);
-        EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
+        if (ueidList.size() > 0){
+            CacheManager.addBlockNameList(ueidList);
+            EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
+        }
+
     }
 
     /**

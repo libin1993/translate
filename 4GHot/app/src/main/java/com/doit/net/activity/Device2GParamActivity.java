@@ -195,7 +195,12 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                         ToastUtils.showMessageLong("当前正在搜寻中，请确认通道射频变动是否对其产生影响！");
                     }
 
-                    showProcess(6000);
+                    if (params.getBoardid().equals("0")){
+                        showProcess(6000);
+                    }else {
+                        showProcess(10000);
+                    }
+
                     Send2GManager.setRFState(params.getBoardid(), params.getCarrierid(), params.isRfState() ? "0" : "1");
 
                 }
@@ -276,7 +281,7 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             } else {
                 ToastUtils.showMessageLong("功率设置已下发，请等待其生效");
             }
-
+            showProcess(6000);
             switch (checkedId) {
                 case R.id.rb_power_high:
                     Send2GManager.setPowerLevel(3);
@@ -294,7 +299,6 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
                     break;
             }
 
-            showProcess(6000);
         }
     };
 

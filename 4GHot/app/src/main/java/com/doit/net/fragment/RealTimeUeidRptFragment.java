@@ -218,7 +218,7 @@ public class RealTimeUeidRptFragment extends BaseFragment implements EventAdapte
                 ToastUtils.showMessageLong(R.string.all_rf_open);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_4G_RF);
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.OPEN_ALL_2G_RF);
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
+                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
             } else {
                 if (CacheManager.getLocState()) {
                     new MySweetAlertDialog(getContext(), MySweetAlertDialog.WARNING_TYPE)

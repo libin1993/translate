@@ -52,10 +52,8 @@ public class GettingPartnerAnalysis {
 
             /* 考虑时间交叉 */
             if (tmpUeid.getCreateDate() < tmpLastTimePoint){
-                LogUtils.log("1");
                 continue;
             } else if ((tmpUeid.getCreateDate()-tmpLastTimePoint) >= 2*timeDev){
-                LogUtils.log("2");
                 try {
                     imsiInDeviation = dbManager.selector(DBUeidInfo.class)
                             .where("createDate", "BETWEEN",
@@ -63,7 +61,6 @@ public class GettingPartnerAnalysis {
                             .orderBy("id", true).findAll();
                 } catch (DbException e) {e.printStackTrace();}
             }else if ((tmpUeid.getCreateDate()-tmpLastTimePoint) < 2*timeDev){
-                LogUtils.log("3");
                 try {
                     imsiInDeviation = dbManager.selector(DBUeidInfo.class)
                             .where("createDate", "BETWEEN",

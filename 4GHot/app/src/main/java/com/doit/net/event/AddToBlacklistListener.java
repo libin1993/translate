@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.doit.net.bean.UeidBean;
+import com.doit.net.model.CacheManager;
 import com.doit.net.model.DBUeidInfo;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.model.BlackListInfo;
@@ -25,8 +26,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class AddToBlacklistListener implements View.OnClickListener {
     private Context mContext;
     private String imsi;
-    private String msisdn="";
-    private String remark="";
+    private String msisdn = "";
+    private String remark = "";
 
     public AddToBlacklistListener(Context mContext, String imsi, String msisdn, String remark) {
         this.mContext = mContext;
@@ -46,27 +47,27 @@ public class AddToBlacklistListener implements View.OnClickListener {
         try {
 
             DbManager dbManager = UCSIDBManager.getDbManager();
-            if (!"".equals(imsi)){
+            if (!"".equals(imsi)) {
                 long count = dbManager.selector(BlackListInfo.class)
-                        .where("imsi","=",imsi)
+                        .where("imsi", "=", imsi)
                         .count();
-                if(count>0){
+                if (count > 0) {
 
-                    ToastUtils.showMessage( R.string.exist_whitelist);
+                    ToastUtils.showMessage(R.string.exist_whitelist);
                     return;
                 }
-            }else{
+            } else {
                 long count = dbManager.selector(BlackListInfo.class)
-                        .where("msisdn","=",msisdn)
+                        .where("msisdn", "=", msisdn)
                         .count();
-                if(count>0){
-                    ToastUtils.showMessage( R.string.exist_whitelist);
+                if (count > 0) {
+                    ToastUtils.showMessage(R.string.exist_whitelist);
                     return;
-                }else {
+                } else {
                     DBUeidInfo ueidInfo = dbManager.selector(DBUeidInfo.class)
                             .where("msisdn", "=", this.msisdn)
                             .findFirst();
-                    if (ueidInfo!= null && !TextUtils.isEmpty(ueidInfo.getImsi())){
+                    if (ueidInfo != null && !TextUtils.isEmpty(ueidInfo.getImsi())) {
                         imsi = ueidInfo.getImsi();
                     }
                 }
@@ -79,8 +80,10 @@ public class AddToBlacklistListener implements View.OnClickListener {
             dbManager.save(info);
 
             Send2GManager.setBlackList();
-            if (!TextUtils.isEmpty(imsi)){
-                LTESendManager.changeNameList("del","reject",imsi);
+
+            if (!TextUtils.isEmpty(imsi) && (!CacheManager.getLocState() ||
+                    (CacheManager.getLocState() && !imsi.equals(CacheManager.getCurrentLocation().getImsi())))) {
+                LTESendManager.changeNameList("add", "block", imsi);
             }
 
 

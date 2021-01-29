@@ -138,7 +138,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
     }
 
 
-
     private void stopSpeechBroadcastLoop() {
         if (speechTimer != null) {
             speechTimer.cancel();
@@ -290,7 +289,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLocation == null || TextUtils.isEmpty(CacheManager.currentLocation.getImsi())) {
                     return;
                 }
-                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
+                EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
 
                 LTESendManager.closeAllRf();
 
@@ -311,7 +310,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 if (CacheManager.currentLocation == null || CacheManager.currentLocation.getImsi().equals("")) {
                     ToastUtils.showMessage(R.string.button_loc_unstart);
                 } else {
-                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 10000);
+                    EventAdapter.call(EventAdapter.SHOW_PROGRESS, 8000);
                     CacheManager.startLoc(CacheManager.getCurrentLocation().getImsi(),CacheManager.currentLocation.getType());
                     startLoc(CacheManager.getCurrentLocation().getImsi());
 
@@ -452,7 +451,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                         cbGainSwitch.setOnCheckedChangeListener(null);
                         for (int i = 0; i < CacheManager.channels.size(); i++) {
                             LteChannelCfg channel = CacheManager.channels.get(i);
-                            LogUtils.log(channel.toString());
                             int ga = Integer.parseInt(channel.getGa());
                             if (ga <= 10) {
                                 cbGainSwitch.setChecked(false);

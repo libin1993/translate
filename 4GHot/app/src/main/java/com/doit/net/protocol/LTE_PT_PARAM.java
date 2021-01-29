@@ -533,7 +533,7 @@ public class LTE_PT_PARAM {
                         public void run() {
                             LTESendManager.getEquipAndAllChannelConfig();
                         }
-                    },9000);
+                    },5000);
                 } else if (respContent.charAt(0) == '1') {
                     LogUtils.log("切换band失败");
                 }
@@ -738,17 +738,24 @@ public class LTE_PT_PARAM {
 
         String[] splitStr = locRpt.split("#");
         List<UeidBean> ueidList = new ArrayList<>();
+        int locRSSI = 20; //定位目标场强
         for (String s : splitStr) {
             String[] split = s.split(":");
             if (split.length > 1) {
                 String rssi = split[1];
-                if (TextUtils.isEmpty(rssi) || Integer.parseInt(rssi) <= 0) {
+                try {
+                    if (TextUtils.isEmpty(rssi) || Integer.parseInt(rssi) < 20) {
+                        continue;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                     continue;
                 }
 
+
                 if (CacheManager.getLocState() && CacheManager.getCurrentLocation().getType() == 1
                         && s.split(":")[0].equals(CacheManager.getCurrentLocation().getImsi())) {
-                    EventAdapter.call(EventAdapter.LOCATION_RPT, rssi);
+                    locRSSI = Math.max(locRSSI,Integer.parseInt(rssi)); //取最大值
                 }
 
                 UeidBean ueidBean = new UeidBean();
@@ -760,6 +767,10 @@ public class LTE_PT_PARAM {
                 ueidList.add(ueidBean);
 
             }
+        }
+
+        if (locRSSI > 20){
+            EventAdapter.call(EventAdapter.LOCATION_RPT, String.valueOf(locRSSI));
         }
         LogUtils.log("4G采号数量：" + ueidList.size());
         CacheManager.addBlockNameList(ueidList);

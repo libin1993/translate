@@ -20,6 +20,8 @@ import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.protocol.Send2GManager;
+import com.doit.net.utils.LogUtils;
+import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;
 
@@ -170,22 +172,39 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
 
         @Override
         public void onClick(View v) {
-            BlackListInfo resp = listBlacklistInfo.get(position);
-            try {
-                UCSIDBManager.getDbManager().delete(resp);
+            new MySweetAlertDialog(mContext, MySweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("删除名单")
+                    .setContentText("确定要删除名单吗？")
+                    .setCancelText(mContext.getString(R.string.cancel))
+                    .setConfirmText(mContext.getString(R.string.sure))
+                    .showCancelButton(true)
+                    .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
+
+                        @Override
+                        public void onClick(MySweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismiss();
+
+                            BlackListInfo resp = listBlacklistInfo.get(position);
+                            try {
+                                UCSIDBManager.getDbManager().delete(resp);
 
 
-                EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
+                                EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
 
-                Send2GManager.setBlackList();
+                                Send2GManager.setBlackList();
 
-                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_BLACK_LIST
-                        + resp.getImsi() + "+" + resp.getMsisdn());
-            } catch (DbException e) {
-                new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE)
-                        .setTitleText(mContext.getString(R.string.del_white_list_fail))
-                        .show();
-            }
+                                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_BLACK_LIST
+                                        + resp.getImsi() + "+" + resp.getMsisdn());
+                            } catch (DbException e) {
+                                new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE)
+                                        .setTitleText(mContext.getString(R.string.del_white_list_fail))
+                                        .show();
+                            }
+
+                        }
+                    })
+                    .show();
+
         }
     }
 }

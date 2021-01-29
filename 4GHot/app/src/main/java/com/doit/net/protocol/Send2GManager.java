@@ -68,12 +68,12 @@ public class Send2GManager {
      * 查询设备参数
      */
     public static void getCommonConfig() {
-        getCommonConfig("1");
+        getCommonConfig("0");
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                getCommonConfig("0");
+                getCommonConfig("1");
             }
         },500);
 
@@ -97,12 +97,12 @@ public class Send2GManager {
      * 查询运营商参数、工作模式
      */
     public static void getParamsConfig() {
-        getParamsConfig("1", "0");
+        getParamsConfig("0", "0");
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                getParamsConfig("0", "0");
+                getParamsConfig("0", "1");
             }
         }, 500);
 
@@ -110,7 +110,7 @@ public class Send2GManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                getParamsConfig("0", "1");
+                getParamsConfig("1", "0");
             }
         }, 1000);
 

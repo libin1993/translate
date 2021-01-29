@@ -25,6 +25,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
+import com.doit.net.model.CacheManager;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.FileUtils;
@@ -366,8 +367,8 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
                             }
                         }
 
-                        if (!TextUtils.isEmpty(imsi.toString())){
-                            LTESendManager.changeNameList("del", "reject", imsi.substring(0,imsi.length()-1));
+                        if (!TextUtils.isEmpty(imsi.toString()) && !CacheManager.getLocState()){
+                            LTESendManager.changeNameList("add", "block", imsi.substring(0,imsi.length()-1));
                         }
                     }
 
@@ -497,17 +498,33 @@ public class BlacklistManagerActivity extends BaseActivity implements EventAdapt
         @Override
 
         public void onClick(View v) {
+            new MySweetAlertDialog(BlacklistManagerActivity.this, MySweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("清空名单")
+                    .setContentText("确定要清空黑名单吗？")
+                    .setCancelText(getString(R.string.cancel))
+                    .setConfirmText(getString(R.string.sure))
+                    .showCancelButton(true)
+                    .setConfirmClickListener(new MySweetAlertDialog.OnSweetClickListener() {
 
-            try {
-                dbManager.delete(BlackListInfo.class);
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
+                        @Override
+                        public void onClick(MySweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismiss();
 
-            Send2GManager.setBlackList();
+                            try {
+                                dbManager.delete(BlackListInfo.class);
+                            } catch (DbException e) {
+                                e.printStackTrace();
+                            }
 
-            updateListFromDB();
-            EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLEAR_BLACKLIST);
+                            Send2GManager.setBlackList();
+
+                            updateListFromDB();
+                            EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.CLEAR_BLACKLIST);
+
+                        }
+                    })
+                    .show();
+
         }
     };
 
