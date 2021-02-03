@@ -528,7 +528,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             } //只有从wifi未连接到连接才出现这种状态
 
             downloadAccount();
-            initUDP();  //重连wifi后udp发送ip、端口
+//            initUDP();  //重连wifi后udp发送ip、端口
         } else {
             ToastUtils.showMessageLong("网络连接已断开！请检查网络是否正常连接！");
             CacheManager.deviceState.setDeviceState(DeviceState.WIFI_DISCONNECT);

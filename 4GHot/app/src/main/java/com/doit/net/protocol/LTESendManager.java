@@ -80,7 +80,7 @@ public class LTESendManager {
             namelist += "@NAMELIST_REST_ACTION:" + nameListRestAction;
         }
 
-        namelist += "@NAMELIST_FILE:";
+        namelist += "@NAMELIST_RELEASE:@NAMELIST_FILE:";
 
         LogUtils.log("设置名单：" + namelist);
         LTE_PT_PARAM.setCommonParam(LTE_PT_PARAM.PARAM_SET_NAMELIST, namelist);
