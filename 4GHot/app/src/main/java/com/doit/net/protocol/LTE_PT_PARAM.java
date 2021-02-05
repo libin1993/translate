@@ -266,7 +266,7 @@ public class LTE_PT_PARAM {
 
         EventAdapter.call(EventAdapter.RPT_HEARTBEAT_4G, stationState);
         EventAdapter.call(EventAdapter.RF_STATUS_RPT);
-        EventAdapter.call(EventAdapter.RF_STATUS_LOC);
+//        EventAdapter.call(EventAdapter.RF_STATUS_LOC);
         EventAdapter.call(EventAdapter.REFRESH_DEVICE);
 
 
