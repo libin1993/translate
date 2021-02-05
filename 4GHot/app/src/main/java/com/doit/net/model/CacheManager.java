@@ -291,7 +291,7 @@ public class CacheManager {
                 public void run() {
                     Send2GManager.setRFState("0");
                 }
-            }, 1000);
+            }, 4000);
 
 
         } else {

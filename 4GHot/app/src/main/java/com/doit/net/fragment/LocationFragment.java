@@ -385,7 +385,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         }
 
 
-        LogUtils.log("4G功放状态："+rfState4G+",2G功放状态："+rfState2G);
+        LogUtils.log("4G功放状态："+rfState4G+",2G功放状态："+rfState2G+",定位状态："+CacheManager.getLocState());
         if (!rfState4G && !rfState2G  && CacheManager.getLocState()) {
             stopLoc();
         }
