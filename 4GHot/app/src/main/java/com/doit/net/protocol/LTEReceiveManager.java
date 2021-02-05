@@ -393,12 +393,12 @@ public class LTEReceiveManager {
                 }
 
                 EventAdapter.call(EventAdapter.REFRESH_DEVICE_2G);
+                EventAdapter.call(EventAdapter.RF_STATUS_RPT);
+                EventAdapter.call(EventAdapter.RF_STATUS_LOC);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        EventAdapter.call(EventAdapter.RF_STATUS_RPT);
 
     }
 
@@ -585,8 +585,9 @@ public class LTEReceiveManager {
      * @param receivePackage 定位上报
      */
     private void parseImsiLoc(LTEReceivePackage receivePackage) {
-        Report2GLocBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
-                StandardCharsets.UTF_8), Report2GLocBean.class);
+        String data = new String(receivePackage.getByteSubContent(),StandardCharsets.UTF_8);
+        LogUtils.log("2G定位上报：IMSI:" + data);
+        Report2GLocBean responseBean = GsonUtils.jsonToBean(data, Report2GLocBean.class);
 
         if (CacheManager.getLocState() && responseBean.getImsi().equals(CacheManager.getCurrentLocation().getImsi())
                 && CacheManager.getCurrentLocation().getType() == 0) {

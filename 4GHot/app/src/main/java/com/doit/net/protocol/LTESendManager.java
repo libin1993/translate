@@ -361,6 +361,7 @@ public class LTESendManager {
                 public void run() {
                     if (CacheManager.getChannels().size() > index) {
                         openRf(CacheManager.getChannels().get(index).getIdx());
+                        CacheManager.getChannels().get(index).setRFState(true);
                     }
                 }
             }, index * 150);

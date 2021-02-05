@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.UtilOperator;
@@ -367,8 +368,8 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
      * 射频是否开启
      */
     private void isRFOpen() {
-
         boolean rfState4G = false;
+        boolean rfState2G = false;
 
         for (LteChannelCfg channel : CacheManager.getChannels()) {
             if (channel.getRFState()) {
@@ -376,10 +377,22 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
                 break;
             }
         }
+        for (Set2GParamsBean.Params params : CacheManager.paramList) {
+            if(params.isRfState() ) {
+                rfState2G = true;
+                break;
+            }
+        }
 
-        if (!rfState4G) {
+
+        LogUtils.log("4G功放状态："+rfState4G+",2G功放状态："+rfState2G);
+        if (!rfState4G && !rfState2G  && CacheManager.getLocState()) {
             stopLoc();
         }
+
+//        if (!rfState4G) {
+//            stopLoc();
+//        }
     }
 
 

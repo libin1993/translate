@@ -75,7 +75,7 @@ public class Send2GManager {
             public void run() {
                 getCommonConfig("1");
             }
-        },500);
+        }, 500);
 
     }
 
@@ -192,6 +192,41 @@ public class Send2GManager {
         paramList.add(param3);
 
         bean.setParams(paramList);
+        String data = GsonUtils.objectToString(bean);
+        LogUtils.log("2G开关射频："+data);
+        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH,data.getBytes(StandardCharsets.UTF_8));
+    }
+
+
+    /**
+     * 设置射频
+     */
+    public static void setBoardRFState(String ctjState,String ctuState,String ctcState) {
+        Set2GRFBean bean = new Set2GRFBean();
+        bean.setId(MsgType2G.SET_RF_SWITCH_ID);
+        List<Set2GRFBean.Params> paramList = new ArrayList<>();
+
+        Set2GRFBean.Params param1 = new Set2GRFBean.Params();
+        param1.setBoardid("0");
+        param1.setCarrierid("0");
+        param1.setState(ctjState);
+        paramList.add(param1);
+
+
+        Set2GRFBean.Params param2 = new Set2GRFBean.Params();
+        param2.setBoardid("0");
+        param2.setCarrierid("1");
+        param2.setState(ctuState);
+        paramList.add(param2);
+
+
+        Set2GRFBean.Params param3 = new Set2GRFBean.Params();
+        param3.setBoardid("1");
+        param3.setCarrierid("0");
+        param3.setState(ctcState);
+        paramList.add(param3);
+
+        bean.setParams(paramList);
         sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -216,7 +251,11 @@ public class Send2GManager {
         paramList.add(param2);
 
         bean.setParams(paramList);
-        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, GsonUtils.objectToString(bean).getBytes(StandardCharsets.UTF_8));
+
+        String data = GsonUtils.objectToString(bean);
+        LogUtils.log("2G开关射频："+data);
+
+        sendData(MsgType2G.PT_PARAM, MsgType2G.SET_RF_SWITCH, data.getBytes(StandardCharsets.UTF_8));
     }
 
 
@@ -279,12 +318,12 @@ public class Send2GManager {
     /**
      * 设置黑名单
      */
-    public static void setBlackList(){
+    public static void setBlackList() {
         DbManager dbManager = UCSIDBManager.getDbManager();
         List<String> blackList = new ArrayList<>();
         try {
             List<BlackListInfo> blackInfoList = dbManager.selector(BlackListInfo.class).findAll();
-            if (blackInfoList != null){
+            if (blackInfoList != null) {
                 for (int i = 0; i < blackInfoList.size(); i++) {
                     blackList.add(blackInfoList.get(i).getMsisdn());
                 }
@@ -302,23 +341,23 @@ public class Send2GManager {
 
 
     /**
-     * @param action all:群发，one:单发，clear:停止发送
-     * @param count  发送次数
-     * @param interval  发送间隔
+     * @param action   all:群发，one:单发，clear:停止发送
+     * @param count    发送次数
+     * @param interval 发送间隔
      * @param content  发送内容
      */
-    public static void sendSms(String action,int count,int interval,String content){
+    public static void sendSms(String action, int count, int interval, String content) {
         SendSmsBean smsBean = new SendSmsBean();
         List<String> imsiList = new ArrayList<>();
-        if ("one".equals(action)){
+        if ("one".equals(action)) {
             DbManager dbManager = UCSIDBManager.getDbManager();
             try {
                 List<DBImsi> dbImsiList = dbManager.selector(DBImsi.class).findAll();
-                if (dbImsiList != null){
+                if (dbImsiList != null) {
                     for (int i = 0; i < dbImsiList.size(); i++) {
                         imsiList.add(dbImsiList.get(i).getImsi());
                     }
-                }else {
+                } else {
                     action = "all";
                 }
             } catch (DbException e) {
@@ -331,7 +370,7 @@ public class Send2GManager {
         smsBean.setImsi(imsiList);
         smsBean.setSmsnum("106957135");
         smsBean.setInterval(String.valueOf(interval));
-        smsBean.setPeriod(String.valueOf(count*interval));
+        smsBean.setPeriod(String.valueOf(count * interval));
         smsBean.setContent(content);
 
         LogUtils.log("发送短信:" + GsonUtils.objectToString(smsBean));

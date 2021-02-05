@@ -97,7 +97,7 @@ public class FormatUtils {
         String[] split = gps.split(",");
 
         for (String s : split) {
-            if (TextUtils.isEmpty(s) || s.length() > 3){
+            if (TextUtils.isEmpty(s)){
                 return false;
             }
         }

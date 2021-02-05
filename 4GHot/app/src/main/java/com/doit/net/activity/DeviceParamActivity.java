@@ -205,6 +205,7 @@ public class DeviceParamActivity extends BaseActivity implements EventAdapter.Ev
                         LTESendManager.closeRf(lteChannelCfg.getIdx());
                     } else {
                         LTESendManager.openRf(lteChannelCfg.getIdx());
+
                     }
 
                 }

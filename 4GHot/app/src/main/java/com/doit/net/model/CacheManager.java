@@ -111,7 +111,7 @@ public class CacheManager {
             try {
 
                 List<BlackListInfo> blackList = UCSIDBManager.getDbManager().selector(BlackListInfo.class).findAll();
-                if (blackList !=null && blackList.size() > 0){
+                if (blackList != null && blackList.size() > 0) {
                     for (int i = 0; i < blackList.size(); i++) {
                         if (!TextUtils.isEmpty(blackList.get(i).getImsi()) && !blackList.get(i).getImsi().startsWith("46003")) {
                             blackIMSI += blackList.get(i).getImsi() + ",";
@@ -202,7 +202,7 @@ public class CacheManager {
 
         try {
             List<BlackListInfo> blackList = UCSIDBManager.getDbManager().selector(BlackListInfo.class).findAll();
-            if (blackList !=null && blackList.size() > 0){
+            if (blackList != null && blackList.size() > 0) {
                 for (int i = 0; i < blackList.size(); i++) {
                     if (!TextUtils.isEmpty(blackList.get(i).getImsi()) && !blackList.get(i).getImsi().equals(imsi)
                             && !blackList.get(i).getImsi().startsWith("46003")) {
@@ -213,7 +213,6 @@ public class CacheManager {
         } catch (DbException e) {
             e.printStackTrace();
         }
-
 
 
         if (!TextUtils.isEmpty(blackIMSI)) {
@@ -237,6 +236,7 @@ public class CacheManager {
             }, 1000);
 
             String finalBlockIMSI = blockIMSI;
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -245,12 +245,44 @@ public class CacheManager {
             }, 1500);
 
 
+//            for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+//                int index = i;
+//                new Timer().schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        if (CacheManager.getChannels().size() > index) {
+//                            boolean isOpenRF = false;
+//                            int band = Integer.parseInt(CacheManager.getChannels().get(index).getBand());
+//                            //管控的黑名单
+//                            String[] split = finalBlockIMSI.split(",");
+//                            for (String s : split) {
+//                                String plmn = UtilOperator.getOperatorName(s);
+//                                //移动判断b3和tdd; 联通电信判断fdd
+//                                if (((band == 3 || band >= 33) && "CTJ".equals(plmn)) || (band <= 25 && !"CTJ".equals(plmn))) {
+//                                    isOpenRF = true;
+//                                    break;
+//                                }
+//                            }
+//
+//                            if (isOpenRF) {
+//                                LTESendManager.openRf(CacheManager.getChannels().get(index).getIdx());
+//                                CacheManager.getChannels().get(index).setRFState(true);
+//                            } else {
+//                                LTESendManager.closeRf(CacheManager.getChannels().get(index).getIdx());
+//                            }
+//                        }
+//                    }
+//                }, 2000 + index * 150);
+//            }
+
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     LTESendManager.openAllRf();
                 }
             }, 2000);
+
 
             Send2GManager.setLocIMSI("", "0");
 
@@ -291,6 +323,87 @@ public class CacheManager {
             }
 
 
+//            for (int i = 0; i < CacheManager.getChannels().size(); i++) {
+//                int index = i;
+//                String finalBlackList= blackIMSI;
+//                new Timer().schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        if (CacheManager.getChannels().size() > index) {
+//                            boolean isOpenRF = false;
+//                            int band = Integer.parseInt(CacheManager.getChannels().get(index).getBand());
+//                            //管控的黑名单
+//                            if (!TextUtils.isEmpty(finalBlackList)) {
+//                                String[] split = finalBlackList.split(",");
+//                                for (String s : split) {
+//                                    String plmn = UtilOperator.getOperatorName(s);
+//                                    //移动判断b3和tdd; 联通电信判断fdd
+//                                    if (((band == 3 || band >= 33) && "CTJ".equals(plmn)) || (band <= 25 && !"CTJ".equals(plmn))) {
+//                                        isOpenRF = true;
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//
+//                            if (!isOpenRF && (((band == 3 || band >= 33) && "CTJ".equals(UtilOperator.getOperatorName(imsi)))
+//                                    || (band <= 25 && "CTU".equals(UtilOperator.getOperatorName(imsi))))){
+//                                isOpenRF = true;
+//                            }
+//
+//                            if (isOpenRF) {
+//                                LTESendManager.openRf(CacheManager.getChannels().get(index).getIdx());
+//                                CacheManager.getChannels().get(index).setRFState(true);
+//                            } else {
+//                                LTESendManager.closeRf(CacheManager.getChannels().get(index).getIdx());
+//                            }
+//                        }
+//                    }
+//                }, 2000 + index * 150);
+//            }
+//
+//            if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+//                Send2GManager.setBoardRFState("0","0","1");
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    if(params.getBoardid().equals("1")) {
+//                        params.setRfState(true);
+//                    }
+//                }
+//            }else {
+//                Send2GManager.setBoardRFState("1","1","0");
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    if(params.getBoardid().equals("0")) {
+//                        params.setRfState(true);
+//                    }
+//                }
+//            }
+
+
+//            if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
+//                Send2GManager.setBoardRFState("0","0","1");
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    if(params.getBoardid().equals("1")) {
+//                        params.setRfState(true);
+//                        break;
+//                    }
+//                }
+//            } else if ("CTU".equals(UtilOperator.getOperatorName(imsi))){
+//                Send2GManager.setBoardRFState("0","1","0");
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    if(params.getBoardid().equals("0") && params.getCarrierid().equals("1")) {
+//                        params.setRfState(true);
+//                        break;
+//                    }
+//                }
+//            }else {
+//                Send2GManager.setBoardRFState("1","0","0");
+//                for (Set2GParamsBean.Params params : CacheManager.paramList) {
+//                    if(params.getBoardid().equals("0") && params.getCarrierid().equals("0")) {
+//                        params.setRfState(true);
+//                        break;
+//                    }
+//                }
+//            }
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -305,7 +418,6 @@ public class CacheManager {
                 Send2GManager.setGSMRFState("1");
             }
 
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -313,8 +425,8 @@ public class CacheManager {
                 }
             }, 2000);
 
-
         }
+
     }
 
 
