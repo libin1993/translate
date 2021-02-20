@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.doit.net.application.MyApplication;
 import com.doit.net.bean.DeviceState;
@@ -15,6 +16,7 @@ import com.doit.net.bean.Report2GLocBean;
 import com.doit.net.bean.Report2GNumberBean;
 import com.doit.net.bean.SendSmsAckBean;
 import com.doit.net.bean.Set2GParamsBean;
+import com.doit.net.bean.UBCStateBean;
 import com.doit.net.bean.UeidBean;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.model.CacheManager;
@@ -269,6 +271,13 @@ public class LTEReceiveManager {
                     case MsgType2G.PT_LOGIN:
                         LTE_PT_LOGIN.loginResp(receivePackage);
 
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Send2GManager.getUBCState();
+                            }
+                        }, 500);
+
                         if (!CacheManager.initSuccess2G) {
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -277,7 +286,7 @@ public class LTEReceiveManager {
                                         Send2GManager.getParamsConfig();
                                     }
                                 }
-                            }, 500);
+                            }, 1000);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -294,6 +303,14 @@ public class LTEReceiveManager {
 
                         LogUtils.log("2G初始化" + CacheManager.initSuccess2G);
                         if (!CacheManager.initSuccess2G) {
+
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    Send2GManager.getUBCState();
+                                }
+                            }, 500);
+
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
@@ -301,7 +318,7 @@ public class LTEReceiveManager {
                                         Send2GManager.getParamsConfig();
                                     }
                                 }
-                            }, 500);
+                            }, 1000);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -351,6 +368,9 @@ public class LTEReceiveManager {
                             case MsgType2G.RPT_HEARTBEAT_INFO:
                                 parseHeartBeat(receivePackage);
                                 break;
+                            case MsgType2G.GET_UBC_CONFIG_ACK:
+                                parseUBCState(receivePackage);
+                                break;
                         }
                         break;
 
@@ -370,6 +390,7 @@ public class LTEReceiveManager {
                     StandardCharsets.UTF_8), Get2GCommonResponseBean.class);
             if (responseBean.getParams() != null && responseBean.getParams().size() > 0) {
                 for (Get2GCommonResponseBean.Params param : responseBean.getParams()) {
+
                     for (int i = 0; i < CacheManager.paramList.size(); i++) {
                         if ("0".equals(CacheManager.paramList.get(i).getBoardid()) && "0".equals(param.getBoardid())) {
                             if ("0".equals(CacheManager.paramList.get(i).getCarrierid())) {
@@ -434,7 +455,20 @@ public class LTEReceiveManager {
             }
 
             LogUtils.log("载波数量：" + CacheManager.paramList.size() + "," + initSuccess);
-            if (CacheManager.paramList.size() >= 2 && !initSuccess) {
+
+            if (CacheManager.paramList.size() < 2) {
+                return;
+            }
+
+            int carrierCount = 0;
+
+            for (int i = 0; i < CacheManager.paramList.size(); i++) {
+                if ("0".equals(CacheManager.paramList.get(i).getBoardid())) {
+                    carrierCount++;
+                }
+            }
+
+            if (carrierCount >= 2 && !initSuccess) {
                 initSuccess = true;
                 CacheManager.initSuccess2G = true;
                 LogUtils.log("2G初始化成功，4G初始化结果：" + CacheManager.initSuccess4G);
@@ -546,7 +580,7 @@ public class LTEReceiveManager {
                 e.printStackTrace();
             }
         }
-        if (ueidList.size() > 0){
+        if (ueidList.size() > 0) {
             CacheManager.addBlockNameList(ueidList);
             EventAdapter.call(EventAdapter.SHIELD_RPT, ueidList);
         }
@@ -585,7 +619,7 @@ public class LTEReceiveManager {
      * @param receivePackage 定位上报
      */
     private void parseImsiLoc(LTEReceivePackage receivePackage) {
-        String data = new String(receivePackage.getByteSubContent(),StandardCharsets.UTF_8);
+        String data = new String(receivePackage.getByteSubContent(), StandardCharsets.UTF_8);
         LogUtils.log("2G定位上报：IMSI:" + data);
         Report2GLocBean responseBean = GsonUtils.jsonToBean(data, Report2GLocBean.class);
 
@@ -627,6 +661,15 @@ public class LTEReceiveManager {
             ToastUtils.showMessage("短信发送成功");
         }
 
+    }
+
+    private void parseUBCState(LTEReceivePackage receivePackage) {
+        UBCStateBean responseBean = GsonUtils.jsonToBean(new String(receivePackage.getByteSubContent(),
+                StandardCharsets.UTF_8), UBCStateBean.class);
+        LogUtils.log("查询UBC回复：" + responseBean.toString());
+        if (!"1".equals(responseBean.getUbc_state())) {
+            CacheManager.isClearWhiteList = true;
+        }
     }
 
 

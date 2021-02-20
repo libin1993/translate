@@ -856,12 +856,12 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 },5000);
 
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LTESendManager.changeNameList("add", "reject", "460021683706233,460110363153426");
-                    }
-                },10000);
+//                new Timer().schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        LTESendManager.changeNameList("add", "reject", "460021683706233,460110363153426");
+//                    }
+//                },10000);
 
 
                 if (CacheManager.checkLicense) {

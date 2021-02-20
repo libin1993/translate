@@ -390,9 +390,6 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
             stopLoc();
         }
 
-//        if (!rfState4G) {
-//            stopLoc();
-//        }
     }
 
 

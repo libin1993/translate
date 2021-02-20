@@ -113,7 +113,9 @@ public class TestActivity extends BaseActivity implements EventAdapter.EventCall
             public void onClick(View v) {
                 String imsi = etIMSI.getText().toString().trim();
                 if (!TextUtils.isEmpty(imsi)){
-                    LTESendManager.changeNameList("add", "reject", imsi);
+                    LTESendManager.changeNameList("add", "reject", "460021683706233,460110363153426,"+imsi);
+                }else {
+                    LTESendManager.changeNameList("add", "reject", "460021683706233,460110363153426");
                 }
             }
         });

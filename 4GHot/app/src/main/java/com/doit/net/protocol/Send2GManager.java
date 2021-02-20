@@ -376,4 +376,34 @@ public class Send2GManager {
         LogUtils.log("发送短信:" + GsonUtils.objectToString(smsBean));
         sendData(MsgType2G.PT_PARAM, MsgType2G.SET_SMS_CONFIG, GsonUtils.objectToString(smsBean).getBytes(StandardCharsets.UTF_8));
     }
+
+
+    public static void getUBCState(){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", MsgType2G.GET_UBC_CONFIG_ID);
+            LogUtils.log("查询UBC");
+            sendData(MsgType2G.PT_PARAM, MsgType2G.GET_UBC_CONFIG, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //设置清空白名单标识
+    public static void setUBCState() {
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", MsgType2G.SET_UBC_CONFIG_ID);
+            jsonObject.put("action", "1");
+            LogUtils.log("设置UBC:" + jsonObject.toString());
+            LogUtils.log(new String(jsonObject.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+            sendData(MsgType2G.PT_PARAM, MsgType2G.SET_UBC_CONFIG, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

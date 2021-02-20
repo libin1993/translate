@@ -29,11 +29,14 @@ public class MsgType2G {
     public static final byte SET_LOC_IMSI_ACK = (byte) 0xC3;   //设置定位imsi应答
     public static final byte SET_BLACK_NAMELIST = (byte) 0x47;   //设置黑名单手机号
     public static final byte SET_BLACK_NAMELIST_ACK = (byte) 0xC7;   //设置黑名单手机号应答
+    public static final byte SET_UBC_CONFIG = (byte) 0x48;   //设置清空白名单
 
     public static final byte GET_NTC_CONFIG = 0x11;   //查询基本环境参数
     public static final byte GET_NTC_CONFIG_ACK = (byte) 0x91;   //查询基本环境参数应答
     public static final byte GET_MCRF_CONFIG = 0x12;   //查询运营商参数、工作模式
     public static final byte GET_MCRF_CONFIG_ACK = (byte) 0x92;   //查询运营商参数、工作模式应答
+    public static final byte GET_UBC_CONFIG = 0x50;   //查询设备启动标识
+    public static final byte GET_UBC_CONFIG_ACK = (byte) 0xD0;   //查询设备启动标识应答
 
     public static final byte REBOOT_DEVICE = (byte) 0x31;   //重启设备
     public static final byte REBOOT_DEVICE_ACK = (byte) 0xB1;   //重启设备应答
@@ -55,4 +58,6 @@ public class MsgType2G {
     public static final String GET_MP_STATE_ID = "GET_MP_STATE";   //查询猫池状态id
     public static final String SET_BLACK_NAMELIST_ID = "SET_BLACK_NAMELIST";   //设置黑名单id
     public static final String SET_SMS_CONFIG_ID = "SET_SMS_CONFIG";   //发送短信id
+    public static final String GET_UBC_CONFIG_ID = "GET_UBC_CONFIG";   //查询是否清空白名单id
+    public static final String SET_UBC_CONFIG_ID = "SET_UBC_CONFIG";   //清空白名单id
 }

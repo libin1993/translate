@@ -16,7 +16,6 @@ import com.doit.net.bean.LteEquipConfig;
 import com.doit.net.bean.ScanFreqRstBean;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.bean.UeidBean;
-import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.LogUtils;
@@ -77,6 +76,8 @@ public class CacheManager {
     private static LteEquipConfig equipConfig;
     public static List<LteChannelCfg> channels = new ArrayList<>();
 
+    public static boolean isClearWhiteList = false; //清空白名单标识
+
 
     public static void setLocMode(boolean locMode) {
         CacheManager.locMode = locMode;
@@ -130,8 +131,7 @@ public class CacheManager {
                 blackIMSI = blackIMSI.substring(0, blackIMSI.length() - 1);
             }
 
-            CacheManager.redirect2G("", blackIMSI, "redirect");
-
+            CacheManager.redirect2G("", blackIMSI, CacheManager.isClearWhiteList ? "" : null, "redirect");
 
             if (!TextUtils.isEmpty(blackIMSI)) {
                 String finalBlackIMSI = blackIMSI;
@@ -299,7 +299,7 @@ public class CacheManager {
             String redirectIMSI = !"CTC".equals(UtilOperator.getOperatorName(imsi)) ? imsi : "";
 
 
-            CacheManager.redirect2G(redirectIMSI, blackIMSI, "reject");
+            CacheManager.redirect2G(redirectIMSI, blackIMSI, null, "reject");
 
             if (!TextUtils.isEmpty(redirectIMSI)) {
                 new Timer().schedule(new TimerTask() {
@@ -325,7 +325,7 @@ public class CacheManager {
 
             for (int i = 0; i < CacheManager.getChannels().size(); i++) {
                 int index = i;
-                String finalBlackList= blackIMSI;
+                String finalBlackList = blackIMSI;
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -346,7 +346,7 @@ public class CacheManager {
                             }
 
                             if (!isOpenRF && (((band == 3 || band >= 33) && "CTJ".equals(UtilOperator.getOperatorName(imsi)))
-                                    || (band <= 25 && "CTU".equals(UtilOperator.getOperatorName(imsi))))){
+                                    || (band <= 25 && "CTU".equals(UtilOperator.getOperatorName(imsi))))) {
                                 isOpenRF = true;
                             }
 
@@ -379,25 +379,25 @@ public class CacheManager {
 
 
             if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
-                Send2GManager.setBoardRFState("0","0","1");
+                Send2GManager.setBoardRFState("0", "0", "1");
                 for (Set2GParamsBean.Params params : CacheManager.paramList) {
-                    if(params.getBoardid().equals("1")) {
+                    if (params.getBoardid().equals("1")) {
                         params.setRfState(true);
                         break;
                     }
                 }
-            } else if ("CTU".equals(UtilOperator.getOperatorName(imsi))){
-                Send2GManager.setBoardRFState("0","1","0");
+            } else if ("CTU".equals(UtilOperator.getOperatorName(imsi))) {
+                Send2GManager.setBoardRFState("0", "1", "0");
                 for (Set2GParamsBean.Params params : CacheManager.paramList) {
-                    if(params.getBoardid().equals("0") && params.getCarrierid().equals("1")) {
+                    if (params.getBoardid().equals("0") && params.getCarrierid().equals("1")) {
                         params.setRfState(true);
                         break;
                     }
                 }
-            }else {
-                Send2GManager.setBoardRFState("1","0","0");
+            } else {
+                Send2GManager.setBoardRFState("1", "0", "0");
                 for (Set2GParamsBean.Params params : CacheManager.paramList) {
-                    if(params.getBoardid().equals("0") && params.getCarrierid().equals("0")) {
+                    if (params.getBoardid().equals("0") && params.getCarrierid().equals("0")) {
                         params.setRfState(true);
                         break;
                     }
@@ -594,7 +594,7 @@ public class CacheManager {
     /**
      * 重定向到2G
      */
-    public static void redirect2G(String nameListRedirect, String nameListBlock, String nameListRestAction) {
+    public static void redirect2G(String nameListRedirect, String nameListBlock, String nameListReject, String nameListRestAction) {
 
         String mobileFcn = "";
         String unicomFcn = "";
@@ -614,11 +614,15 @@ public class CacheManager {
 
         if (!TextUtils.isEmpty(mobileFcn) && !TextUtils.isEmpty(unicomFcn)) {
             String redirectConfig = "46000,2," + mobileFcn + "#46002,2," + mobileFcn + "#46007,2," + mobileFcn + "#46001,2," + unicomFcn;
-            LTESendManager.setNameList(redirectConfig, null,
+            LTESendManager.setNameList(redirectConfig, nameListReject,
                     nameListRedirect, nameListBlock, nameListRestAction);
+
+            //清空白名单
+            if (CacheManager.isClearWhiteList){
+                CacheManager.isClearWhiteList = false;
+                Send2GManager.setUBCState();
+            }
         }
-
-
     }
 
     //将RF状态更新到内存
