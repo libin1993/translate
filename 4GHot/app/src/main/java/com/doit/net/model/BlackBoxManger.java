@@ -53,13 +53,13 @@ public class BlackBoxManger {
     public final static String STOP_LOCALTE = "停止搜寻，号码为:";
     public final static String EXPORT_HISTORT_DATA = "导出历史数据,文件名为:";
     public final static String ADD_BLACK_LIST = "添加了一个黑名单，名单信息:";
-    public final static String DELTE_BLACK_LIST = "删除了一个黑名单，名单信息:";
+    public final static String DELETE_BLACK_LIST = "删除了一个黑名单，名单信息:";
     public final static String MODIFY_BLACK_LIST = "修改了一个黑名单:";
     public final static String EXPORT_BLACKLIST = "导出黑名单,文件名为:";
     public final static String CLEAR_BLACKLIST = "清空黑名单";
     public final static String IMPORT_BLACKLIST = "导入黑名单,文件名为:";
     public final static String ADD_USER = "添加了一个用户:";
-    public final static String DELTE_USER = "删除了一个用户:";
+    public final static String DELETE_USER = "删除了一个用户:";
     public final static String MODIFY_USER = "修改一个用户信息，";
     public final static String MODIFY_ADMIN_ACCOUNT = "修改了管理员账户为:";
     public final static String EXPORT_BLACKBOX = "导出黑匣子信息，文件为:";

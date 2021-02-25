@@ -20,7 +20,6 @@ import com.doit.net.model.BlackListInfo;
 import com.doit.net.model.CacheManager;
 import com.doit.net.model.UCSIDBManager;
 import com.doit.net.protocol.Send2GManager;
-import com.doit.net.utils.LogUtils;
 import com.doit.net.utils.MySweetAlertDialog;
 import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;
@@ -193,8 +192,8 @@ public class BlacklistAdapter extends BaseSwipeAdapter {
 
                                 Send2GManager.setBlackList();
 
-                                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELTE_BLACK_LIST
-                                        + resp.getImsi() + "+" + resp.getMsisdn());
+                                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.DELETE_BLACK_LIST
+                                        + resp.getImsi() + "+" + resp.getMsisdn()+"+"+resp.getRemark());
                             } catch (DbException e) {
                                 new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE)
                                         .setTitleText(mContext.getString(R.string.del_white_list_fail))

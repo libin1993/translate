@@ -127,7 +127,7 @@ public class UserListAdapter extends BaseSwipeAdapter {
                                 UCSIDBManager.getDbManager().delete(resp);
                                 if (AccountManage.UpdateAccountToDevice()){
                                     EventAdapter.call(EventAdapter.REFRESH_USER_LIST);
-                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX,BlackBoxManger.DELTE_USER+resp.getAccount());
+                                    EventAdapter.call(EventAdapter.ADD_BLACKBOX,BlackBoxManger.DELETE_USER +resp.getAccount());
                                     LoadingUtils.loading(mContext);
                                 }else{
                                     UCSIDBManager.getDbManager().save(resp);

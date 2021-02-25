@@ -154,7 +154,7 @@ public class ModifyBlackListDialog extends Dialog {
                     }
                 }
                 EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.MODIFY_BLACK_LIST+modifyIMSI+"为:"+ imsi
-                        + "+" + msisdn);
+                        + "+" + msisdn+"+"+remark);
                 dismiss();
             }
         });

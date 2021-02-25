@@ -100,7 +100,7 @@ public class AddBlacklistDialog extends Dialog {
 
                 new AddToBlacklistListener(getContext(), imsi, msisdn, remark).onClick(null);
 
-                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.ADD_BLACK_LIST+imsi+"+"+msisdn);
+                EventAdapter.call(EventAdapter.ADD_BLACKBOX, BlackBoxManger.ADD_BLACK_LIST+imsi+"+"+msisdn+"+"+remark);
                 EventAdapter.call(EventAdapter.REFRESH_BLACKLIST);
                 dismiss();
 
