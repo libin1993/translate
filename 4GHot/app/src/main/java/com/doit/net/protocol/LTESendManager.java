@@ -451,11 +451,11 @@ public class LTESendManager {
 
                         String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
                         setChannelConfig(idx, fcn + ",1506,1650",
-                                "46000,46001,46011", "", "", "", "", "");
+                                "46001,46011", "", "", "", "", "");
                         for (LteChannelCfg channel : CacheManager.channels) {
                             if (channel.getIdx().equals(idx)) {
                                 channel.setFcn(fcn + ",1506,1650");
-                                channel.setPlmn("46000,46001,46011");
+                                channel.setPlmn("46001,46011");
                                 break;
                             }
                         }

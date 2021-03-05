@@ -6,6 +6,9 @@ import com.doit.net.application.MyApplication;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -122,20 +125,31 @@ public class FormatUtils {
         return true;
     }
 
-    /**
-     * @return FCN校验
-     */
-    public boolean matchFCN(String input) {
-        return Pattern.matches("^(\\d+)|(\\d+,\\d+)|(\\d+,\\d+,\\d+)", input);
-    }
 
     /**
      * @return FCN校验
      */
     public boolean fcnRange(String band, String input) {
+        if (TextUtils.isEmpty(input)){
+            ToastUtils.showMessage("请输入3个频点");
+            return false;
+        }
         String[] split = input.split(",");
+        if (split.length != 3){
+            ToastUtils.showMessage("请输入3个频点");
+            return false;
+        }
+
+        Set<String> tempSet = new HashSet<String>(Arrays.asList(split));
+        if (tempSet.size() != split.length){
+            ToastUtils.showMessage("请输入3个不重复的频点");
+            return false;
+        }
+
+
         for (String s : split) {
             if (TextUtils.isEmpty(s) || s.length() > 5) {
+                ToastUtils.showMessage("输入频点格式有误");
                 return false;
             }
             int fcn = Integer.parseInt(s);

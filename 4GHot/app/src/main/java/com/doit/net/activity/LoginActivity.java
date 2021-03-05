@@ -19,6 +19,7 @@ import com.doit.net.model.BlackBoxManger;
 import com.doit.net.model.CacheManager;
 import com.doit.net.utils.FTPManager;
 import com.doit.net.model.PrefManage;
+import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.ucsi.R;
@@ -53,7 +54,6 @@ public class LoginActivity extends BaseActivity {
         checkLocalDir();
 
         initLog();
-
     }
 
 

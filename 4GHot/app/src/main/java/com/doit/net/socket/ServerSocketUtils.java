@@ -72,14 +72,13 @@ public class ServerSocketUtils {
                         socket.setKeepAlive(true);
                         socket.setTcpNoDelay(true);
 
+                        LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
                         if (remoteIP.equals(ServerSocketUtils.REMOTE_4G_IP) || remoteIP.equals(ServerSocketUtils.REMOTE_2G_IP)) {
                             map.put(remoteIP, socket);   //存储socket
 
                             if (onSocketChangedListener != null) {
                                 onSocketChangedListener.onChange(remoteIP);
                             }
-
-                            LogUtils.log("TCP收到设备连接,ip：" + remoteIP + "；端口：" + remotePort);
 
                             new ReceiveThread(socket, remoteIP).start();
                         }

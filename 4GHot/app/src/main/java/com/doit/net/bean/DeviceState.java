@@ -19,6 +19,5 @@ public class DeviceState {
 
     public synchronized void setDeviceState(String deviceState){
         this.deviceState = deviceState;
-
     }
 }
