@@ -12,13 +12,13 @@ import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.model.AccountManage;
+import com.doit.net.utils.AccountManage;
 import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.utils.FTPManager;
-import com.doit.net.model.PrefManage;
-import com.doit.net.utils.LSettingItem;
+import com.doit.net.utils.SPUtils;
+import com.doit.net.view.LSettingItem;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 
@@ -81,10 +81,10 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         btRefresh = findViewById(R.id.btRefresh);
         btRefresh.setOnClickListener(refreshClickListener);
 
-        tvOnOffLocation.setChecked(PrefManage.getBoolean(LOC_PREF_KEY, true));
+        tvOnOffLocation.setChecked(SPUtils.getBoolean(LOC_PREF_KEY, true));
 
         tvStaticIp = findViewById(R.id.tv_static_ip);
-        tvStaticIp.setChecked(PrefManage.getBoolean(SET_STATIC_IP, true));
+        tvStaticIp.setChecked(SPUtils.getBoolean(SET_STATIC_IP, true));
         tvStaticIp.setOnLSettingCheckedChange(setStaticIpSwitch);
         tvStaticIp.setmOnLSettingItemClick(setStaticIpSwitch);
 
@@ -115,9 +115,9 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         @Override
         public void click(LSettingItem item) {
             if (tvOnOffLocation.isChecked()) {
-                PrefManage.setBoolean(LOC_PREF_KEY, true);
+                SPUtils.setBoolean(LOC_PREF_KEY, true);
             } else {
-                PrefManage.setBoolean(LOC_PREF_KEY, false);
+                SPUtils.setBoolean(LOC_PREF_KEY, false);
             }
 
             ToastUtils.showMessage("设置成功，重新登陆生效。");
@@ -142,10 +142,10 @@ public class SystemSettingActivity extends BaseActivity implements EventAdapter.
         @Override
         public void click(LSettingItem item) {
             if (tvStaticIp.isChecked()) {
-                PrefManage.setBoolean(SET_STATIC_IP, true);
+                SPUtils.setBoolean(SET_STATIC_IP, true);
                 ToastUtils.showMessage("已开启自动连接，无需配置WIFI静态IP，以后将自动连接设备");
             } else {
-                PrefManage.setBoolean(SET_STATIC_IP, false);
+                SPUtils.setBoolean(SET_STATIC_IP, false);
                 ToastUtils.showMessageLong("已关闭自动连接，请配置WIFI静态IP，否则将无法连接设备");
             }
 

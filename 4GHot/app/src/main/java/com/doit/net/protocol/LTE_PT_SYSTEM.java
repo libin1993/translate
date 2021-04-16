@@ -1,7 +1,7 @@
 package com.doit.net.protocol;
 
 
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.socket.ServerSocketUtils;
 import com.doit.net.utils.FileUtils;
 import com.doit.net.utils.LogUtils;

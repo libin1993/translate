@@ -15,12 +15,12 @@ import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.event.AddToLocationListener;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.BlackListInfo;
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.UCSIDBManager;
+import com.doit.net.utils.BlackBoxManger;
+import com.doit.net.bean.BlackListInfo;
+import com.doit.net.utils.CacheManager;
+import com.doit.net.utils.UCSIDBManager;
 import com.doit.net.protocol.Send2GManager;
-import com.doit.net.utils.MySweetAlertDialog;
+import com.doit.net.view.MySweetAlertDialog;
 import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;
 

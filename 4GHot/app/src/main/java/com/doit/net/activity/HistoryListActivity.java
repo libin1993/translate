@@ -1,21 +1,15 @@
 package com.doit.net.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
@@ -23,13 +17,12 @@ import com.doit.net.utils.FileUtils;
 import com.doit.net.adapter.HistoryListViewAdapter;
 import com.doit.net.view.MyTimePickDialog;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.model.BlackBoxManger;
+import com.doit.net.utils.BlackBoxManger;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.UCSIDBManager;
+import com.doit.net.bean.DBUeidInfo;
+import com.doit.net.utils.UCSIDBManager;
 import com.doit.net.utils.DateUtils;
-import com.doit.net.utils.MySweetAlertDialog;
-import com.doit.net.utils.StringUtils;
+import com.doit.net.view.MySweetAlertDialog;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.ToastUtils;
 

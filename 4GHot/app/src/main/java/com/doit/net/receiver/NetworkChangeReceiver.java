@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.utils.NetWorkUtils;
 
 /**

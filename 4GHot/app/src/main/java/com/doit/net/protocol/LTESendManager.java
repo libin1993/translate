@@ -3,17 +3,15 @@ package com.doit.net.protocol;
 import android.text.TextUtils;
 
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.DBChannel;
-import com.doit.net.model.PrefManage;
-import com.doit.net.model.UCSIDBManager;
+import com.doit.net.bean.DBChannel;
+import com.doit.net.utils.SPUtils;
+import com.doit.net.utils.UCSIDBManager;
 import com.doit.net.socket.ServerSocketUtils;
-import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.utils.UtilOperator;
-import com.doit.net.application.MyApplication;
 import com.doit.net.bean.FtpConfig;
 import com.doit.net.bean.LteChannelCfg;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.BlackBoxManger;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.utils.LogUtils;
 
 import org.xutils.DbManager;
@@ -449,7 +447,7 @@ public class LTESendManager {
                 if (!TextUtils.isEmpty(idx)){
                     if ("CTC".equals(UtilOperator.getOperatorName(imsi))) {
 
-                        String fcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
+                        String fcn = SPUtils.getString(SPUtils.CTC_FCN, "1850"); //电信定位默认频点
                         setChannelConfig(idx, fcn + ",1506,1650",
                                 "46001,46011", "", "", "", "", "");
                         for (LteChannelCfg channel : CacheManager.channels) {

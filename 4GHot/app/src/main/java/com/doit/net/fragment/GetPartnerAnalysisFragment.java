@@ -23,12 +23,12 @@ import com.doit.net.adapter.AnalysisResultAdapter;
 import com.doit.net.view.MyTimePickDialog;
 import com.doit.net.base.BaseFragment;
 import com.doit.net.bean.AnalysisResultBean;
-import com.doit.net.data.GettingPartnerAnalysis;
-import com.doit.net.model.BlackBoxManger;
+import com.doit.net.utils.GettingPartnerAnalysis;
+import com.doit.net.utils.BlackBoxManger;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.utils.DateUtils;
-import com.doit.net.utils.MySweetAlertDialog;
-import com.doit.net.utils.MyCommonDialog;
+import com.doit.net.view.MySweetAlertDialog;
+import com.doit.net.view.MyCommonDialog;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
 

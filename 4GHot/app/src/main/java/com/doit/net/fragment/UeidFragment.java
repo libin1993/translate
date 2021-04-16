@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.doit.net.adapter.UeidTabLayoutAdapter;
 import com.doit.net.base.BaseFragment;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.ucsi.R;
@@ -22,8 +22,6 @@ import com.doit.net.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Zxc on 2018/11/21.

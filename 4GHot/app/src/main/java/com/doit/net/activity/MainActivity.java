@@ -41,17 +41,17 @@ import com.doit.net.bean.BatteryBean;
 import com.doit.net.bean.DeviceState;
 import com.doit.net.bean.TabEntity;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.model.BlackBoxManger;
+import com.doit.net.utils.BlackBoxManger;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.AccountManage;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.AccountManage;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.utils.FTPManager;
 import com.doit.net.utils.LicenceUtils;
-import com.doit.net.model.PrefManage;
+import com.doit.net.utils.SPUtils;
 import com.doit.net.utils.DateUtils;
 import com.doit.net.utils.FTPServerUtils;
 import com.doit.net.utils.FileUtils;
-import com.doit.net.utils.MySweetAlertDialog;
+import com.doit.net.view.MySweetAlertDialog;
 import com.doit.net.utils.NetWorkUtils;
 import com.doit.net.utils.LogUtils;
 
@@ -504,9 +504,9 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
             LogUtils.log("语音播报中文：" + result);
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                PrefManage.supportPlay = false;
+                SPUtils.supportPlay = false;
             } else {
-                PrefManage.supportPlay = true;
+                SPUtils.supportPlay = true;
             }
         }
     }
@@ -566,7 +566,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
      */
     private void initUDP() {
 
-        if (!PrefManage.getBoolean(SET_STATIC_IP, true)) {     //是否设置自动连接
+        if (!SPUtils.getBoolean(SET_STATIC_IP, true)) {     //是否设置自动连接
             return;
         }
 
@@ -1053,7 +1053,7 @@ public class MainActivity extends BaseActivity implements TextToSpeech.OnInitLis
                 if (heartBeatBean.getCdma_sync() == 0){
                     iv2GState.setImageResource(R.mipmap.sync_success_2g);
                 }else {
-                    iv2GState.setImageResource(R.mipmap.sync_fail_2g);
+                    iv2GState.setImageResource(R.mipmap.sync_loss_2g);
                 }
 
                 if (heartBeatBean.getMp_state() == 0){

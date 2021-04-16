@@ -4,11 +4,10 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.doit.net.bean.UeidBean;
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.BlackListInfo;
+import com.doit.net.utils.CacheManager;
+import com.doit.net.bean.DBUeidInfo;
+import com.doit.net.utils.UCSIDBManager;
+import com.doit.net.bean.BlackListInfo;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.ToastUtils;

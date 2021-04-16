@@ -1,6 +1,5 @@
 package com.doit.net.activity;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
@@ -12,14 +11,10 @@ import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.ScreenUtils;
 import com.doit.net.view.ChangeFcnDialog;
 import com.doit.net.view.SystemSetupDialog;
-import com.doit.net.adapter.UserChannelListAdapter;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.utils.MySweetAlertDialog;
+import com.doit.net.view.MySweetAlertDialog;
 import com.doit.net.utils.LogUtils;
 import com.doit.net.ucsi.R;
-
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 
 import android.os.Handler;
 import android.os.Message;
@@ -31,30 +26,24 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.doit.net.bean.LteChannelCfg;
-import com.doit.net.model.BlackBoxManger;
+import com.doit.net.utils.BlackBoxManger;
 import com.doit.net.event.EventAdapter;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 
 import com.doit.net.utils.ToastUtils;
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.ListHolder;
-import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

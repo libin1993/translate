@@ -1,40 +1,23 @@
 package com.doit.net.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.VersionManage;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.utils.LogUtils;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.protocol.LTE_PT_SYSTEM;
 import com.doit.net.utils.Cellular;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;
-
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static com.doit.net.event.EventAdapter.GET_NAME_LIST;
-import static com.doit.net.event.EventAdapter.UPDATE_TMEPRATURE;
 
 public class TestActivity extends BaseActivity implements EventAdapter.EventCall {
     private Button test1;

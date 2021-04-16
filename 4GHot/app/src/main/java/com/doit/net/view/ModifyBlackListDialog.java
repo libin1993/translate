@@ -11,10 +11,9 @@ import android.widget.EditText;
 
 import com.doit.net.event.AddToBlacklistListener;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.BlackListInfo;
-import com.doit.net.protocol.LTESendManager;
+import com.doit.net.utils.BlackBoxManger;
+import com.doit.net.utils.UCSIDBManager;
+import com.doit.net.bean.BlackListInfo;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.utils.ToastUtils;
 import com.doit.net.ucsi.R;

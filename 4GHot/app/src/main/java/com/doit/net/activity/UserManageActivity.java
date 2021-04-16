@@ -1,13 +1,10 @@
 package com.doit.net.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -19,9 +16,9 @@ import com.doit.net.view.AddUserDialog;
 import com.doit.net.view.ModifyAdminAccountDialog;
 import com.doit.net.adapter.UserListAdapter;
 import com.doit.net.base.BaseActivity;
-import com.doit.net.model.AccountManage;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.UserInfo;
+import com.doit.net.utils.AccountManage;
+import com.doit.net.utils.UCSIDBManager;
+import com.doit.net.bean.UserInfo;
 import com.doit.net.ucsi.R;
 
 import org.xutils.ex.DbException;

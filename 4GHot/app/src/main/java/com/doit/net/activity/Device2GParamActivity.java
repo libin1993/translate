@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,19 +32,17 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.doit.net.base.BaseActivity;
 import com.doit.net.bean.Set2GParamsBean;
 import com.doit.net.event.EventAdapter;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.DBImsi;
-import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.PrefManage;
-import com.doit.net.model.UCSIDBManager;
-import com.doit.net.model.UserInfo;
+import com.doit.net.utils.BlackBoxManger;
+import com.doit.net.utils.CacheManager;
+import com.doit.net.bean.DBImsi;
+import com.doit.net.utils.SPUtils;
+import com.doit.net.utils.UCSIDBManager;
 import com.doit.net.protocol.LTESendManager;
 import com.doit.net.protocol.Send2GManager;
 import com.doit.net.ucsi.R;
 import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.LogUtils;
-import com.doit.net.utils.MySweetAlertDialog;
+import com.doit.net.view.MySweetAlertDialog;
 import com.doit.net.utils.ScreenUtils;
 import com.doit.net.utils.ToastUtils;
 
@@ -62,7 +59,6 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bertsir.zbar.Qr.Image;
 
 /**
  * Author：Libin on 2020/9/28 14:25
@@ -497,9 +493,9 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             }
         });
 
-        int interval = PrefManage.getInt(Device2GParamActivity.SMS_INTERVAL,1);
-        int count = PrefManage.getInt(Device2GParamActivity.SMS_COUNT,1);
-        String content =  PrefManage.getString(Device2GParamActivity.SMS_CONTENT,"");
+        int interval = SPUtils.getInt(Device2GParamActivity.SMS_INTERVAL,1);
+        int count = SPUtils.getInt(Device2GParamActivity.SMS_COUNT,1);
+        String content =  SPUtils.getString(Device2GParamActivity.SMS_CONTENT,"");
 
         etContent.setText(content);
         etCount.setText(String.valueOf(count));
@@ -630,9 +626,9 @@ public class Device2GParamActivity extends BaseActivity implements EventAdapter.
             return;
         }
 
-        PrefManage.setInt(Device2GParamActivity.SMS_INTERVAL,Integer.parseInt(interval));
-        PrefManage.setInt(Device2GParamActivity.SMS_COUNT,Integer.parseInt(count));
-        PrefManage.setString(Device2GParamActivity.SMS_CONTENT,content);
+        SPUtils.setInt(Device2GParamActivity.SMS_INTERVAL,Integer.parseInt(interval));
+        SPUtils.setInt(Device2GParamActivity.SMS_COUNT,Integer.parseInt(count));
+        SPUtils.setString(Device2GParamActivity.SMS_CONTENT,content);
 
         Send2GManager.sendSms(action,Integer.parseInt(count),Integer.parseInt(interval),content);
         popupWindow.dismiss();

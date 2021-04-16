@@ -7,8 +7,8 @@ import android.view.View;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.doit.net.activity.MainActivity;
-import com.doit.net.model.BlackBoxManger;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.BlackBoxManger;
+import com.doit.net.utils.CacheManager;
 import com.doit.net.utils.ToastUtils;
 
 /**

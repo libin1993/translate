@@ -3,17 +3,14 @@ package com.doit.net.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.doit.net.model.PrefManage;
+import com.doit.net.utils.SPUtils;
 import com.doit.net.ucsi.R;
-import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.ToastUtils;
 
 /**
@@ -41,7 +38,7 @@ public class ChangeFcnDialog extends Dialog {
         EditText etFcn = mView.findViewById(R.id.et_ctc_fcn);
         Button btnSave = mView.findViewById(R.id.btn_change_fcn);
         Button btnCancel = mView.findViewById(R.id.btn_cancel_fcn);
-        String defaultFcn = PrefManage.getString(PrefManage.CTC_FCN, "1850"); //电信定位默认频点
+        String defaultFcn = SPUtils.getString(SPUtils.CTC_FCN, "1850"); //电信定位默认频点
 
         etFcn.setText(defaultFcn);
 
@@ -60,7 +57,7 @@ public class ChangeFcnDialog extends Dialog {
                     ToastUtils.showMessage("请输入频点");
                     return;
                 }
-                PrefManage.setString(PrefManage.CTC_FCN,fcn);
+                SPUtils.setString(SPUtils.CTC_FCN,fcn);
                 dismiss();
             }
         });

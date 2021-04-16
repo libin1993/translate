@@ -2,9 +2,6 @@ package com.doit.net.utils;
 
 import android.content.Context;
 //
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.VersionManage;
-import com.doit.net.protocol.LTE_PT_PARAM;
 
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;

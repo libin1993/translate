@@ -9,7 +9,6 @@ import com.doit.net.application.MyApplication;
 import com.doit.net.bean.LteChannelCfg;
 import com.doit.net.bean.ScanCellInfo;
 import com.doit.net.protocol.LTESendManager;
-import com.doit.net.model.CacheManager;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,12 +1,8 @@
 package com.doit.net.socket;
 
 import com.doit.net.protocol.LTEReceiveManager;
-import com.doit.net.model.CacheManager;
-import com.doit.net.utils.FormatUtils;
 import com.doit.net.utils.LogUtils;
-import com.doit.net.utils.ToastUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

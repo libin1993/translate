@@ -17,7 +17,7 @@ import com.doit.net.application.MyApplication;
 import com.doit.net.bean.UeidBean;
 
 import com.doit.net.event.AddToLocationListener;
-import com.doit.net.model.CacheManager;
+import com.doit.net.utils.CacheManager;
 
 import com.doit.net.utils.UtilOperator;
 import com.doit.net.ucsi.R;

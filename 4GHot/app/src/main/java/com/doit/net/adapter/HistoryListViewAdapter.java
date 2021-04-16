@@ -12,11 +12,11 @@ import android.widget.TextView;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.doit.net.event.AddToLocationListener;
-import com.doit.net.model.CacheManager;
-import com.doit.net.model.DBUeidInfo;
-import com.doit.net.model.UCSIDBManager;
+import com.doit.net.utils.CacheManager;
+import com.doit.net.bean.DBUeidInfo;
+import com.doit.net.utils.UCSIDBManager;
 
-import com.doit.net.model.BlackListInfo;
+import com.doit.net.bean.BlackListInfo;
 import com.doit.net.view.AddBlacklistDialog;
 import com.doit.net.view.ModifyBlackListDialog;
 import com.doit.net.ucsi.R;

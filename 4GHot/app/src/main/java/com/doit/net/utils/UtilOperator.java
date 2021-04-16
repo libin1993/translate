@@ -1,12 +1,5 @@
 package com.doit.net.utils;
 
-import com.doit.net.bean.LteChannelCfg;
-import com.doit.net.protocol.LTESendManager;
-import com.doit.net.model.CacheManager;
-
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Created by Zxc on 2019/3/22.
  */
