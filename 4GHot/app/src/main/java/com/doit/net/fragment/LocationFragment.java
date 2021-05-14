@@ -204,7 +204,7 @@ public class LocationFragment extends BaseFragment implements EventAdapter.Event
         if (!"".equals(lastLocateIMSI) && !lastLocateIMSI.equals(imsi)) {   //更换目标
             speech("搜寻目标更换");
             currentSRSP = 0;
-            lastRptSRSP = 0;
+            lastRptSRSP = 60;
             textContent = "正在搜寻：" + CacheManager.getCurrentLocation().getImsi();
             resetLocateChartValue();
         }

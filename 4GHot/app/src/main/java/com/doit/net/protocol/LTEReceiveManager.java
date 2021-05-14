@@ -56,7 +56,7 @@ public class LTEReceiveManager {
     //解析数据
     public synchronized void parseData(String ip, byte[] bytesReceived, int receiveCount) {
         //将接收到数据存放在列表中
-
+        LogUtils.log("接收数据大小：" + receiveCount);
         for (int i = 0; i < receiveCount; i++) {
             listReceiveBuffer.add(bytesReceived[i]);
         }
@@ -71,8 +71,7 @@ public class LTEReceiveManager {
             }
 
             //取出长度
-            byte[] contentLength = {listReceiveBuffer.get(0), listReceiveBuffer.get(1)};
-            int contentLen = getShortData(contentLength[0], contentLength[1]);
+            int contentLen = getShortData(listReceiveBuffer.get(0), listReceiveBuffer.get(1));
 
 
             LogUtils.log("分包大小：" + listReceiveBuffer.size() + "," + contentLen);
