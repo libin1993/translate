@@ -599,13 +599,13 @@ public class LTEReceiveManager {
             notification = new Notification.Builder(MyApplication.mContext, id)
                     .setContentTitle("目标手机上报")
                     .setContentText(content)
-                    .setSmallIcon(R.drawable.august_first)
+                    .setSmallIcon(R.drawable.app_icon)
                     .build();
         } else {
             notification = new NotificationCompat.Builder(MyApplication.mContext, id)
                     .setContentTitle("目标手机上报")
                     .setContentText(content)
-                    .setSmallIcon(R.drawable.august_first)
+                    .setSmallIcon(R.drawable.app_icon)
                     .build();
         }
         notification.flags = Notification.FLAG_AUTO_CANCEL;

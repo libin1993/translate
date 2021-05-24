@@ -27,7 +27,7 @@ public class EventAdapter {
     public final static String CHANGE_TAB = "CHANGE_TAB";
     public final static String UPDATE_BLACKLIST = "UPDATE_BLACKLIST";
     public final static String POWER_START = "POWER_START";
-    public final static String SCAN_CODE = "SCAN_CODE"; //扫码结果
+    public final static String SCAN_CODE = "SCAN_CODE"; //授权码扫码结果
     public final static String GET_NAME_LIST = "GET_NAME_LIST"; //获取白名单
     public final static String REFRESH_DEVICE = "REFRESH_DEVICE";  //通道设置
     public final static String REFRESH_SYSTEM = "REFRESH_SYSTEM";  //系统设置
